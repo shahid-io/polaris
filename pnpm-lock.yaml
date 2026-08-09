@@ -133,6 +133,22 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.1)(supports-color@8.1.1)(terser@5.49.2)
 
+  packages/providers:
+    dependencies:
+      '@polaris/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@polaris/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      typescript:
+        specifier: ^5.7.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.1)(supports-color@8.1.1)(terser@5.49.2)
+
 packages:
 
   '@alloc/quick-lru@5.2.0':
