@@ -101,15 +101,17 @@ export class ProviderError extends Error {
    * @param providerId - Which provider failed.
    * @param message - Human-readable explanation, surfaced in the UI.
    * @param retryable - Whether retrying could plausibly succeed.
-   * @param cause - The underlying error, preserved for logs.
+   * @param cause - The underlying error. Forwarded to the native `Error.cause` rather
+   *   than stored as a own property, so the standard cause chain — and the stack trace
+   *   rendering that reads it — keeps working.
    */
   constructor(
     readonly providerId: ProviderId,
     message: string,
     readonly retryable: boolean = false,
-    readonly cause?: unknown,
+    cause?: unknown,
   ) {
-    super(message);
+    super(message, { cause });
     this.name = 'ProviderError';
   }
 }

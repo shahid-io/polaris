@@ -1,3 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*
+ * Tailwind 4 is CSS-first: one import replaces the three @tailwind directives,
+ * and design tokens live in @theme here rather than in a tailwind.config.ts.
+ */
+@import 'tailwindcss';
