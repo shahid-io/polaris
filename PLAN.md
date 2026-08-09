@@ -324,6 +324,35 @@ results UI. It is the single most persuasive 20 seconds in the demo.
 
 ---
 
+## 9a. Persistence — decided
+
+The brief requires no data store, but a real product needs one. Scoped deliberately:
+
+**In (Phase 2) — search analytics.** Every search persists: route, travel date, providers
+attempted, per-provider status and latency, offer/group counts, cache hit. **No identity, no
+IP, no cookies.** This is what turns the provider health dashboard (§10, item 1) from a
+live-only view into something with history, and turns "error handling" from a claim into a
+chart. It is also honest telemetry we would want in production regardless.
+
+**In (Phase 3) — recent searches** in `localStorage`. Client-side only, no PII, no backend.
+
+**Deliberately out — user tracking.** Storing IP addresses alongside search queries makes us
+a data fiduciary under **India's DPDP Act 2023** (and GDPR for any EU traffic); IP is personal
+data. That needs a lawful basis, a retention policy, and truncation or hashing at minimum.
+Adding it casually to a prototype is careless; excluding it deliberately and being able to
+explain why is a strong answer when they ask about production-readiness. If request-level
+diagnostics are ever needed, the design is: truncate IPv4 to /24, hash with a rotating salt,
+30-day retention.
+
+**Store: SQLite + Prisma.** Chosen over Postgres so the demo has nothing to start — no Docker,
+no "is the database running?" failure on stage. Prisma reduces the move to Postgres to a
+one-line datasource change, which is itself the answer to "how would this scale?".
+
+**Also deferred to Phase 6:** accounts, saved searches, price alerts — all need auth, and auth
+before the required features are done is the wrong order.
+
+---
+
 ## 10. Stretch features — strict priority order
 
 The brief asks for a prototype; extras only count if the core is airtight. Work down this list
