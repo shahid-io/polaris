@@ -17,6 +17,8 @@
     "@nestjs/core": "^11.1.28",
     "@nestjs/platform-express": "^11.1.28",
     "@polaris/contracts": "workspace:*",
+    "@polaris/core": "workspace:*",
+    "@polaris/providers": "workspace:*",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "^4.4.3"

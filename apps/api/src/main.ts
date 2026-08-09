@@ -3,12 +3,14 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './common/all-exceptions.filter';
 import type { Env } from './config/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   const config = app.get(ConfigService<Env, true>);
 
+  app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors({ origin: config.get('API_CORS_ORIGIN', { infer: true }) });
   app.enableShutdownHooks();
 

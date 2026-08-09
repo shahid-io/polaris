@@ -1,27 +1,12 @@
-import type { ComparisonGroup, IataAirlineCode, ProviderId, TimeRange } from '@polaris/contracts';
+import type {
+  ComparisonGroup,
+  FlightFilters,
+  IataAirlineCode,
+  ProviderId,
+  TimeRange,
+} from '@polaris/contracts';
 
-/**
- * Filters a user can apply to a result set.
- *
- * Every field is optional; an omitted field means "no constraint on this dimension".
- * Filters are combined with AND — narrowing, never widening.
- */
-export interface FlightFilters {
-  /** Maximum stops. `0` means non-stop only. */
-  maxStops?: number;
-  /** Keep only flights departing within this window, local to the origin airport. */
-  departureWindow?: TimeRange;
-  /** Keep only these marketing carriers. */
-  airlines?: readonly IataAirlineCode[];
-  /** Keep only flights with an offer from at least one of these providers. */
-  providers?: readonly ProviderId[];
-  /** Maximum price in minor units, compared against the group's cheapest offer. */
-  maxPriceMinor?: number;
-  /** Maximum gate-to-gate duration. */
-  maxDurationMinutes?: number;
-  /** Keep only flights where at least one offer is refundable. */
-  refundableOnly?: boolean;
-}
+export type { FlightFilters };
 
 /**
  * Applies filters to grouped flights.

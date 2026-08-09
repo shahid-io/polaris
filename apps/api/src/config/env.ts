@@ -23,6 +23,16 @@ export const envSchema = z.object({
   CIRCUIT_FAILURE_THRESHOLD: z.coerce.number().int().positive().default(3),
   CIRCUIT_RESET_MS: z.coerce.number().int().positive().default(30_000),
 
+  /**
+   * Demo failure injection, as comma-separated `provider:mode` pairs —
+   * e.g. `cleartrip:timeout,goibibo:error`.
+   *
+   * Exists so the partial-results path can be shown deliberately rather than waited for.
+   * Explicit configuration rather than a random failure rate: a demo whose key moment
+   * depends on a coin toss is not a demo.
+   */
+  SIMULATED_FAILURES: z.string().optional(),
+
   /** Absent keys are tolerated — the affected adapter reports status "skipped". */
   SERPAPI_KEY: z.string().optional(),
   DUFFEL_ACCESS_TOKEN: z.string().optional(),

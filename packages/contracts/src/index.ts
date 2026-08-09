@@ -15,3 +15,4 @@ export * from './search-query';
 export * from './offer';
 export * from './comparison';
 export * from './search-response';
+export * from './search-request';

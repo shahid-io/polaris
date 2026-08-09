@@ -35,6 +35,12 @@ importers:
       '@polaris/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@polaris/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@polaris/providers':
+        specifier: workspace:*
+        version: link:../../packages/providers
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
