@@ -353,6 +353,39 @@ before the required features are done is the wrong order.
 
 ---
 
+## 9b. Frontend conventions — follow the Local-IL house style
+
+Phase 3 follows the structure used in `~/workspace/newagesysit/local-il-community-admin`, so
+the code looks like work Shahid already writes rather than a different dialect.
+
+```
+apps/web/src/
+  app/            App Router. Route groups in parentheses where they earn it.
+  components/
+    ui/           shadcn/ui primitives
+    <feature>/    feature components, one folder per area
+  lib/            utils.ts · routes.ts (route constants, JSDoc'd) · fetch.ts
+  hooks/          custom hooks
+  types/          shared view types
+  config/         static config
+```
+
+**Adopted from Local-IL:** shadcn/ui on Radix, `lucide-react` icons, `react-hook-form` with
+`@hookform/resolvers/zod`, `next-themes` for dark mode, a toast library for errors,
+`next dev --turbopack`, and JSDoc on shared library modules.
+
+**Deliberately different, with reasons to give if asked:**
+- **No `src/schemas/`.** Local-IL keeps Zod schemas in the frontend because it *is* the
+  backend — server actions and Mongoose models live in the same app. Polaris has a separate
+  API service, so schemas live in `@polaris/contracts` and are imported by both sides. One
+  definition, no drift. Duplicating them under `src/schemas/` would recreate exactly the
+  problem that package exists to prevent.
+- **No `src/actions/` or `src/models/`.** Both belong to the Next-as-backend pattern. Polaris
+  talks to NestJS over HTTP, so data access is a typed API client in `lib/` instead.
+- **No `auth.ts` / `middleware.ts`.** No authentication in scope (§10, deferred to Phase 6).
+
+---
+
 ## 10. Stretch features — strict priority order
 
 The brief asks for a prototype; extras only count if the core is airtight. Work down this list

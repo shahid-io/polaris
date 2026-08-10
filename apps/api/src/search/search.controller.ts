@@ -2,10 +2,14 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { searchRequestSchema, type SearchRequest, type SearchResponse } from '@polaris/contracts';
 import { ZodValidationPipe } from '../common/zod-validation.pipe';
 import { SearchOrchestrator } from './search.orchestrator';
+import { AnalyticsService } from '../analytics/analytics.service';
 
 @Controller('api/search')
 export class SearchController {
-  constructor(private readonly orchestrator: SearchOrchestrator) {}
+  constructor(
+    private readonly orchestrator: SearchOrchestrator,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   /**
    * Searches every provider and returns grouped, ranked flights.
@@ -21,6 +25,13 @@ export class SearchController {
   async search(
     @Body(new ZodValidationPipe(searchRequestSchema)) request: SearchRequest,
   ): Promise<SearchResponse> {
-    return this.orchestrator.search(request);
+    const response = await this.orchestrator.search(request);
+
+    // Deliberately not awaited. Recording telemetry must not add latency to a response
+    // the user is waiting for, and must not be able to fail a search that already
+    // succeeded. AnalyticsService swallows its own errors, so there is nothing to catch.
+    void this.analytics.recordSearch(response);
+
+    return response;
   }
 }

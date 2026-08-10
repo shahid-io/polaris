@@ -33,6 +33,14 @@ export const envSchema = z.object({
    */
   SIMULATED_FAILURES: z.string().optional(),
 
+  /**
+   * MongoDB connection string for search analytics.
+   *
+   * Optional. Absent means analytics is disabled and every search still works — the app
+   * must run on a clean checkout with nothing else started.
+   */
+  MONGODB_URI: z.string().optional(),
+
   /** Absent keys are tolerated — the affected adapter reports status "skipped". */
   SERPAPI_KEY: z.string().optional(),
   DUFFEL_ACCESS_TOKEN: z.string().optional(),
