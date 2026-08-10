@@ -324,6 +324,68 @@ results UI. It is the single most persuasive 20 seconds in the demo.
 
 ---
 
+## 9a. Persistence — decided
+
+The brief requires no data store, but a real product needs one. Scoped deliberately:
+
+**In (Phase 2) — search analytics.** Every search persists: route, travel date, providers
+attempted, per-provider status and latency, offer/group counts, cache hit. **No identity, no
+IP, no cookies.** This is what turns the provider health dashboard (§10, item 1) from a
+live-only view into something with history, and turns "error handling" from a claim into a
+chart. It is also honest telemetry we would want in production regardless.
+
+**In (Phase 3) — recent searches** in `localStorage`. Client-side only, no PII, no backend.
+
+**Deliberately out — user tracking.** Storing IP addresses alongside search queries makes us
+a data fiduciary under **India's DPDP Act 2023** (and GDPR for any EU traffic); IP is personal
+data. That needs a lawful basis, a retention policy, and truncation or hashing at minimum.
+Adding it casually to a prototype is careless; excluding it deliberately and being able to
+explain why is a strong answer when they ask about production-readiness. If request-level
+diagnostics are ever needed, the design is: truncate IPv4 to /24, hash with a rotating salt,
+30-day retention.
+
+**Store: SQLite + Prisma.** Chosen over Postgres so the demo has nothing to start — no Docker,
+no "is the database running?" failure on stage. Prisma reduces the move to Postgres to a
+one-line datasource change, which is itself the answer to "how would this scale?".
+
+**Also deferred to Phase 6:** accounts, saved searches, price alerts — all need auth, and auth
+before the required features are done is the wrong order.
+
+---
+
+## 9b. Frontend conventions — follow the Local-IL house style
+
+Phase 3 follows the structure used in `~/workspace/newagesysit/local-il-community-admin`, so
+the code looks like work Shahid already writes rather than a different dialect.
+
+```
+apps/web/src/
+  app/            App Router. Route groups in parentheses where they earn it.
+  components/
+    ui/           shadcn/ui primitives
+    <feature>/    feature components, one folder per area
+  lib/            utils.ts · routes.ts (route constants, JSDoc'd) · fetch.ts
+  hooks/          custom hooks
+  types/          shared view types
+  config/         static config
+```
+
+**Adopted from Local-IL:** shadcn/ui on Radix, `lucide-react` icons, `react-hook-form` with
+`@hookform/resolvers/zod`, `next-themes` for dark mode, a toast library for errors,
+`next dev --turbopack`, and JSDoc on shared library modules.
+
+**Deliberately different, with reasons to give if asked:**
+- **No `src/schemas/`.** Local-IL keeps Zod schemas in the frontend because it *is* the
+  backend — server actions and Mongoose models live in the same app. Polaris has a separate
+  API service, so schemas live in `@polaris/contracts` and are imported by both sides. One
+  definition, no drift. Duplicating them under `src/schemas/` would recreate exactly the
+  problem that package exists to prevent.
+- **No `src/actions/` or `src/models/`.** Both belong to the Next-as-backend pattern. Polaris
+  talks to NestJS over HTTP, so data access is a typed API client in `lib/` instead.
+- **No `auth.ts` / `middleware.ts`.** No authentication in scope (§10, deferred to Phase 6).
+
+---
+
 ## 10. Stretch features — strict priority order
 
 The brief asks for a prototype; extras only count if the core is airtight. Work down this list

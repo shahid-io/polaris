@@ -3,12 +3,19 @@ import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { AllExceptionsFilter } from './common/all-exceptions.filter';
 import type { Env } from './config/env';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  // bufferLogs holds every startup message until this is called. Without it the buffer is
+  // never drained and the process runs completely silently — including the errors you most
+  // need when something fails to start.
+  app.flushLogs();
+
   const config = app.get(ConfigService<Env, true>);
 
+  app.useGlobalFilters(new AllExceptionsFilter());
   app.enableCors({ origin: config.get('API_CORS_ORIGIN', { infer: true }) });
   app.enableShutdownHooks();
 

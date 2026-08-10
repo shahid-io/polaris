@@ -1,0 +1,23 @@
+# Local infrastructure for Polaris.
+#
+# Only MongoDB, and only for search analytics. The API deliberately does not require it:
+# if this is not running, searches still work and analytics degrades to a no-op. That is
+# a demo-safety property as much as an architectural one — a database being down should
+# never be the reason a flight search fails.
+services:
+  mongo:
+    image: mongo:8
+    container_name: polaris-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - polaris-mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  polaris-mongo-data:
