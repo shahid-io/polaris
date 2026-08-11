@@ -48,12 +48,14 @@ export default function HomePage() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 lg:py-12">
-      <header>
-        <h1 className="text-3xl font-semibold tracking-tight">Polaris</h1>
-        <p className="mt-1 text-muted-foreground">
-          Compare the same flight across every provider that sells it.
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          Compare the same flight across every provider
+        </h1>
+        <p className="mt-1.5 text-sm text-muted-foreground sm:text-base">
+          One row per flight, with each seller&apos;s price beside it — not one row per offer.
         </p>
-      </header>
+      </div>
 
       {airportsError ? (
         <p className="rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm">
@@ -95,7 +97,7 @@ export default function HomePage() {
             />
           ) : (
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
-              <div className="lg:w-64 lg:shrink-0">
+              <div className="lg:sticky lg:top-20 lg:w-64 lg:shrink-0">
                 <ResultControls
                   sort={sort}
                   filters={filters}
