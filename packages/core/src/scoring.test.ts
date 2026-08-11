@@ -148,7 +148,9 @@ describe('scoreGroups', () => {
       groupOffers([
         buildOffer({
           itinerary: buildItinerary({ segments: [buildSegment({ flightNumber: '100' })] }),
-          benefits: [buildBenefit({ type: 'lounge_access', label: 'Lounge access', value: undefined })],
+          benefits: [
+            buildBenefit({ type: 'lounge_access', label: 'Lounge access', value: undefined }),
+          ],
         }),
         buildOffer({
           itinerary: buildItinerary({ segments: [buildSegment({ flightNumber: '200' })] }),

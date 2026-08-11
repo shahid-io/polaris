@@ -22,9 +22,7 @@ export function ResultsHeader({ meta, shown }: { meta: SearchMeta; shown: number
       </p>
 
       {meta.multiProviderGroups > 0 && (
-        <Badge variant="live">
-          {meta.multiProviderGroups} sold by more than one provider
-        </Badge>
+        <Badge variant="live">{meta.multiProviderGroups} sold by more than one provider</Badge>
       )}
 
       {shown !== meta.totalGroups && <Badge variant="outline">{shown} after filters</Badge>}

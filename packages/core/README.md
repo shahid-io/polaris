@@ -2,7 +2,7 @@
 
 **The comparison engine — pure functions, no I/O, no framework.**
 
-Everything that decides *what the user sees* lives here: recognising when several providers
+Everything that decides _what the user sees_ lives here: recognising when several providers
 are selling the same flight, scoring value, filtering and ranking. Nothing in this package
 knows about HTTP, NestJS, React, or any individual provider.
 
@@ -35,14 +35,14 @@ offers  →  groupOffers  →  scoreGroups  →  filterGroups  →  sortGroups
 ```ts
 import { groupOffers, scoreGroups, filterGroups, sortGroups } from '@polaris/core';
 
-const groups  = groupOffers(offers);           // 62 offers → 37 flights
-const scored  = scoreGroups(groups);           // adds a transparent value score
+const groups = groupOffers(offers); // 62 offers → 37 flights
+const scored = scoreGroups(groups); // adds a transparent value score
 const visible = sortGroups(filterGroups(scored, { maxStops: 0 }), 'price');
 ```
 
 **Scoring runs before filtering, deliberately.** Sub-scores are normalised across the result
 set, so filtering first would silently rescale every score as the user toggles a checkbox —
-a flight's "value" would change because a *different* flight was hidden.
+a flight's "value" would change because a _different_ flight was hidden.
 
 ---
 
@@ -60,7 +60,7 @@ Multi-leg journeys join each segment's key, so two itineraries match only when e
 matches in the same order.
 
 **Marketed flight, not physical aircraft.** Marketing carrier and flight number are what a
-ticket is *sold* as and what providers agree on. On a codeshare, one aircraft may be sold
+ticket is _sold_ as and what providers agree on. On a codeshare, one aircraft may be sold
 under two numbers and will appear here as two flights. That is deliberate: merging them
 reliably needs operating carrier and equipment data providers do not expose, and showing a
 fare the user cannot buy under the number displayed is worse than showing two rows.
@@ -78,7 +78,7 @@ value = 0.45·price + 0.25·duration + 0.20·stops + 0.10·benefits
 ```
 
 Every sub-score and the weights that produced it are returned with the group, so the UI can
-answer *"why is this ranked first?"* rather than presenting an opaque number.
+answer _"why is this ranked first?"_ rather than presenting an opaque number.
 
 - `price`, `duration`, `benefits` are min–max normalised **within the result set** — a score
   is a statement about this search, not an absolute rating.
@@ -113,6 +113,6 @@ pnpm test        # 68 tests, ~20ms, no mocks
 pnpm typecheck
 ```
 
-Several tests are named after the wrong answer they prevent — *"measures spread per
-provider, not across fare families"*, *"keys an after-midnight departure to its local date,
-not the UTC date"* — because those are the regressions that would otherwise return silently.
+Several tests are named after the wrong answer they prevent — _"measures spread per
+provider, not across fare families"_, _"keys an after-midnight departure to its local date,
+not the UTC date"_ — because those are the regressions that would otherwise return silently.

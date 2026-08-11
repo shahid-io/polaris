@@ -39,7 +39,11 @@ const makeMyTripBenefits: readonly Benefit[] = [
     // Card-gated, so scoring excludes it — most users cannot actually claim it.
     conditional: true,
   },
-  { type: 'free_date_change', label: 'Free date change up to 24h before departure', conditional: false },
+  {
+    type: 'free_date_change',
+    label: 'Free date change up to 24h before departure',
+    conditional: false,
+  },
   { type: 'reward_points', label: 'MMTBLACK loyalty points', conditional: false },
 ];
 
@@ -72,7 +76,11 @@ const cleartripBenefits: readonly Benefit[] = [
     value: { amountMinor: 35_000, currency: 'INR' },
     conditional: false,
   },
-  { type: 'free_cancellation', label: 'Free cancellation within 24h of booking', conditional: false },
+  {
+    type: 'free_cancellation',
+    label: 'Free cancellation within 24h of booking',
+    conditional: false,
+  },
   {
     type: 'extra_baggage',
     label: '5 kg extra check-in baggage',
@@ -180,7 +188,6 @@ export function createOtaProviders(
       [CLEARTRIP_CONFIG, failureModes.cleartrip],
     ] as const
   ).map(
-    ([config, failureMode]) =>
-      new RepresentativeProvider(config, { failureMode, simulateLatency }),
+    ([config, failureMode]) => new RepresentativeProvider(config, { failureMode, simulateLatency }),
   );
 }

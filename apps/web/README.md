@@ -61,7 +61,7 @@ banner names what failed, why, and says a cheaper fare may exist.
 
 ### `ScoreBreakdown`
 
-Answers *"who decided these weights?"* before it is asked — every sub-score, its weight, and
+Answers _"who decided these weights?"_ before it is asked — every sub-score, its weight, and
 the fact that scores are relative to the **full** result set rather than the filtered view,
 so filtering never changes a flight's score.
 
@@ -120,8 +120,8 @@ asset would mean it could not be regenerated on a machine that lacks one.
 
 ## Configuration
 
-| Variable | Default |
-|---|---|
+| Variable                   | Default                 |
+| -------------------------- | ----------------------- |
 | `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:4000` |
 
 ---

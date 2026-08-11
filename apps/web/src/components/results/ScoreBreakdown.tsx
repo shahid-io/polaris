@@ -38,8 +38,8 @@ export function ScoreBreakdown({ score }: { score: ValueScore }) {
       <PopoverContent className="w-72 p-3">
         <p className="text-sm font-medium">How this score is calculated</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          A weighted blend of four measures. Each is scored against the other flights in
-          this search, so 1.00 means best in these results.
+          A weighted blend of four measures. Each is scored against the other flights in this
+          search, so 1.00 means best in these results.
         </p>
 
         <ul className="mt-3 flex flex-col gap-2">
@@ -67,8 +67,8 @@ export function ScoreBreakdown({ score }: { score: ValueScore }) {
         </ul>
 
         <p className="mt-3 border-t border-border pt-2 text-[11px] text-muted-foreground">
-          Scores compare against the full search result, not the filtered view — so
-          filtering never changes a flight&apos;s score.
+          Scores compare against the full search result, not the filtered view — so filtering never
+          changes a flight&apos;s score.
         </p>
       </PopoverContent>
     </Popover>

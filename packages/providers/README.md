@@ -15,7 +15,7 @@ Depends on `@polaris/contracts` and `@polaris/core`.
 
 ```ts
 interface FlightProvider {
-  readonly descriptor: ProviderDescriptor;   // integration type, data source, provenance
+  readonly descriptor: ProviderDescriptor; // integration type, data source, provenance
   search(query: SearchQuery, ctx: ProviderContext): Promise<ProviderResult>;
 }
 ```
@@ -35,14 +35,14 @@ without stubbing globals.
 
 ## The six providers
 
-| Provider | Integration | Source | Real data |
-|---|---|---|---|
-| IndiGo | `live-api` | SerpApi Google Flights | Yes |
-| Air India Express | `live-api` | SerpApi Google Flights | Yes |
-| Duffel | `sandbox-api` | Duffel API | No — synthetic |
-| MakeMyTrip | `representative` | Shared timetable | No |
-| Goibibo | `representative` | Shared timetable | No |
-| Cleartrip | `representative` | Shared timetable | No |
+| Provider          | Integration      | Source                 | Real data      |
+| ----------------- | ---------------- | ---------------------- | -------------- |
+| IndiGo            | `live-api`       | SerpApi Google Flights | Yes            |
+| Air India Express | `live-api`       | SerpApi Google Flights | Yes            |
+| Duffel            | `sandbox-api`    | Duffel API             | No — synthetic |
+| MakeMyTrip        | `representative` | Shared timetable       | No             |
+| Goibibo           | `representative` | Shared timetable       | No             |
+| Cleartrip         | `representative` | Shared timetable       | No             |
 
 **No airline's own API is integrated, because none of them publish one.** IndiGo and Air
 India Express fares are real live Google Flights results obtained through SerpApi, a
@@ -69,11 +69,11 @@ case to prove itself against.
 Each provider gets a distinct market position so comparison surfaces meaningful differences
 rather than noise:
 
-| Provider | Price position | Inventory coverage | Competes on |
-|---|---|---|---|
-| MakeMyTrip | +3.5% | 90% | Wallet cashback, flexibility |
-| Goibibo | −1.5% | 82% | goCash, fee waivers |
-| Cleartrip | +1.2% | 74% | Instant discount, free cancellation |
+| Provider   | Price position | Inventory coverage | Competes on                         |
+| ---------- | -------------- | ------------------ | ----------------------------------- |
+| MakeMyTrip | +3.5%          | 90%                | Wallet cashback, flexibility        |
+| Goibibo    | −1.5%          | 82%                | goCash, fee waivers                 |
+| Cleartrip  | +1.2%          | 74%                | Instant discount, free cancellation |
 
 Coverage is below 100% on purpose: no travel agency sells every seat on every flight, and
 uniform coverage would make every comparison group identical.

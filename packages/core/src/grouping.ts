@@ -1,9 +1,4 @@
-import type {
-  ComparisonGroup,
-  NormalizedOffer,
-  PriceSpread,
-  ProviderId,
-} from '@polaris/contracts';
+import type { ComparisonGroup, NormalizedOffer, PriceSpread, ProviderId } from '@polaris/contracts';
 import { canonicalKeyForOffer } from './canonical-key';
 import { isLessThan, maxOf, minOf, percentageOf, subtract } from './money';
 
@@ -71,7 +66,11 @@ function buildGroup(canonicalKey: string, offers: NormalizedOffer[]): UnscoredCo
   // Cheapest first: the UI leads with the best price for this flight, and the ordering
   // makes offers[0] meaningful everywhere downstream.
   const sorted = [...offers].sort((a, b) =>
-    isLessThan(a.price.total, b.price.total) ? -1 : isLessThan(b.price.total, a.price.total) ? 1 : 0,
+    isLessThan(a.price.total, b.price.total)
+      ? -1
+      : isLessThan(b.price.total, a.price.total)
+        ? 1
+        : 0,
   );
 
   const cheapest = sorted[0]!;

@@ -42,10 +42,7 @@ export function SearchForm({ airports, routes, isSearching, onSearch }: SearchFo
   const [departureDate, setDepartureDate] = useState(defaultDate);
   const [timePreset, setTimePreset] = useState<TimePreset>('any');
 
-  const reachable = useMemo(
-    () => (origin ? (routes[origin] ?? []) : undefined),
-    [origin, routes],
-  );
+  const reachable = useMemo(() => (origin ? (routes[origin] ?? []) : undefined), [origin, routes]);
 
   const canSearch = Boolean(origin && destination && departureDate) && !isSearching;
 

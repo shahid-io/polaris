@@ -4,16 +4,15 @@ import { groupOffers } from './grouping';
 import { scoreGroups } from './scoring';
 import { buildItinerary, buildOffer, buildSegment, istTime } from './testing/builders';
 
-const flight = (
-  flightNumber: string,
-  overrides: Parameters<typeof buildSegment>[0] = {},
-) => buildItinerary({ segments: [buildSegment({ flightNumber, ...overrides })] });
+const flight = (flightNumber: string, overrides: Parameters<typeof buildSegment>[0] = {}) =>
+  buildItinerary({ segments: [buildSegment({ flightNumber, ...overrides })] });
 
 const priceOf = (group: { priceSpread: { min: { amountMinor: number } } }) =>
   group.priceSpread.min.amountMinor / 100;
 
-const flightNumbersOf = (groups: readonly { itinerary: { segments: { flightNumber: string }[] } }[]) =>
-  groups.map((group) => group.itinerary.segments[0]!.flightNumber);
+const flightNumbersOf = (
+  groups: readonly { itinerary: { segments: { flightNumber: string }[] } }[],
+) => groups.map((group) => group.itinerary.segments[0]!.flightNumber);
 
 describe('sortGroups', () => {
   it('sorts by best overall value by default', () => {

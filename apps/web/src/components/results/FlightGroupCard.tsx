@@ -150,64 +150,69 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
           <OfferPerks offer={offers[0]!} />
         </div>
       ) : (
-      <div className="border-t border-border px-4 py-3">
-        <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          Compare {providerCount} providers · prices vary {priceSpread.percentage}%
-        </p>
+        <div className="border-t border-border px-4 py-3">
+          <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+            Compare {providerCount} providers · prices vary {priceSpread.percentage}%
+          </p>
 
-        <ul className="flex flex-col gap-1">
-          {visibleOffers.map((offer, index) => (
-            <li key={offer.id} className="rounded-md px-2 py-1.5 even:bg-muted/40">
-              <div className="flex items-center justify-between gap-3 text-sm">
-              <span className="flex min-w-0 items-center gap-2">
-                <PlaneIcon
-                  className={cn('size-3.5 shrink-0', index === 0 ? 'text-success' : 'text-muted-foreground')}
-                  aria-hidden="true"
-                />
-                <span className="truncate font-medium">{offer.providerDisplayName}</span>
-                <Badge variant={offer.integrationType === 'representative' ? 'simulated' : 'live'}>
-                  {offer.integrationType === 'representative' ? 'Representative' : 'Live'}
-                </Badge>
-                {offer.fareFamily && (
-                  <span className="hidden text-xs text-muted-foreground sm:inline">
-                    {offer.fareFamily}
+          <ul className="flex flex-col gap-1">
+            {visibleOffers.map((offer, index) => (
+              <li key={offer.id} className="rounded-md px-2 py-1.5 even:bg-muted/40">
+                <div className="flex items-center justify-between gap-3 text-sm">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <PlaneIcon
+                      className={cn(
+                        'size-3.5 shrink-0',
+                        index === 0 ? 'text-success' : 'text-muted-foreground',
+                      )}
+                      aria-hidden="true"
+                    />
+                    <span className="truncate font-medium">{offer.providerDisplayName}</span>
+                    <Badge
+                      variant={offer.integrationType === 'representative' ? 'simulated' : 'live'}
+                    >
+                      {offer.integrationType === 'representative' ? 'Representative' : 'Live'}
+                    </Badge>
+                    {offer.fareFamily && (
+                      <span className="hidden text-xs text-muted-foreground sm:inline">
+                        {offer.fareFamily}
+                      </span>
+                    )}
                   </span>
-                )}
-              </span>
 
-              <span className="flex shrink-0 items-center gap-2">
-                {index === 0 && providerCount > 1 && (
-                  <span className="text-[11px] font-medium text-success">Cheapest</span>
-                )}
-                <span className="tabular font-semibold">
-                  {formatRupees(offer.price.total.amountMinor)}
-                </span>
-              </span>
-              </div>
+                  <span className="flex shrink-0 items-center gap-2">
+                    {index === 0 && providerCount > 1 && (
+                      <span className="text-[11px] font-medium text-success">Cheapest</span>
+                    )}
+                    <span className="tabular font-semibold">
+                      {formatRupees(offer.price.total.amountMinor)}
+                    </span>
+                  </span>
+                </div>
 
-              <OfferPerks offer={offer} />
-            </li>
-          ))}
-        </ul>
+                <OfferPerks offer={offer} />
+              </li>
+            ))}
+          </ul>
 
-        {!isExpanded && cheapestPerProvider.length > 3 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mt-1 h-7 px-2 text-xs"
-            onClick={() => setShowAllOffers((open) => !open)}
-            aria-expanded={showAllOffers}
-          >
-            <ChevronDownIcon
-              className={cn('transition-transform', showAllOffers && 'rotate-180')}
-              aria-hidden="true"
-            />
-            {showAllOffers
-              ? 'Show fewer'
-              : `Show ${cheapestPerProvider.length - 3} more provider${cheapestPerProvider.length - 3 > 1 ? 's' : ''}`}
-          </Button>
-        )}
-      </div>
+          {!isExpanded && cheapestPerProvider.length > 3 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-1 h-7 px-2 text-xs"
+              onClick={() => setShowAllOffers((open) => !open)}
+              aria-expanded={showAllOffers}
+            >
+              <ChevronDownIcon
+                className={cn('transition-transform', showAllOffers && 'rotate-180')}
+                aria-hidden="true"
+              />
+              {showAllOffers
+                ? 'Show fewer'
+                : `Show ${cheapestPerProvider.length - 3} more provider${cheapestPerProvider.length - 3 > 1 ? 's' : ''}`}
+            </Button>
+          )}
+        </div>
       )}
 
       {isExpanded && <FlightDetail group={group} />}

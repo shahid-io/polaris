@@ -34,9 +34,9 @@ describe('searchQuerySchema', () => {
   });
 
   it('rejects a malformed travel date', () => {
-    expect(searchQuerySchema.safeParse({ ...validQuery, departureDate: '20-08-2026' }).success).toBe(
-      false,
-    );
+    expect(
+      searchQuerySchema.safeParse({ ...validQuery, departureDate: '20-08-2026' }).success,
+    ).toBe(false);
   });
 
   /**
@@ -51,12 +51,12 @@ describe('searchQuerySchema', () => {
   );
 
   it('accepts a leap day in a leap year and rejects it otherwise', () => {
-    expect(searchQuerySchema.safeParse({ ...validQuery, departureDate: '2028-02-29' }).success).toBe(
-      true,
-    );
-    expect(searchQuerySchema.safeParse({ ...validQuery, departureDate: '2026-02-29' }).success).toBe(
-      false,
-    );
+    expect(
+      searchQuerySchema.safeParse({ ...validQuery, departureDate: '2028-02-29' }).success,
+    ).toBe(true);
+    expect(
+      searchQuerySchema.safeParse({ ...validQuery, departureDate: '2026-02-29' }).success,
+    ).toBe(false);
   });
 
   it('rejects an inverted time range', () => {

@@ -101,7 +101,11 @@ export function searchFlights(
   body: SearchRequestInput,
   options: HttpOptions = {},
 ): Promise<ApiResult<SearchResponse>> {
-  return request<SearchResponse>('/api/search', { method: 'POST', body: JSON.stringify(body) }, options);
+  return request<SearchResponse>(
+    '/api/search',
+    { method: 'POST', body: JSON.stringify(body) },
+    options,
+  );
 }
 
 /** One provider as reported by `GET /api/providers`. */

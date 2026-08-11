@@ -129,7 +129,12 @@ describe('carriersOn', () => {
     const mixed = buildItinerary({
       segments: [
         buildSegment({ marketingCarrier: 'IX', origin: 'DEL', destination: 'AMD' }),
-        buildSegment({ marketingCarrier: '6E', flightNumber: '200', origin: 'AMD', destination: 'BOM' }),
+        buildSegment({
+          marketingCarrier: '6E',
+          flightNumber: '200',
+          origin: 'AMD',
+          destination: 'BOM',
+        }),
       ],
     });
 

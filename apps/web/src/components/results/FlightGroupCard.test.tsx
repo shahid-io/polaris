@@ -84,7 +84,12 @@ describe('FlightGroupCard', () => {
     render(
       <FlightGroupCard
         group={buildGroup([
-          { providerId: 'indigo', displayName: 'IndiGo', priceInr: 4500, offer: { integrationType: 'live-api' } },
+          {
+            providerId: 'indigo',
+            displayName: 'IndiGo',
+            priceInr: 4500,
+            offer: { integrationType: 'live-api' },
+          },
           { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 4704 },
         ])}
       />,
@@ -180,11 +185,7 @@ describe('FlightGroupCard', () => {
       ],
     });
 
-    render(
-      <FlightGroupCard
-        group={buildGroup(undefined, { itinerary: overnight })}
-      />,
-    );
+    render(<FlightGroupCard group={buildGroup(undefined, { itinerary: overnight })} />);
 
     expect(screen.getByText('+1')).toBeInTheDocument();
   });
@@ -239,8 +240,18 @@ describe('expanding a flight', () => {
     render(
       <FlightGroupCard
         group={buildGroup([
-          { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 4614, offer: { fareFamily: 'SAVER' } },
-          { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 6400, offer: { fareFamily: 'FLEX' } },
+          {
+            providerId: 'goibibo',
+            displayName: 'Goibibo',
+            priceInr: 4614,
+            offer: { fareFamily: 'SAVER' },
+          },
+          {
+            providerId: 'goibibo',
+            displayName: 'Goibibo',
+            priceInr: 6400,
+            offer: { fareFamily: 'FLEX' },
+          },
         ])}
       />,
     );

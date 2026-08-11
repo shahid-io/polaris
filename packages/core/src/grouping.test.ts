@@ -54,9 +54,7 @@ describe('groupOffers', () => {
   });
 
   it('points cheapestOfferId at the lowest-priced offer', () => {
-    const groups = groupOffers(
-      buildSameFlightAcrossProviders({ makemytrip: 5499, indigo: 5199 }),
-    );
+    const groups = groupOffers(buildSameFlightAcrossProviders({ makemytrip: 5499, indigo: 5199 }));
     const group = groups[0]!;
 
     const cheapest = group.offers.find((offer) => offer.id === group.cheapestOfferId)!;
@@ -141,8 +139,12 @@ describe('groupOffers', () => {
 
   it('preserves first-appearance order so results are deterministic', () => {
     const groups = groupOffers([
-      buildOffer({ itinerary: buildItinerary({ segments: [buildSegment({ flightNumber: '900' })] }) }),
-      buildOffer({ itinerary: buildItinerary({ segments: [buildSegment({ flightNumber: '100' })] }) }),
+      buildOffer({
+        itinerary: buildItinerary({ segments: [buildSegment({ flightNumber: '900' })] }),
+      }),
+      buildOffer({
+        itinerary: buildItinerary({ segments: [buildSegment({ flightNumber: '100' })] }),
+      }),
     ]);
 
     expect(groups.map((group) => group.canonicalKey)).toEqual([

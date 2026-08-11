@@ -81,10 +81,7 @@
           "travel_class": "Economy",
           "flight_number": "IX 1242",
           "legroom": "30 in",
-          "extensions": [
-            "Average legroom (30 in)",
-            "Carbon emissions estimate: 55 kg"
-          ],
+          "extensions": ["Average legroom (30 in)", "Carbon emissions estimate: 55 kg"],
           "often_delayed_by_over_30_min": true
         }
       ],
@@ -119,10 +116,7 @@
           "travel_class": "Economy",
           "flight_number": "IX 1238",
           "legroom": "30 in",
-          "extensions": [
-            "Average legroom (30 in)",
-            "Carbon emissions estimate: 55 kg"
-          ]
+          "extensions": ["Average legroom (30 in)", "Carbon emissions estimate: 55 kg"]
         }
       ],
       "total_duration": 80,
@@ -195,10 +189,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 230",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 44 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 44 kg"]
         }
       ],
       "total_duration": 75,
@@ -234,10 +225,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 5386",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 59 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 59 kg"]
         },
         {
           "departure_airport": {
@@ -257,10 +245,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6329",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 51 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 51 kg"]
         }
       ],
       "layovers": [
@@ -341,10 +326,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6361",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 44 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 44 kg"]
         }
       ],
       "total_duration": 65,
@@ -378,10 +360,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 5106",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 49 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 49 kg"]
         }
       ],
       "total_duration": 80,
@@ -415,10 +394,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 5241",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 57 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 57 kg"]
         }
       ],
       "total_duration": 85,
@@ -491,10 +467,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 261",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 44 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 44 kg"]
         }
       ],
       "total_duration": 70,
@@ -512,259 +485,70 @@
   "price_insights": {
     "lowest_price": 5021,
     "price_level": "high",
-    "typical_price_range": [
-      3500,
-      4850
-    ],
+    "typical_price_range": [3500, 4850],
     "price_history": [
-      [
-        1781116200,
-        3269
-      ],
-      [
-        1781202600,
-        3269
-      ],
-      [
-        1781289000,
-        3269
-      ],
-      [
-        1781375400,
-        3269
-      ],
-      [
-        1781461800,
-        3269
-      ],
-      [
-        1781548200,
-        3269
-      ],
-      [
-        1781634600,
-        3269
-      ],
-      [
-        1781721000,
-        3269
-      ],
-      [
-        1781807400,
-        3269
-      ],
-      [
-        1781893800,
-        3269
-      ],
-      [
-        1781980200,
-        3269
-      ],
-      [
-        1782066600,
-        3269
-      ],
-      [
-        1782153000,
-        3269
-      ],
-      [
-        1782239400,
-        3504
-      ],
-      [
-        1782325800,
-        3409
-      ],
-      [
-        1782412200,
-        3409
-      ],
-      [
-        1782498600,
-        3792
-      ],
-      [
-        1782585000,
-        3792
-      ],
-      [
-        1782671400,
-        3792
-      ],
-      [
-        1782757800,
-        3792
-      ],
-      [
-        1782844200,
-        3792
-      ],
-      [
-        1782930600,
-        3792
-      ],
-      [
-        1783017000,
-        3792
-      ],
-      [
-        1783103400,
-        3792
-      ],
-      [
-        1783189800,
-        3792
-      ],
-      [
-        1783276200,
-        3792
-      ],
-      [
-        1783362600,
-        3792
-      ],
-      [
-        1783449000,
-        3792
-      ],
-      [
-        1783535400,
-        3792
-      ],
-      [
-        1783621800,
-        3792
-      ],
-      [
-        1783708200,
-        3792
-      ],
-      [
-        1783794600,
-        3792
-      ],
-      [
-        1783881000,
-        4107
-      ],
-      [
-        1783967400,
-        4107
-      ],
-      [
-        1784053800,
-        4107
-      ],
-      [
-        1784140200,
-        4107
-      ],
-      [
-        1784226600,
-        4107
-      ],
-      [
-        1784313000,
-        4107
-      ],
-      [
-        1784399400,
-        4107
-      ],
-      [
-        1784485800,
-        4107
-      ],
-      [
-        1784572200,
-        4107
-      ],
-      [
-        1784658600,
-        4107
-      ],
-      [
-        1784745000,
-        4107
-      ],
-      [
-        1784831400,
-        4797
-      ],
-      [
-        1784917800,
-        4797
-      ],
-      [
-        1785004200,
-        4797
-      ],
-      [
-        1785090600,
-        4575
-      ],
-      [
-        1785177000,
-        4575
-      ],
-      [
-        1785263400,
-        4575
-      ],
-      [
-        1785349800,
-        4797
-      ],
-      [
-        1785436200,
-        4797
-      ],
-      [
-        1785522600,
-        4701
-      ],
-      [
-        1785609000,
-        4701
-      ],
-      [
-        1785695400,
-        4701
-      ],
-      [
-        1785781800,
-        4701
-      ],
-      [
-        1785868200,
-        4701
-      ],
-      [
-        1785954600,
-        4701
-      ],
-      [
-        1786041000,
-        5021
-      ],
-      [
-        1786127400,
-        5021
-      ],
-      [
-        1786213800,
-        5021
-      ],
-      [
-        1786300200,
-        5021
-      ],
-      [
-        1786386600,
-        5021
-      ]
+      [1781116200, 3269],
+      [1781202600, 3269],
+      [1781289000, 3269],
+      [1781375400, 3269],
+      [1781461800, 3269],
+      [1781548200, 3269],
+      [1781634600, 3269],
+      [1781721000, 3269],
+      [1781807400, 3269],
+      [1781893800, 3269],
+      [1781980200, 3269],
+      [1782066600, 3269],
+      [1782153000, 3269],
+      [1782239400, 3504],
+      [1782325800, 3409],
+      [1782412200, 3409],
+      [1782498600, 3792],
+      [1782585000, 3792],
+      [1782671400, 3792],
+      [1782757800, 3792],
+      [1782844200, 3792],
+      [1782930600, 3792],
+      [1783017000, 3792],
+      [1783103400, 3792],
+      [1783189800, 3792],
+      [1783276200, 3792],
+      [1783362600, 3792],
+      [1783449000, 3792],
+      [1783535400, 3792],
+      [1783621800, 3792],
+      [1783708200, 3792],
+      [1783794600, 3792],
+      [1783881000, 4107],
+      [1783967400, 4107],
+      [1784053800, 4107],
+      [1784140200, 4107],
+      [1784226600, 4107],
+      [1784313000, 4107],
+      [1784399400, 4107],
+      [1784485800, 4107],
+      [1784572200, 4107],
+      [1784658600, 4107],
+      [1784745000, 4107],
+      [1784831400, 4797],
+      [1784917800, 4797],
+      [1785004200, 4797],
+      [1785090600, 4575],
+      [1785177000, 4575],
+      [1785263400, 4575],
+      [1785349800, 4797],
+      [1785436200, 4797],
+      [1785522600, 4701],
+      [1785609000, 4701],
+      [1785695400, 4701],
+      [1785781800, 4701],
+      [1785868200, 4701],
+      [1785954600, 4701],
+      [1786041000, 5021],
+      [1786127400, 5021],
+      [1786213800, 5021],
+      [1786300200, 5021],
+      [1786386600, 5021]
     ]
   },
   "airports": [

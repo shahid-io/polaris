@@ -91,12 +91,12 @@ describe('filterGroups', () => {
       buildOffer({ itinerary: nonStop({ departure: istTime('2026-08-20T00:45') }) }),
     ]);
 
-    expect(
-      filterGroups(groups, { departureWindow: { from: '00:00', to: '06:00' } }),
-    ).toHaveLength(1);
-    expect(
-      filterGroups(groups, { departureWindow: { from: '18:00', to: '23:59' } }),
-    ).toHaveLength(0);
+    expect(filterGroups(groups, { departureWindow: { from: '00:00', to: '06:00' } })).toHaveLength(
+      1,
+    );
+    expect(filterGroups(groups, { departureWindow: { from: '18:00', to: '23:59' } })).toHaveLength(
+      0,
+    );
   });
 
   it('filters by airline', () => {
@@ -188,7 +188,9 @@ describe('availableFilterOptions', () => {
     const options = availableFilterOptions(groups);
 
     expect(options.airlines).toEqual(['6E', 'IX']);
-    expect(options.providers).toEqual(expect.arrayContaining(['indigo', 'makemytrip', 'cleartrip']));
+    expect(options.providers).toEqual(
+      expect.arrayContaining(['indigo', 'makemytrip', 'cleartrip']),
+    );
     expect(options.minPriceMinor).toBe(519_900);
     expect(options.maxPriceMinor).toBe(610_000);
     expect(options.maxStops).toBe(0);

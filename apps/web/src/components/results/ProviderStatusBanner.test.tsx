@@ -67,7 +67,12 @@ describe('ProviderStatusBanner', () => {
 
   it('explains a provider skipped for missing credentials', () => {
     const statuses = [
-      buildProviderStatus({ providerId: 'duffel', displayName: 'Duffel', status: 'skipped', offerCount: 0 }),
+      buildProviderStatus({
+        providerId: 'duffel',
+        displayName: 'Duffel',
+        status: 'skipped',
+        offerCount: 0,
+      }),
     ];
 
     render(<ProviderStatusBanner statuses={statuses} meta={metaFor(statuses)} />);

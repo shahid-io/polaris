@@ -22,7 +22,7 @@ Verifying rather than assuming turned up that **Amadeus Self-Service was decommi
 existing users.
 
 This is the single most useful thing AI did on this project, and it is worth being precise
-about why: the model's *training knowledge* said Amadeus was the answer. A live search said
+about why: the model's _training knowledge_ said Amadeus was the answer. A live search said
 otherwise. Had the plan been written from memory, the whole integration layer would have been
 built against a dead dependency and the problem discovered mid-implementation, with days
 already spent.
@@ -40,7 +40,7 @@ The same discipline caught several things that would otherwise have been wrong:
   least-maintained driver. That reframed the decision and led to Mongoose with
   `@nestjs/mongoose`.
 - **Dependency versions.** An audit against what is actually published found Vitest, Next,
-  Tailwind and Zod all majors behind. Upgrading Next and Tailwind *before* the UI existed
+  Tailwind and Zod all majors behind. Upgrading Next and Tailwind _before_ the UI existed
   cost fifteen minutes; after Phase 3 it would have meant a rewrite.
 - **TypeScript 7.** Latest is not automatically correct. TS 7 is the native Go port; NestJS 11
   officially supports 5.x and `emitDecoratorMetadata` is the surface most likely to break, so
@@ -68,12 +68,12 @@ This section matters more than the one above.
 ### A concurrency bug in the timeout primitive
 
 The first `withTimeout` awaited the operation directly while aborting its signal. That works
-only if the operation *honours* the signal. An adapter that ignored it — a third-party client
+only if the operation _honours_ the signal. An adapter that ignored it — a third-party client
 that does not accept one, or simply a mistake — would never settle, and the timeout meant to
 contain one slow provider would hang the entire search instead.
 
 Writing a test with an operation that deliberately ignores its signal made this immediate: the
-suite hung, then failed. The fix passes the signal in *and* races a rejecting deadline, so the
+suite hung, then failed. The fix passes the signal in _and_ races a rejecting deadline, so the
 signal stops the work and the race bounds the wait.
 
 **The lesson:** the code looked correct and read correctly. Only an adversarial test found it.
@@ -123,7 +123,7 @@ provider boundary rather than at the fan-out, why money is integer minor units, 
 analytics stores no IP address.
 
 The most useful working pattern was not "generate code" but **"make the reasoning explicit,
-then check it"** — which is why the comments in this codebase explain *why* a line exists
+then check it"** — which is why the comments in this codebase explain _why_ a line exists
 rather than restating what it does, and why several tests are named after the bug they
 prevent. Those comments are the audit trail. If a decision could not be justified in writing,
 it was reconsidered.

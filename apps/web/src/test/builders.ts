@@ -89,7 +89,12 @@ export function buildItinerary(
  * @param overrides - Anything else to change.
  */
 export function buildGroup(
-  prices: { providerId: string; displayName: string; priceInr: number; offer?: Partial<NormalizedOffer> }[] = [
+  prices: {
+    providerId: string;
+    displayName: string;
+    priceInr: number;
+    offer?: Partial<NormalizedOffer>;
+  }[] = [
     { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 4614 },
     { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 4704 },
   ],

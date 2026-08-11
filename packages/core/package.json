@@ -5,7 +5,9 @@
   "description": "Pure domain logic — canonical keys, grouping, scoring, filtering, sorting. No I/O.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",

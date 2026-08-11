@@ -15,14 +15,14 @@ why, and any representative data used.
 
 ## 1. Providers successfully integrated
 
-| Provider | Integration type | Data source | Real market data | Direct airline API |
-|---|---|---|---|---|
-| IndiGo | `live-api` | SerpApi (Google Flights) | Yes | **No — none published** |
-| Air India Express | `live-api` | SerpApi (Google Flights) | Yes | **No — none published** |
-| Duffel *(beyond the brief)* | `sandbox-api` | Duffel API | No — vendor sandbox |
-| MakeMyTrip | `representative` | Generated from shared timetable | No |
-| Goibibo | `representative` | Generated from shared timetable | No |
-| Cleartrip | `representative` | Generated from shared timetable | No |
+| Provider                    | Integration type | Data source                     | Real market data    | Direct airline API      |
+| --------------------------- | ---------------- | ------------------------------- | ------------------- | ----------------------- |
+| IndiGo                      | `live-api`       | SerpApi (Google Flights)        | Yes                 | **No — none published** |
+| Air India Express           | `live-api`       | SerpApi (Google Flights)        | Yes                 | **No — none published** |
+| Duffel _(beyond the brief)_ | `sandbox-api`    | Duffel API                      | No — vendor sandbox |
+| MakeMyTrip                  | `representative` | Generated from shared timetable | No                  |
+| Goibibo                     | `representative` | Generated from shared timetable | No                  |
+| Cleartrip                   | `representative` | Generated from shared timetable | No                  |
 
 All six implement the same `FlightProvider` interface and are registered under a single
 dependency-injection token. The orchestrator cannot tell them apart — which is the point.
@@ -56,8 +56,8 @@ network failure or an exhausted quota. Two rules keep that honest:
    route on one day cannot stand in for another day; a mismatch returns no data rather than
    presenting one date's departures as another's.
 2. **Replayed data is never labelled live.** Offers sourced from a recording carry
-   `integrationType: 'representative'` and the provider status reads *"Live request failed —
-   replayed a recorded response"*. Real data that is no longer current is closer to
+   `integrationType: 'representative'` and the provider status reads _"Live request failed —
+   replayed a recorded response"_. Real data that is no longer current is closer to
    representative than to live, and a "Live" badge on a stale price would be worse than no
    badge at all.
 
@@ -108,13 +108,13 @@ a plan written from memory rather than verification would have been built on a d
 dependency and discovered the problem mid-implementation. Alternatives were evaluated
 against what is actually live now:
 
-| Option | Verdict |
-|---|---|
-| Amadeus Self-Service | Decommissioned 17 July 2026 |
-| **SerpApi Google Flights** | **Selected** — free tier, real data, real Indian carriers |
-| Duffel | Free signup, but test mode is synthetic; live mode needs payment details and verification, and Indian low-cost coverage is thin |
-| Travelpayouts / Aviasales | Affiliate model, free registration, viable — held as a fallback |
-| Scraping the OTAs | **Rejected** — see below |
+| Option                     | Verdict                                                                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Amadeus Self-Service       | Decommissioned 17 July 2026                                                                                                     |
+| **SerpApi Google Flights** | **Selected** — free tier, real data, real Indian carriers                                                                       |
+| Duffel                     | Free signup, but test mode is synthetic; live mode needs payment details and verification, and Indian low-cost coverage is thin |
+| Travelpayouts / Aviasales  | Affiliate model, free registration, viable — held as a fallback                                                                 |
+| Scraping the OTAs          | **Rejected** — see below                                                                                                        |
 
 ### Why scraping was rejected
 
@@ -126,7 +126,7 @@ and section 4 explicitly pre-authorises representative data where access is not 
 There is also a practical argument: a scraper is the single most likely component to break
 during a live demonstration, because it depends on markup nobody has promised to keep stable.
 
-The architecture remains scrape-*ready* — a scraping adapter would implement the same
+The architecture remains scrape-_ready_ — a scraping adapter would implement the same
 `FlightProvider` interface as everything else — but none ships.
 
 ---
@@ -151,11 +151,11 @@ weekend-only service, and a deliberate 00:45 red-eye on Delhi–Mumbai.
 Each provider is given a distinct market position so comparison surfaces meaningful
 differences rather than noise:
 
-| Provider | Price position | Inventory coverage | Competes on |
-|---|---|---|---|
-| MakeMyTrip | +3.5% | 90% | Wallet cashback, date-change flexibility |
-| Goibibo | −1.5% | 82% | goCash, fee waivers |
-| Cleartrip | +1.2% | 74% | Instant discount, free cancellation, baggage |
+| Provider   | Price position | Inventory coverage | Competes on                                  |
+| ---------- | -------------- | ------------------ | -------------------------------------------- |
+| MakeMyTrip | +3.5%          | 90%                | Wallet cashback, date-change flexibility     |
+| Goibibo    | −1.5%          | 82%                | goCash, fee waivers                          |
+| Cleartrip  | +1.2%          | 74%                | Instant discount, free cancellation, baggage |
 
 Inventory coverage is deliberately below 100%: no OTA sells every seat on every flight.
 Without that, every comparison group would contain all three providers and look identical.
@@ -190,7 +190,7 @@ Representative data is never presented as real:
 - `GET /api/providers` reports `isRealData: false` with an explanatory note per provider.
 - The UI badges simulated data at the point a price is displayed, not in a footnote.
 
-### What representative data does *not* claim
+### What representative data does _not_ claim
 
 The prices are plausible, not accurate. They are not scraped from these providers, not
 historical, and should not be used to make a real purchasing decision. They exist to exercise

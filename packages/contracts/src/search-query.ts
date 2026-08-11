@@ -28,12 +28,7 @@ export const TIME_RANGE_PRESETS = {
   evening: { from: '18:00', to: '23:59' },
 } as const satisfies Record<string, { from: string; to: string }>;
 
-export const timeRangePresetSchema = z.enum([
-  'early_morning',
-  'morning',
-  'afternoon',
-  'evening',
-]);
+export const timeRangePresetSchema = z.enum(['early_morning', 'morning', 'afternoon', 'evening']);
 
 /**
  * A flight search request.

@@ -162,7 +162,10 @@ export class ProviderTimeoutError extends ProviderError {
    * @param providerId - Which provider timed out.
    * @param timeoutMs - The budget it exceeded.
    */
-  constructor(providerId: ProviderId, readonly timeoutMs: number) {
+  constructor(
+    providerId: ProviderId,
+    readonly timeoutMs: number,
+  ) {
     super(providerId, `Did not respond within ${timeoutMs}ms`, true);
     this.name = 'ProviderTimeoutError';
   }

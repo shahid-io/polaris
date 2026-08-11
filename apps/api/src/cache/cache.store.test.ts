@@ -48,8 +48,14 @@ describe('buildCacheKey', () => {
    * otherwise an evening search is served a morning result.
    */
   it('ignores timeRange, because providers fetch the whole day', () => {
-    const morning = buildCacheKey({ ...baseQuery, timeRange: { from: '06:00', to: '12:00' } } as never);
-    const evening = buildCacheKey({ ...baseQuery, timeRange: { from: '18:00', to: '23:59' } } as never);
+    const morning = buildCacheKey({
+      ...baseQuery,
+      timeRange: { from: '06:00', to: '12:00' },
+    } as never);
+    const evening = buildCacheKey({
+      ...baseQuery,
+      timeRange: { from: '18:00', to: '23:59' },
+    } as never);
 
     expect(morning).toBe(evening);
   });

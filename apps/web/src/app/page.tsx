@@ -213,7 +213,9 @@ function buildFilterOptions(groups: readonly ComparisonGroup[]) {
   }
 
   return {
-    airlines: [...airlines].map(([code, count]) => ({ code, count })).sort((a, b) => a.code.localeCompare(b.code)),
+    airlines: [...airlines]
+      .map(([code, count]) => ({ code, count }))
+      .sort((a, b) => a.code.localeCompare(b.code)),
     providers: [...providers].map(([id, { label, count }]) => ({ id, label, count })),
     minPriceMinor: Number.isFinite(minPriceMinor) ? minPriceMinor : 0,
     maxPriceMinor,

@@ -256,9 +256,7 @@ export class SearchOrchestrator {
     const requested = request.query.providers;
     if (!requested?.length) return this.providers;
 
-    return this.providers.filter((provider) =>
-      requested.includes(provider.descriptor.providerId),
-    );
+    return this.providers.filter((provider) => requested.includes(provider.descriptor.providerId));
   }
 
   /**
@@ -371,9 +369,7 @@ export class SearchOrchestrator {
           ? error.message
           : 'Unknown provider failure';
 
-    this.logger.warn(
-      `Provider ${providerId} failed (${status}) after ${latencyMs}ms: ${message}`,
-    );
+    this.logger.warn(`Provider ${providerId} failed (${status}) after ${latencyMs}ms: ${message}`);
 
     return {
       offers: [],

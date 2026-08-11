@@ -49,9 +49,7 @@ describe('withTimeout', () => {
   it('propagates the operation’s own error untouched', async () => {
     const failure = new ProviderUnavailableError('goibibo', 'upstream 503');
 
-    await expect(withTimeout('goibibo', 1000, () => Promise.reject(failure))).rejects.toBe(
-      failure,
-    );
+    await expect(withTimeout('goibibo', 1000, () => Promise.reject(failure))).rejects.toBe(failure);
   });
 
   it('aborts when an external signal is aborted', async () => {

@@ -333,7 +333,7 @@ export const INDIGO_CONFIG: SerpApiProviderConfig = {
   carrierCode: '6E',
   integrationNote:
     'No public developer API — IndiGo runs a Navitaire passenger service system with ' +
-    'partner-only access. Live fares are sourced through SerpApi\'s Google Flights engine, ' +
+    "partner-only access. Live fares are sourced through SerpApi's Google Flights engine, " +
     'a commercial API operating under its own terms.',
 };
 
@@ -343,7 +343,7 @@ export const AIR_INDIA_EXPRESS_CONFIG: SerpApiProviderConfig = {
   displayName: 'Air India Express',
   carrierCode: 'IX',
   integrationNote:
-    'No public developer API. Live fares are sourced through SerpApi\'s Google Flights ' +
+    "No public developer API. Live fares are sourced through SerpApi's Google Flights " +
     'engine, the same route used for IndiGo.',
 };
 

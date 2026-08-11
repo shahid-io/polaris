@@ -36,13 +36,10 @@ export default function Error({
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Something went wrong</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          The search could not be displayed. This is usually temporary — trying again often
-          works.
+          The search could not be displayed. This is usually temporary — trying again often works.
         </p>
         {error.digest && (
-          <p className="mt-3 font-mono text-xs text-muted-foreground">
-            Reference: {error.digest}
-          </p>
+          <p className="mt-3 font-mono text-xs text-muted-foreground">Reference: {error.digest}</p>
         )}
       </div>
       <Button onClick={reset}>

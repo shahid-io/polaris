@@ -114,9 +114,7 @@ function departsWithin(group: ComparisonGroup, window: TimeRange): boolean {
  * @internal
  */
 function operatedByAny(group: ComparisonGroup, airlines: readonly IataAirlineCode[]): boolean {
-  return group.itinerary.segments.some((segment) =>
-    airlines.includes(segment.marketingCarrier),
-  );
+  return group.itinerary.segments.some((segment) => airlines.includes(segment.marketingCarrier));
 }
 
 /**

@@ -1,6 +1,13 @@
 'use client';
 
-import { ArmchairIcon, ClockIcon, GiftIcon, LuggageIcon, PlaneIcon, RotateCcwIcon } from 'lucide-react';
+import {
+  ArmchairIcon,
+  ClockIcon,
+  GiftIcon,
+  LuggageIcon,
+  PlaneIcon,
+  RotateCcwIcon,
+} from 'lucide-react';
 import type { ComparisonGroup, NormalizedOffer } from '@polaris/contracts';
 import { carriersOn, flyingMinutes, layoversFor, waitingMinutes } from '@polaris/core';
 
@@ -42,7 +49,10 @@ export function FlightDetail({ group }: { group: ComparisonGroup }) {
                     <div className="flex flex-col items-center pt-1.5">
                       <span className="size-2 rounded-full bg-primary" aria-hidden="true" />
                       <span className="my-1 w-px flex-1 bg-border" aria-hidden="true" />
-                      <span className="size-2 rounded-full border border-primary" aria-hidden="true" />
+                      <span
+                        className="size-2 rounded-full border border-primary"
+                        aria-hidden="true"
+                      />
                     </div>
 
                     <div className="flex-1 pb-1">
@@ -99,7 +109,10 @@ export function FlightDetail({ group }: { group: ComparisonGroup }) {
             <Stat label="Total" value={formatDuration(itinerary.totalDurationMinutes)} />
             <Stat label="Flying" value={formatDuration(flyingMinutes(itinerary))} />
             {waiting > 0 && <Stat label="Connecting" value={formatDuration(waiting)} />}
-            <Stat label="Stops" value={itinerary.stops === 0 ? 'Non-stop' : String(itinerary.stops)} />
+            <Stat
+              label="Stops"
+              value={itinerary.stops === 0 ? 'Non-stop' : String(itinerary.stops)}
+            />
             <Stat label="Airline" value={carriers.join(' + ')} />
             {carriers.length > 1 && (
               <Stat label="Note" value="Two carriers — baggage may not transfer" />
@@ -116,13 +129,17 @@ export function FlightDetail({ group }: { group: ComparisonGroup }) {
 
           <ul className="flex flex-col gap-2">
             {group.offers.map((offer) => (
-              <FareRow key={offer.id} offer={offer} isCheapest={offer.id === group.cheapestOfferId} />
+              <FareRow
+                key={offer.id}
+                offer={offer}
+                isCheapest={offer.id === group.cheapestOfferId}
+              />
             ))}
           </ul>
 
           <p className="mt-3 text-xs text-muted-foreground">
-            The card shows each provider&apos;s cheapest fare. This lists every fare family
-            they sell, which is why a provider can appear more than once here.
+            The card shows each provider&apos;s cheapest fare. This lists every fare family they
+            sell, which is why a provider can appear more than once here.
           </p>
         </section>
       </div>

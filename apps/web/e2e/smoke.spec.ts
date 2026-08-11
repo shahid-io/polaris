@@ -27,7 +27,10 @@ test('a user can search and compare fares', async ({ page }) => {
   await page.getByRole('option', { name: /Delhi/ }).click();
 
   await page.getByRole('combobox', { name: /^To/ }).click();
-  await page.getByRole('option', { name: /Mumbai/ }).first().click();
+  await page
+    .getByRole('option', { name: /Mumbai/ })
+    .first()
+    .click();
 
   await page.getByRole('button', { name: /Search flights/ }).click();
 

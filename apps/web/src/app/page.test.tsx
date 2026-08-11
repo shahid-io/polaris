@@ -109,7 +109,10 @@ describe('the search page', () => {
 
     vi.mocked(searchFlights).mockResolvedValue({
       data: buildSearchResponse({
-        groups: [buildGroup(), buildGroup(undefined, { itinerary: connecting, canonicalKey: 'connecting' })],
+        groups: [
+          buildGroup(),
+          buildGroup(undefined, { itinerary: connecting, canonicalKey: 'connecting' }),
+        ],
       }),
     });
     render(<HomePage />);

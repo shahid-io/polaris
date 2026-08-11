@@ -20,7 +20,7 @@ in whichever layer was not updated.
 Defining the schema once and deriving the type removes the possibility:
 
 ```ts
-export const searchQuerySchema = z.object({ /* … */ });
+export const searchQuerySchema = z.object({/* … */});
 export type SearchQuery = z.infer<typeof searchQuerySchema>;
 ```
 
@@ -47,15 +47,15 @@ const response: SearchResponse = await post('/api/search', result.data);
 
 ## What's in here
 
-| Module | Describes |
-|---|---|
-| `common` | IATA codes, ISO dates, money, scheduled times |
-| `provider` | Provider ids, integration types, per-provider call status |
-| `search-query` | The search itself — route, date, time window, passengers, cabin |
-| `search-request` | Request body: query plus optional filters and sort |
-| `offer` | Segments, itineraries, benefits, baggage, a normalised provider offer |
-| `comparison` | Comparison groups, price spreads, value scores |
-| `search-response` | The response envelope, search metadata, API errors |
+| Module            | Describes                                                             |
+| ----------------- | --------------------------------------------------------------------- |
+| `common`          | IATA codes, ISO dates, money, scheduled times                         |
+| `provider`        | Provider ids, integration types, per-provider call status             |
+| `search-query`    | The search itself — route, date, time window, passengers, cabin       |
+| `search-request`  | Request body: query plus optional filters and sort                    |
+| `offer`           | Segments, itineraries, benefits, baggage, a normalised provider offer |
+| `comparison`      | Comparison groups, price spreads, value scores                        |
+| `search-response` | The response envelope, search metadata, API errors                    |
 
 ---
 

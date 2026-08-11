@@ -67,10 +67,7 @@ describe('RepresentativeProvider', () => {
   it('returns an empty result for an unserved route rather than throwing', async () => {
     const provider = new RepresentativeProvider(MAKEMYTRIP_CONFIG, noLatency);
 
-    const result = await provider.search(
-      query({ origin: 'DEL', destination: 'COK' }),
-      ctx(),
-    );
+    const result = await provider.search(query({ origin: 'DEL', destination: 'COK' }), ctx());
 
     expect(result.offers).toEqual([]);
     expect(result.droppedOfferCount).toBe(0);
@@ -121,9 +118,8 @@ describe('RepresentativeProvider', () => {
       .find((key) => goibiboOffers.some((offer) => canonicalKeyForOffer(offer) === key))!;
 
     const mmtPrice = mmtOffers.find((o) => canonicalKeyForOffer(o) === sharedKey)!.price.total;
-    const goibiboPrice = goibiboOffers.find(
-      (o) => canonicalKeyForOffer(o) === sharedKey,
-    )!.price.total;
+    const goibiboPrice = goibiboOffers.find((o) => canonicalKeyForOffer(o) === sharedKey)!.price
+      .total;
 
     expect(mmtPrice.amountMinor).not.toBe(goibiboPrice.amountMinor);
   });
@@ -236,7 +232,10 @@ describe('RepresentativeProvider', () => {
   });
 
   it('throws a provider error when forced to fail', async () => {
-    const provider = new RepresentativeProvider(CLEARTRIP_CONFIG, { ...noLatency, failureMode: 'error' });
+    const provider = new RepresentativeProvider(CLEARTRIP_CONFIG, {
+      ...noLatency,
+      failureMode: 'error',
+    });
 
     await expect(provider.search(query(), ctx())).rejects.toThrow(ProviderUnavailableError);
   });
@@ -292,7 +291,10 @@ describe('the three OTAs together', () => {
   });
 
   it('isolate a forced failure from the providers that still work', async () => {
-    const providers = createOtaProviders({ simulateLatency: false, failureModes: { cleartrip: 'error' } });
+    const providers = createOtaProviders({
+      simulateLatency: false,
+      failureModes: { cleartrip: 'error' },
+    });
 
     const settled = await Promise.allSettled(providers.map((p) => p.search(query(), ctx())));
 

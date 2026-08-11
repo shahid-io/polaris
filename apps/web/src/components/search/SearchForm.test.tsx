@@ -145,9 +145,7 @@ describe('SearchForm', () => {
   });
 
   it('shows a searching state while a request is in flight', () => {
-    render(
-      <SearchForm airports={AIRPORTS} routes={ROUTES} isSearching onSearch={vi.fn()} />,
-    );
+    render(<SearchForm airports={AIRPORTS} routes={ROUTES} isSearching onSearch={vi.fn()} />);
 
     expect(screen.getByRole('button', { name: /Searching/ })).toBeDisabled();
   });

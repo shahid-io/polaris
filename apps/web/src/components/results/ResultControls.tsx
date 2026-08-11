@@ -74,7 +74,11 @@ export function ResultControls({
         >
           Sort by
         </label>
-        <Select id="sort" value={sort} onChange={(event) => onSortChange(event.target.value as SortKey)}>
+        <Select
+          id="sort"
+          value={sort}
+          onChange={(event) => onSortChange(event.target.value as SortKey)}
+        >
           {SORT_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

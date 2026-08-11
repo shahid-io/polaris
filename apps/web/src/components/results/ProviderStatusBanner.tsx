@@ -50,10 +50,7 @@ export function ProviderStatusBanner({
   }
 
   return (
-    <div
-      role="status"
-      className="rounded-lg border border-warning/40 bg-warning/5 p-3"
-    >
+    <div role="status" className="rounded-lg border border-warning/40 bg-warning/5 p-3">
       <p className="flex items-center gap-2 text-sm font-medium">
         <AlertTriangleIcon className="size-4 shrink-0 text-warning" aria-hidden="true" />
         Showing results from {meta.providersSucceeded} of {meta.providersAttempted} providers

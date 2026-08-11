@@ -41,10 +41,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6107",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 145,
@@ -116,9 +113,7 @@
           "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/QP.png",
           "travel_class": "Economy",
           "flight_number": "QP 1112",
-          "extensions": [
-            "Carbon emissions estimate: 87 kg"
-          ]
+          "extensions": ["Carbon emissions estimate: 87 kg"]
         }
       ],
       "total_duration": 140,
@@ -154,10 +149,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6261",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 63 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 63 kg"]
         },
         {
           "departure_airport": {
@@ -177,10 +169,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6285",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 53 kg"
-          ],
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 53 kg"],
           "overnight": true
         }
       ],
@@ -222,10 +211,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 5119",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 63 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 63 kg"]
         },
         {
           "departure_airport": {
@@ -245,10 +231,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 5146",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 61 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 61 kg"]
         }
       ],
       "layovers": [
@@ -289,10 +272,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 2076",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 63 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 63 kg"]
         },
         {
           "departure_airport": {
@@ -312,10 +292,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 5078",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 48 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 48 kg"]
         }
       ],
       "layovers": [
@@ -356,10 +333,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 5014",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 65 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 65 kg"]
         },
         {
           "departure_airport": {
@@ -379,10 +353,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 679",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 47 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 47 kg"]
         }
       ],
       "layovers": [
@@ -423,10 +394,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 931",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 63 kg"
-          ],
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 63 kg"],
           "often_delayed_by_over_30_min": true
         },
         {
@@ -447,10 +415,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6351",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 53 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 53 kg"]
         }
       ],
       "layovers": [
@@ -491,10 +456,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 2013",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 63 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 63 kg"]
         },
         {
           "departure_airport": {
@@ -514,10 +476,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6205",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 48 kg"
-          ],
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 48 kg"],
           "overnight": true
         }
       ],
@@ -559,10 +518,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6328",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 140,
@@ -596,10 +552,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6047",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -633,10 +586,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6676",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -670,10 +620,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 324",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 130,
@@ -707,10 +654,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6022",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 145,
@@ -744,10 +688,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6318",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -781,10 +722,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 864",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -818,10 +756,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 327",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 140,
@@ -855,10 +790,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6706",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -892,10 +824,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 449",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -929,10 +858,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6218",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -966,10 +892,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 675",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -1003,10 +926,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6114",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 140,
@@ -1040,10 +960,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 322",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -1077,10 +994,7 @@
           "travel_class": "Economy",
           "flight_number": "IX 1056",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 118 kg"
-          ],
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 118 kg"],
           "often_delayed_by_over_30_min": true
         }
       ],
@@ -1115,10 +1029,7 @@
           "travel_class": "Economy",
           "flight_number": "IX 1235",
           "legroom": "30 in",
-          "extensions": [
-            "Average legroom (30 in)",
-            "Carbon emissions estimate: 102 kg"
-          ]
+          "extensions": ["Average legroom (30 in)", "Carbon emissions estimate: 102 kg"]
         }
       ],
       "total_duration": 145,
@@ -1268,10 +1179,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 6814",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -1305,10 +1213,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 320",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 140,
@@ -1342,10 +1247,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 329",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 135,
@@ -1379,10 +1281,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 354",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 145,
@@ -1416,10 +1315,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 303",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 130,
@@ -1453,10 +1349,7 @@
           "travel_class": "Economy",
           "flight_number": "6E 395",
           "legroom": "28 in",
-          "extensions": [
-            "Below average legroom (28 in)",
-            "Carbon emissions estimate: 88 kg"
-          ]
+          "extensions": ["Below average legroom (28 in)", "Carbon emissions estimate: 88 kg"]
         }
       ],
       "total_duration": 140,
@@ -2678,255 +2571,69 @@
   "price_insights": {
     "lowest_price": 6074,
     "price_level": "typical",
-    "typical_price_range": [
-      4450,
-      6300
-    ],
+    "typical_price_range": [4450, 6300],
     "price_history": [
-      [
-        1781202600,
-        5928
-      ],
-      [
-        1781289000,
-        5928
-      ],
-      [
-        1781375400,
-        5928
-      ],
-      [
-        1781461800,
-        5928
-      ],
-      [
-        1781548200,
-        5928
-      ],
-      [
-        1781634600,
-        5928
-      ],
-      [
-        1781721000,
-        5928
-      ],
-      [
-        1781807400,
-        5928
-      ],
-      [
-        1781893800,
-        5928
-      ],
-      [
-        1781980200,
-        5928
-      ],
-      [
-        1782066600,
-        5928
-      ],
-      [
-        1782153000,
-        5928
-      ],
-      [
-        1782239400,
-        5928
-      ],
-      [
-        1782325800,
-        5928
-      ],
-      [
-        1782412200,
-        5928
-      ],
-      [
-        1782498600,
-        5928
-      ],
-      [
-        1782585000,
-        5928
-      ],
-      [
-        1782671400,
-        5928
-      ],
-      [
-        1782757800,
-        5928
-      ],
-      [
-        1782844200,
-        5928
-      ],
-      [
-        1782930600,
-        6348
-      ],
-      [
-        1783017000,
-        6348
-      ],
-      [
-        1783103400,
-        6348
-      ],
-      [
-        1783189800,
-        6348
-      ],
-      [
-        1783276200,
-        5861
-      ],
-      [
-        1783362600,
-        5861
-      ],
-      [
-        1783449000,
-        5861
-      ],
-      [
-        1783535400,
-        5861
-      ],
-      [
-        1783621800,
-        5861
-      ],
-      [
-        1783708200,
-        5861
-      ],
-      [
-        1783794600,
-        5861
-      ],
-      [
-        1783881000,
-        5861
-      ],
-      [
-        1783967400,
-        5861
-      ],
-      [
-        1784053800,
-        5861
-      ],
-      [
-        1784140200,
-        6162
-      ],
-      [
-        1784226600,
-        6162
-      ],
-      [
-        1784313000,
-        6342
-      ],
-      [
-        1784399400,
-        6342
-      ],
-      [
-        1784485800,
-        6464
-      ],
-      [
-        1784572200,
-        6265
-      ],
-      [
-        1784658600,
-        6265
-      ],
-      [
-        1784745000,
-        5922
-      ],
-      [
-        1784831400,
-        6487
-      ],
-      [
-        1784917800,
-        6487
-      ],
-      [
-        1785004200,
-        6487
-      ],
-      [
-        1785090600,
-        6487
-      ],
-      [
-        1785177000,
-        6542
-      ],
-      [
-        1785263400,
-        6187
-      ],
-      [
-        1785349800,
-        6187
-      ],
-      [
-        1785436200,
-        6187
-      ],
-      [
-        1785522600,
-        6074
-      ],
-      [
-        1785609000,
-        6074
-      ],
-      [
-        1785695400,
-        6074
-      ],
-      [
-        1785781800,
-        6074
-      ],
-      [
-        1785868200,
-        6074
-      ],
-      [
-        1785954600,
-        6074
-      ],
-      [
-        1786041000,
-        6074
-      ],
-      [
-        1786127400,
-        6074
-      ],
-      [
-        1786213800,
-        6074
-      ],
-      [
-        1786300200,
-        6074
-      ],
-      [
-        1786386600,
-        6074
-      ]
+      [1781202600, 5928],
+      [1781289000, 5928],
+      [1781375400, 5928],
+      [1781461800, 5928],
+      [1781548200, 5928],
+      [1781634600, 5928],
+      [1781721000, 5928],
+      [1781807400, 5928],
+      [1781893800, 5928],
+      [1781980200, 5928],
+      [1782066600, 5928],
+      [1782153000, 5928],
+      [1782239400, 5928],
+      [1782325800, 5928],
+      [1782412200, 5928],
+      [1782498600, 5928],
+      [1782585000, 5928],
+      [1782671400, 5928],
+      [1782757800, 5928],
+      [1782844200, 5928],
+      [1782930600, 6348],
+      [1783017000, 6348],
+      [1783103400, 6348],
+      [1783189800, 6348],
+      [1783276200, 5861],
+      [1783362600, 5861],
+      [1783449000, 5861],
+      [1783535400, 5861],
+      [1783621800, 5861],
+      [1783708200, 5861],
+      [1783794600, 5861],
+      [1783881000, 5861],
+      [1783967400, 5861],
+      [1784053800, 5861],
+      [1784140200, 6162],
+      [1784226600, 6162],
+      [1784313000, 6342],
+      [1784399400, 6342],
+      [1784485800, 6464],
+      [1784572200, 6265],
+      [1784658600, 6265],
+      [1784745000, 5922],
+      [1784831400, 6487],
+      [1784917800, 6487],
+      [1785004200, 6487],
+      [1785090600, 6487],
+      [1785177000, 6542],
+      [1785263400, 6187],
+      [1785349800, 6187],
+      [1785436200, 6187],
+      [1785522600, 6074],
+      [1785609000, 6074],
+      [1785695400, 6074],
+      [1785781800, 6074],
+      [1785868200, 6074],
+      [1785954600, 6074],
+      [1786041000, 6074],
+      [1786127400, 6074],
+      [1786213800, 6074],
+      [1786300200, 6074],
+      [1786386600, 6074]
     ]
   },
   "airports": [

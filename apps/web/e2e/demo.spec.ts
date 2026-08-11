@@ -49,7 +49,10 @@ test('capture the demo walkthrough', async ({ page }) => {
 
   await page.getByRole('combobox', { name: /^To/ }).click();
   await capture(3);
-  await page.getByRole('option', { name: /Mumbai/ }).first().click();
+  await page
+    .getByRole('option', { name: /Mumbai/ })
+    .first()
+    .click();
   await capture(2);
 
   // ── 3. Results ────────────────────────────────────────────────────────
