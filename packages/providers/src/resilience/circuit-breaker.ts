@@ -61,8 +61,18 @@ export class CircuitBreaker {
    * Decides whether a call may proceed, transitioning to `half_open` when the reset
    * window has elapsed.
    *
-   * Not side-effect free by design: asking is what allows the probe through, which keeps
-   * callers from having to drive the state machine themselves.
+   * Not side-effect free by design: asking is what claims the probe, which keeps callers
+   * from having to drive the state machine themselves.
+   *
+   * `half_open` therefore means *the probe is already taken*, and this returns `false`
+   * until it resolves. Returning `true` there instead — which reads as the obvious thing —
+   * would let every caller arriving during the probe through at once, defeating the state
+   * entirely. That is not theoretical here: the orchestrator fans out concurrently, so two
+   * searches racing the end of the reset window would both be admitted, and a provider we
+   * are not yet sure has recovered would take the full load the instant its cooldown ended.
+   *
+   * The probe is released by {@link recordSuccess} or {@link recordFailure}. A caller that
+   * takes it must record one of the two, or the circuit stays half-open indefinitely.
    *
    * @returns `true` when the call should be attempted.
    */
@@ -74,11 +84,12 @@ export class CircuitBreaker {
       return true;
     }
 
-    return this.state === 'half_open';
+    return false;
   }
 
   /**
-   * Records a successful call, closing the circuit and clearing the failure count.
+   * Records a successful call, closing the circuit, clearing the failure count and
+   * releasing the half-open probe.
    *
    * A success in `half_open` fully closes the circuit rather than requiring several — a
    * provider that answers correctly after a cooldown is working, and demanding more probes

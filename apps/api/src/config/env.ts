@@ -32,6 +32,22 @@ export const envSchema = z.object({
   PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
   CACHE_TTL_SECONDS: z.coerce.number().int().nonnegative().default(300),
 
+  /**
+   * Shorter lifetime for a search where some provider failed.
+   *
+   * A cached response carries the provider statuses alongside the offers, so caching a
+   * timeout at the full TTL would suppress the retry for five minutes: the second search
+   * is served from cache, never reaches the fan-out, and the circuit breaker — the
+   * component whose actual job is deciding when to stop calling a broken provider — is
+   * never consulted. A transient blip would look like a five-minute outage.
+   *
+   * 30s is short enough that the failed provider is retried while the user is still
+   * looking at the page, and long enough that the providers that *did* answer are not
+   * re-fetched on every keystroke — which matters against a live source capped at 250
+   * searches a month.
+   */
+  CACHE_PARTIAL_TTL_SECONDS: z.coerce.number().int().nonnegative().default(30),
+
   CIRCUIT_FAILURE_THRESHOLD: z.coerce.number().int().positive().default(3),
   CIRCUIT_RESET_MS: z.coerce.number().int().positive().default(30_000),
 

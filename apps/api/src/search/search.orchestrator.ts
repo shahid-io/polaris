@@ -64,6 +64,20 @@ function mergeTimeRange(
   return { ...filters, departureWindow: query.timeRange };
 }
 
+/**
+ * Failures that might resolve on their own within a minute or two.
+ *
+ * `skipped` is excluded on purpose. It means the provider has no credential configured,
+ * which will not change until someone edits the environment and restarts — expiring the
+ * whole cache entry early on its account would re-fetch the healthy providers repeatedly
+ * and buy nothing.
+ */
+const TRANSIENT_STATUSES: ReadonlySet<ProviderCallStatus> = new Set([
+  'timeout',
+  'error',
+  'circuit_open',
+]);
+
 /** What one provider contributed to a search, before assembly into the response. */
 interface ProviderOutcome {
   status: ProviderStatus;
@@ -135,7 +149,7 @@ export class SearchOrchestrator {
       await this.cache.set(
         cacheKey,
         { offers, providerStatuses } satisfies CachedSearch,
-        this.config.get('CACHE_TTL_SECONDS', { infer: true }),
+        this.ttlFor(providerStatuses),
       );
     }
 
@@ -172,11 +186,44 @@ export class SearchOrchestrator {
   }
 
   /**
+   * Chooses how long this result may be cached.
+   *
+   * The cache stores the provider statuses along with the offers, so a cache hit reproduces
+   * the failures as well as the flights — and reproduces them without calling anyone, which
+   * means the circuit breaker never gets a say. At the full TTL a single timeout would
+   * therefore present as a five-minute outage for that provider.
+   *
+   * Caching the result anyway, just briefly, keeps both properties worth having: the
+   * providers that answered are not re-fetched on the next filter toggle, and the one that
+   * did not is retried soon enough that a blip stays a blip.
+   *
+   * Caching successes and failures separately would be more precise still, and is the right
+   * shape once there is more than one API instance and a shared store. It is not worth the
+   * extra key surface here, where the whole fan-out is a few hundred milliseconds.
+   *
+   * @param statuses - Per-provider outcomes for this search.
+   * @returns Lifetime in seconds.
+   * @internal
+   */
+  private ttlFor(statuses: ProviderStatus[]): number {
+    const anyTransient = statuses.some((status) => TRANSIENT_STATUSES.has(status.status));
+
+    return this.config.get(anyTransient ? 'CACHE_PARTIAL_TTL_SECONDS' : 'CACHE_TTL_SECONDS', {
+      infer: true,
+    });
+  }
+
+  /**
    * Calls every provider concurrently and collects what each contributed.
    *
-   * `Promise.all` would be wrong here in a way that matters: it rejects on the first
-   * failure, discarding results already returned by providers that succeeded. Settling
-   * every promise is what makes partial results possible at all.
+   * `Promise.all` is safe here despite rejecting on first failure, because
+   * {@link callProvider} has no rejecting path: every provider error is caught and
+   * converted into a {@link ProviderOutcome} carrying a status. That is what makes partial
+   * results possible — the isolation lives in the per-provider call, not in the combinator.
+   *
+   * **This is load-bearing.** Any future change that lets `callProvider` throw must move
+   * this to `Promise.allSettled` in the same commit, or one provider's failure will discard
+   * results the others already returned.
    *
    * @param request - The search request.
    * @param searchId - Correlates provider logs with this search.
@@ -282,6 +329,12 @@ export class SearchOrchestrator {
    * A missing credential deliberately does not count as a failure: the provider is not
    * broken, it is unconfigured, and tripping a breaker over it would be meaningless.
    *
+   * It resets the breaker rather than simply not recording, because this call may have
+   * taken the half-open probe. Leaving it unresolved would strand the circuit half-open
+   * and reject every later call forever. Resetting is also the honest reading of the
+   * situation — a stale failure history describes a provider that is no longer being
+   * reached at all, and re-checking costs nothing since the credential check is local.
+   *
    * @param provider - The adapter that failed.
    * @param breaker - Its circuit breaker.
    * @param error - What was thrown.
@@ -298,6 +351,8 @@ export class SearchOrchestrator {
     const { providerId } = provider.descriptor;
 
     if (error instanceof ProviderCredentialsMissingError) {
+      breaker.reset();
+
       return {
         offers: [],
         status: this.buildStatus(provider, 'skipped', latencyMs, 0, 0, {

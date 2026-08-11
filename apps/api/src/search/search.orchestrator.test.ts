@@ -27,6 +27,7 @@ const request = (overrides: Partial<SearchRequest> = {}): SearchRequest => ({
 const ENV: Record<string, unknown> = {
   PROVIDER_TIMEOUT_MS: 200,
   CACHE_TTL_SECONDS: 300,
+  CACHE_PARTIAL_TTL_SECONDS: 30,
   CIRCUIT_FAILURE_THRESHOLD: 2,
   CIRCUIT_RESET_MS: 30_000,
 };
@@ -66,12 +67,15 @@ const succeedsWith = (offerCount: number, providerId: 'makemytrip' | 'goibibo' |
     return { offers: result.offers.slice(0, offerCount), droppedOfferCount: 0 };
   });
 
-async function buildOrchestrator(providers: FlightProvider[]): Promise<SearchOrchestrator> {
+async function buildOrchestrator(
+  providers: FlightProvider[],
+  cache: InMemoryCacheStore = new InMemoryCacheStore(),
+): Promise<SearchOrchestrator> {
   const moduleRef = await Test.createTestingModule({
     providers: [
       SearchOrchestrator,
       { provide: FLIGHT_PROVIDERS, useValue: providers },
-      { provide: CACHE_STORE, useValue: new InMemoryCacheStore() },
+      { provide: CACHE_STORE, useValue: cache },
       {
         provide: ConfigService,
         useValue: { get: (key: string) => ENV[key] },
@@ -291,6 +295,83 @@ describe('SearchOrchestrator', () => {
       expect(cheap.groups.length).toBeLessThan(all.groups.length);
       // Totals describe the whole result set, not the filtered view.
       expect(cheap.meta.totalGroups).toBe(all.meta.totalGroups);
+    });
+  });
+
+  /**
+   * A cache hit reproduces the provider statuses as well as the offers, and does so without
+   * reaching the fan-out — so a cached failure is a failure the circuit breaker never gets
+   * to reconsider. At the full TTL one timeout would present as a five-minute outage.
+   */
+  describe('caching a search that partly failed', () => {
+    /** Cheapest way to make a provider count how often it is really called. */
+    const countingFailure = (counter: { calls: number }) =>
+      fakeProvider('cleartrip', async () => {
+        counter.calls += 1;
+        throw new ProviderUnavailableError('cleartrip', 'down');
+      });
+
+    it('retries the failed provider well before the full TTL', async () => {
+      let clock = 1_000_000;
+      const counter = { calls: 0 };
+      const orchestrator = await buildOrchestrator(
+        [succeedsWith(3, 'makemytrip'), countingFailure(counter)],
+        new InMemoryCacheStore(500, () => clock),
+      );
+
+      const first = await orchestrator.search(request());
+      expect(first.meta.partial).toBe(true);
+      expect(counter.calls).toBe(1);
+
+      // Inside the partial window: still served from cache, nobody re-called.
+      clock += 29_000;
+      expect((await orchestrator.search(request())).meta.cached).toBe(true);
+      expect(counter.calls).toBe(1);
+
+      // Past the partial TTL, and nowhere near the 300s a clean search would have kept.
+      clock += 2_000;
+      expect((await orchestrator.search(request())).meta.cached).toBe(false);
+      expect(counter.calls).toBe(2);
+    });
+
+    it('still keeps a fully successful search for the full TTL', async () => {
+      let clock = 1_000_000;
+      const orchestrator = await buildOrchestrator(
+        [succeedsWith(3, 'makemytrip')],
+        new InMemoryCacheStore(500, () => clock),
+      );
+
+      await orchestrator.search(request());
+
+      // The same point at which the partial result above had already expired.
+      clock += 31_000;
+
+      expect((await orchestrator.search(request())).meta.cached).toBe(true);
+    });
+
+    /**
+     * An unconfigured provider is not a transient failure — it cannot recover without an
+     * environment change and a restart, so shortening the TTL would re-fetch the healthy
+     * providers on a loop and buy nothing.
+     */
+    it('does not shorten the TTL for a provider that is merely unconfigured', async () => {
+      let clock = 1_000_000;
+      const orchestrator = await buildOrchestrator(
+        [
+          succeedsWith(3, 'makemytrip'),
+          fakeProvider('goibibo', async () => {
+            throw new ProviderCredentialsMissingError('goibibo', 'SOME_KEY');
+          }),
+        ],
+        new InMemoryCacheStore(500, () => clock),
+      );
+
+      const first = await orchestrator.search(request());
+      expect(first.providerStatuses.some((status) => status.status === 'skipped')).toBe(true);
+
+      clock += 31_000;
+
+      expect((await orchestrator.search(request())).meta.cached).toBe(true);
     });
   });
 

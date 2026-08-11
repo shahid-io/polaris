@@ -112,6 +112,22 @@ change.
 `CacheStore` is an interface, so moving to Redis is another implementation and one changed
 line in `CacheModule`.
 
+### A search that partly failed is cached only briefly
+
+The cached value carries the provider statuses as well as the offers, and a cache hit
+returns before the fan-out — so a cached timeout is a failure the circuit breaker never gets
+to reconsider. At the full 300s that would turn a blip into an apparent five-minute outage.
+
+Such a search is kept for `CACHE_PARTIAL_TTL_SECONDS` instead: long enough that the
+providers that *did* answer are not re-fetched on every filter toggle, short enough that the
+one that did not is retried while the user is still on the page. A provider that is merely
+unconfigured does not count — it cannot recover without a restart, so shortening the window
+on its account would buy nothing.
+
+Caching each provider's result under its own key would be more precise, and is the right
+shape once there is a shared store behind more than one instance. It is not worth the extra
+key surface while the whole fan-out is a few hundred milliseconds.
+
 ### Analytics fails open
 
 Writes are not awaited and the service swallows its own errors. With no `MONGODB_URI` the
@@ -134,8 +150,9 @@ credentials report `skipped` and the search continues with the rest.
 |---|---|---|
 | `API_PORT` | `4000` | |
 | `PROVIDER_MODE` | `hybrid` | `live` · `fixture` · `hybrid` |
-| `PROVIDER_TIMEOUT_MS` | `6000` | Per-provider ceiling |
-| `CACHE_TTL_SECONDS` | `300` | |
+| `PROVIDER_TIMEOUT_MS` | `10000` | Per-provider ceiling |
+| `CACHE_TTL_SECONDS` | `300` | Lifetime of a search where every provider answered |
+| `CACHE_PARTIAL_TTL_SECONDS` | `30` | Lifetime when one failed, so it is retried soon |
 | `CIRCUIT_FAILURE_THRESHOLD` | `3` | Failures before a provider is skipped |
 | `CIRCUIT_RESET_MS` | `30000` | Before a half-open probe |
 | `SERPAPI_KEY` | — | Enables live airline fares |

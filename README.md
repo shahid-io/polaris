@@ -155,10 +155,10 @@ and simulated data is badged in the UI at the point a price is shown. Full matri
 pnpm test
 ```
 
-229 tests across the workspace, plus a Playwright smoke test in a real browser:
+263 tests across the workspace, plus a Playwright smoke test in a real browser:
 
 ```bash
-pnpm test        # 229 unit, component and integration tests
+pnpm test        # 263 unit, component and integration tests
 pnpm --filter @polaris/web test:e2e   # browser smoke test (needs both servers running)
 ```
 

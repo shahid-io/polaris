@@ -84,6 +84,47 @@ describe('CircuitBreaker', () => {
     expect(breaker.currentState()).toBe('half_open');
   });
 
+  /**
+   * The whole point of `half_open`. The orchestrator fans out concurrently, so two searches
+   * can reach `canAttempt` in the same tick just after the cooldown ends — admitting both
+   * would send full traffic to a provider that has not yet proved it recovered.
+   */
+  it('admits exactly one probe when several callers race the end of the reset window', () => {
+    const breaker = build(1, 30_000);
+    breaker.recordFailure();
+
+    clock += 30_000;
+
+    expect(breaker.canAttempt()).toBe(true);
+    expect(breaker.canAttempt()).toBe(false);
+    expect(breaker.canAttempt()).toBe(false);
+  });
+
+  it('keeps rejecting while the probe is still in flight, however long it takes', () => {
+    const breaker = build(1, 30_000);
+    breaker.recordFailure();
+    clock += 30_000;
+    breaker.canAttempt();
+
+    // Well past a second reset window — elapsed time must not hand out another probe
+    // while the first one is unresolved.
+    clock += 300_000;
+
+    expect(breaker.canAttempt()).toBe(false);
+    expect(breaker.currentState()).toBe('half_open');
+  });
+
+  it('admits the next caller once the probe resolves', () => {
+    const breaker = build(1, 30_000);
+    breaker.recordFailure();
+    clock += 30_000;
+    breaker.canAttempt();
+
+    breaker.recordSuccess();
+
+    expect(breaker.canAttempt()).toBe(true);
+  });
+
   it('closes fully when the probe succeeds', () => {
     const breaker = build(1, 30_000);
     breaker.recordFailure();
