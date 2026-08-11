@@ -118,8 +118,9 @@ library does not accept. A twenty-line pipe replaced it.
 
 Every decision in [`ARCHITECTURE.md`](./ARCHITECTURE.md) is one I can explain and defend:
 why the canonical key uses origin-local dates, why price spread is measured per provider
-rather than per offer, why scoring runs before filtering, why `Promise.allSettled` rather than
-`Promise.all`, why money is integer minor units, and why analytics stores no IP address.
+rather than per offer, why scoring runs before filtering, why failure is normalised at the
+provider boundary rather than at the fan-out, why money is integer minor units, and why
+analytics stores no IP address.
 
 The most useful working pattern was not "generate code" but **"make the reasoning explicit,
 then check it"** — which is why the comments in this codebase explain *why* a line exists

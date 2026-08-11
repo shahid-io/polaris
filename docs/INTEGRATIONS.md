@@ -43,7 +43,23 @@ terms, not scraping performed by this application.
 
 **Constraint:** 250 searches/month is a hard ceiling. The response cache exists partly to
 protect it — repeated searches and filter changes are served from cache rather than
-re-querying.
+re-querying. Both airline providers are backed by the same endpoint, so their concurrent
+requests are coalesced into one upstream call rather than spending two credits on identical
+data.
+
+### When the live call fails
+
+`PROVIDER_MODE=hybrid` falls back to a recorded response so a demonstration survives a
+network failure or an exhausted quota. Two rules keep that honest:
+
+1. **A recording is only used for the exact date it was captured for.** A snapshot of one
+   route on one day cannot stand in for another day; a mismatch returns no data rather than
+   presenting one date's departures as another's.
+2. **Replayed data is never labelled live.** Offers sourced from a recording carry
+   `integrationType: 'representative'` and the provider status reads *"Live request failed —
+   replayed a recorded response"*. Real data that is no longer current is closer to
+   representative than to live, and a "Live" badge on a stale price would be worse than no
+   badge at all.
 
 ### Duffel — vendor sandbox
 

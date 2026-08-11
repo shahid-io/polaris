@@ -31,6 +31,8 @@ export interface SerpApiItinerary {
 /** The subset of the response this adapter consumes. */
 export interface SerpApiResponse {
   search_metadata?: { status?: string; id?: string };
+  /** Echoed request parameters. `outbound_date` is what a fixture is validated against. */
+  search_parameters?: { outbound_date?: string };
   /** Google's own picks. Overlaps with other_flights, so the two are deduplicated. */
   best_flights?: SerpApiItinerary[];
   other_flights?: SerpApiItinerary[];
@@ -59,14 +61,23 @@ const SERPAPI_ENDPOINT = 'https://serpapi.com/search.json';
  * tier allows each month, for data that is byte-identical.
  *
  * Storing the *promise* rather than the result is what makes it work: both providers are
- * dispatched concurrently by `Promise.allSettled`, so the second arrives while the first
- * is still in flight and there is no result to share yet. Sharing the promise means the
- * second call awaits the first rather than starting its own.
+ * dispatched concurrently, so the second arrives while the first is still in flight and
+ * there is no result to share yet. Sharing the promise means the second call awaits the
+ * first rather than starting its own.
+ *
+ * The shared request deliberately runs on its **own** AbortSignal rather than the signal
+ * of whichever caller happened to arrive first. Otherwise the first provider's timeout
+ * would abort a request the second provider is still legitimately waiting on, inside its
+ * own untouched budget — one provider's deadline silently failing another, which is
+ * exactly the coupling the per-provider isolation exists to prevent.
  *
  * Deliberately short-lived. This coalesces concurrent callers within one search; caching
  * results across searches is the orchestrator's job, at a layer that knows about TTLs.
  */
-const inFlight = new Map<string, { promise: Promise<SerpApiResponse>; expiresAtMs: number }>();
+const inFlight = new Map<
+  string,
+  { promise: Promise<SerpApiResponse>; controller: AbortController; expiresAtMs: number }
+>();
 
 /** How long a shared response stays available to a late-arriving sibling provider. */
 const COALESCE_WINDOW_MS = 30_000;
@@ -102,18 +113,49 @@ export function fetchGoogleFlights(
     return existing.promise;
   }
 
-  const promise = performRequest(params, apiKey, signal);
-  inFlight.set(key, { promise, expiresAtMs: now + COALESCE_WINDOW_MS });
+  // Its own controller: the shared request outlives any individual caller's deadline.
+  const shared = new AbortController();
+  const promise = performRequest(params, apiKey, shared.signal);
+  inFlight.set(key, { promise, controller: shared, expiresAtMs: now + COALESCE_WINDOW_MS });
 
   // A failure must not be cached — the next search should be free to retry rather than
   // replaying a rejection for the whole window.
   promise.catch(() => inFlight.delete(key));
 
-  return promise;
+  return raceCallerCancellation(promise, signal);
 }
 
-/** Clears the coalescing map. Intended for tests. */
+/**
+ * Lets a caller stop waiting without stopping the shared request.
+ *
+ * The caller's signal ends *its* wait; the underlying HTTP call continues for whoever else
+ * is still listening. If nobody is, the entry expires from the coalescing window shortly
+ * afterwards.
+ *
+ * @param promise - The shared in-flight request.
+ * @param signal - The individual caller's cancellation signal.
+ * @returns The response, or a rejection once the caller aborts.
+ * @internal
+ */
+function raceCallerCancellation(
+  promise: Promise<SerpApiResponse>,
+  signal: AbortSignal,
+): Promise<SerpApiResponse> {
+  if (!signal) return promise;
+
+  return new Promise<SerpApiResponse>((resolve, reject) => {
+    const onAbort = () => reject(new Error('Request cancelled by caller'));
+
+    if (signal.aborted) return onAbort();
+    signal.addEventListener('abort', onAbort, { once: true });
+
+    promise.then(resolve, reject).finally(() => signal.removeEventListener('abort', onAbort));
+  });
+}
+
+/** Clears the coalescing map, aborting anything still in flight. Intended for tests. */
 export function resetRequestCoalescing(): void {
+  for (const entry of inFlight.values()) entry.controller.abort();
   inFlight.clear();
 }
 
@@ -163,22 +205,41 @@ async function performRequest(
   return body;
 }
 
+/** A recorded response, with the date it was actually captured for. */
+export interface LoadedFixture {
+  response: SerpApiResponse;
+  /** The `outbound_date` the recording was made against. */
+  recordedDate: string;
+}
+
 /**
  * Loads a previously recorded response from `fixtures/`.
  *
  * Recorded responses exist for two reasons that happen to coincide. They make tests
  * deterministic, and they make a live demonstration independent of the network and of a
- * free tier capped at 250 searches a month — switching `PROVIDER_MODE` to `fixture`
- * produces byte-identical behaviour with no external call.
+ * free tier capped at 250 searches a month.
+ *
+ * ### The date must match
+ * A recording is a snapshot of one route on one specific day, and the flight times inside
+ * it are that day's. Returning it for a different date would present September departures
+ * as though they were August's — the offer would carry the requested date in its id while
+ * every timestamp inside it disagreed.
+ *
+ * So a fixture is only usable for the exact date it was captured for. A mismatch returns
+ * `undefined`, which the caller reports honestly as having no data rather than quietly
+ * substituting the wrong day.
  *
  * @param origin - Origin IATA code.
  * @param destination - Destination IATA code.
- * @returns The recorded response, or `undefined` when no fixture exists for the route.
+ * @param departureDate - The date being searched, `YYYY-MM-DD`.
+ * @returns The recording and its date, or `undefined` when no fixture exists for the route
+ *   or the one that exists was captured for a different date.
  */
 export async function loadFixture(
   origin: string,
   destination: string,
-): Promise<SerpApiResponse | undefined> {
+  departureDate: string,
+): Promise<LoadedFixture | undefined> {
   // Resolved from the compiled file's location up to the repository root.
   const path = join(
     __dirname,
@@ -190,11 +251,19 @@ export async function loadFixture(
     `serpapi-${origin.toLowerCase()}-${destination.toLowerCase()}.json`,
   );
 
+  let response: SerpApiResponse;
   try {
-    return JSON.parse(await readFile(path, 'utf8')) as SerpApiResponse;
+    response = JSON.parse(await readFile(path, 'utf8')) as SerpApiResponse;
   } catch {
     return undefined;
   }
+
+  const recordedDate = response.search_parameters?.outbound_date;
+  if (!recordedDate || recordedDate !== departureDate) {
+    return undefined;
+  }
+
+  return { response, recordedDate };
 }
 
 /**

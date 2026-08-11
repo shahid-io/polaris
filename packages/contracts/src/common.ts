@@ -12,10 +12,30 @@ export const iataAirlineCodeSchema = z
   .regex(/^[A-Z0-9]{2}$/, 'Must be a 2-character IATA airline code, e.g. 6E')
   .describe('IATA airline designator');
 
-/** Calendar date with no timezone, YYYY-MM-DD. */
+/**
+ * Calendar date with no timezone, YYYY-MM-DD.
+ *
+ * The shape check alone is not enough: `2026-02-31` and `2026-13-01` both match the
+ * pattern and are not dates. Round-tripping through UTC catches them — a value that does
+ * not survive being parsed and reformatted was never a real calendar date.
+ *
+ * Date.UTC is used rather than `new Date(string)` so the check cannot shift by a day
+ * depending on the server's timezone.
+ */
 export const isoDateSchema = z
   .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be an ISO date, YYYY-MM-DD');
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Must be an ISO date, YYYY-MM-DD')
+  .refine((value) => {
+    const [year, month, day] = value.split('-').map(Number);
+    if (!year || !month || !day) return false;
+
+    const asUtc = new Date(Date.UTC(year, month - 1, day));
+    return (
+      asUtc.getUTCFullYear() === year &&
+      asUtc.getUTCMonth() === month - 1 &&
+      asUtc.getUTCDate() === day
+    );
+  }, 'Must be a real calendar date');
 
 /** Instant in UTC, e.g. 2026-08-20T00:45:00Z. */
 export const isoDateTimeUtcSchema = z

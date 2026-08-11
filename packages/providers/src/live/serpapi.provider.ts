@@ -16,8 +16,23 @@ import {
   fetchGoogleFlights,
   loadFixture,
   type SerpApiItinerary,
+  type SerpApiResponse,
   type SerpApiSegment,
 } from './serpapi-client';
+
+/**
+ * Where a response actually came from.
+ *
+ * Carried through mapping so an offer's declared provenance reflects reality rather than
+ * the adapter's configuration. A hybrid provider that fell back to a recording is not
+ * serving live data, and must not say it is.
+ */
+type ResponseSource = 'live' | 'fixture';
+
+interface SourcedResponse {
+  response: SerpApiResponse;
+  source: ResponseSource;
+}
 
 /** Where a SerpApi-backed provider takes its data from. */
 export type ProviderMode = 'live' | 'fixture' | 'hybrid';
@@ -98,15 +113,17 @@ export class SerpApiProvider implements FlightProvider {
    * @throws {ProviderUnavailableError} When SerpApi fails and no fixture can cover it.
    */
   async search(query: SearchQuery, ctx: ProviderContext): Promise<ProviderResult> {
-    const response = await this.loadResponse(query, ctx);
+    const sourced = await this.loadResponse(query, ctx);
 
-    if (!response) {
+    if (!sourced) {
       return {
         offers: [],
         droppedOfferCount: 0,
-        message: 'No recorded data available for this route',
+        message: `No data available for ${query.origin}–${query.destination} on ${query.departureDate}`,
       };
     }
+
+    const { response, source } = sourced;
 
     const offers: NormalizedOffer[] = [];
     let droppedOfferCount = 0;
@@ -115,7 +132,7 @@ export class SerpApiProvider implements FlightProvider {
       // One response covers every airline on the route; keep only this carrier's.
       if (carrierOf(itinerary.flights[0]) !== this.config.carrierCode) continue;
 
-      const candidate = this.toOffer(itinerary, query, ctx);
+      const candidate = this.toOffer(itinerary, query, ctx, source);
       const parsed = normalizedOfferSchema.safeParse(candidate);
 
       if (parsed.success) {
@@ -127,7 +144,15 @@ export class SerpApiProvider implements FlightProvider {
       }
     }
 
-    return { offers, droppedOfferCount };
+    return {
+      offers,
+      droppedOfferCount,
+      // Surfaced in the provider status so a viewer can tell a degraded search from a
+      // healthy one, not only from the per-offer badge.
+      ...(source === 'fixture'
+        ? { message: 'Live request failed — replayed a recorded response' }
+        : {}),
+    };
   }
 
   /**
@@ -138,21 +163,29 @@ export class SerpApiProvider implements FlightProvider {
    * @returns A response, or `undefined` when fixture mode has nothing for the route.
    * @internal
    */
-  private async loadResponse(query: SearchQuery, ctx: ProviderContext) {
+  private async loadResponse(
+    query: SearchQuery,
+    ctx: ProviderContext,
+  ): Promise<SourcedResponse | undefined> {
+    const replay = async (): Promise<SourcedResponse | undefined> => {
+      const fixture = await loadFixture(query.origin, query.destination, query.departureDate);
+      return fixture ? { response: fixture.response, source: 'fixture' } : undefined;
+    };
+
     if (this.mode === 'fixture') {
-      return loadFixture(query.origin, query.destination);
+      return replay();
     }
 
     if (!this.apiKey) {
       if (this.mode === 'hybrid') {
-        const fixture = await loadFixture(query.origin, query.destination);
+        const fixture = await replay();
         if (fixture) return fixture;
       }
       throw new ProviderCredentialsMissingError(this.config.providerId, 'SERPAPI_KEY');
     }
 
     try {
-      return await fetchGoogleFlights(
+      const response = await fetchGoogleFlights(
         {
           origin: query.origin,
           destination: query.destination,
@@ -163,11 +196,13 @@ export class SerpApiProvider implements FlightProvider {
         this.apiKey,
         ctx.signal,
       );
+      return { response, source: 'live' };
     } catch (error) {
       // Falling back is what keeps a live walkthrough working when the network drops or
-      // the free tier's monthly ceiling is reached mid-demonstration.
+      // the free tier's monthly ceiling is reached mid-demonstration — but the result is
+      // labelled as a replay, not passed off as live.
       if (this.mode === 'hybrid') {
-        const fixture = await loadFixture(query.origin, query.destination);
+        const fixture = await replay();
         if (fixture) return fixture;
       }
 
@@ -193,6 +228,7 @@ export class SerpApiProvider implements FlightProvider {
     itinerary: SerpApiItinerary,
     query: SearchQuery,
     ctx: ProviderContext,
+    source: ResponseSource,
   ): NormalizedOffer {
     const segments = itinerary.flights.map(toSegment);
     const first = segments[0]!;
@@ -202,7 +238,10 @@ export class SerpApiProvider implements FlightProvider {
       id: `${this.config.providerId}-${itinerary.flights.map((s) => s.flight_number.replace(/\s+/g, '')).join('-')}-${query.departureDate}`,
       providerId: this.config.providerId,
       providerDisplayName: this.config.displayName,
-      integrationType: 'live-api',
+      // Reflects where this offer actually came from. A replayed recording is real data
+      // that is no longer current, which is closer to representative than to live — and
+      // claiming otherwise would put a "Live" badge on a stale price.
+      integrationType: source === 'live' ? 'live-api' : 'representative',
       itinerary: {
         segments,
         origin: first.origin,

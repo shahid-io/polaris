@@ -43,8 +43,9 @@ POST /api/search
   ▼ SearchOrchestrator
      1. cache lookup on a normalised key → hit? skip to step 5
      2. FlightProvider[] injected via the FLIGHT_PROVIDERS token
-     3. Promise.allSettled — every provider concurrently, 6 s budget each,
-        circuit breaker consulted before each call
+     3. Promise.all — every provider concurrently, 6 s budget each, circuit
+        breaker consulted before each call. Safe because callProvider never
+        rejects; see below.
      4. each outcome becomes a ProviderStatus (ok · empty · timeout · error ·
         circuit_open · skipped)
   │
@@ -134,9 +135,15 @@ exercise the failure paths — waiting for a real provider to break is not a tes
 
 ### Failure isolation
 
-**`Promise.all` would be actively wrong here.** It rejects on first failure, discarding
-results providers had already returned successfully. `Promise.allSettled` is what makes
-partial results possible.
+**Failure is normalised at the provider boundary, not at the fan-out.** `callProvider`
+never rejects — every exit path returns a `ProviderOutcome`, converting a timeout, an
+error or an open circuit into a status. That is what lets the fan-out use `Promise.all`
+safely.
+
+The invariant is worth stating explicitly, because `Promise.all` would be actively wrong
+without it: it settles on the first rejection and discards results providers had already
+returned successfully. If `callProvider` ever gains a path that throws, the fan-out must
+become `Promise.allSettled` in the same change.
 
 A search never fails because a provider did. Even with every provider down, the response is a
 200 carrying zero flights and an honest account of why — so a client can distinguish "no
