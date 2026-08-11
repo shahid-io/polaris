@@ -15,10 +15,10 @@ why, and any representative data used.
 
 ## 1. Providers successfully integrated
 
-| Provider | Integration type | Data source | Real market data |
-|---|---|---|---|
-| IndiGo | `live-api` | SerpApi (Google Flights) | Yes |
-| Air India Express | `live-api` | SerpApi (Google Flights) | Yes |
+| Provider | Integration type | Data source | Real market data | Direct airline API |
+|---|---|---|---|---|
+| IndiGo | `live-api` | SerpApi (Google Flights) | Yes | **No — none published** |
+| Air India Express | `live-api` | SerpApi (Google Flights) | Yes | **No — none published** |
 | Duffel *(beyond the brief)* | `sandbox-api` | Duffel API | No — vendor sandbox |
 | MakeMyTrip | `representative` | Generated from shared timetable | No |
 | Goibibo | `representative` | Generated from shared timetable | No |
@@ -82,9 +82,10 @@ Offers a REST partner API, also behind a commercial agreement. No self-service a
 
 ### A finding worth recording
 
-**Amadeus Self-Service — the standard free source of real flight data — was decommissioned on
-17 July 2026**, three weeks before this build started. New registrations were paused and the
-portal was shut down for existing users.
+Amadeus Self-Service was evaluated as a source of live flight data and excluded: the
+Self-Service developer portal was **decommissioned on 17 July 2026**, with existing keys
+disabled. Enterprise access remains contract-based and was outside the scope of this
+assessment.
 
 This matters beyond trivia: it is the API almost any prior knowledge would point to first, and
 a plan written from memory rather than verification would have been built on a dead

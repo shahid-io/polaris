@@ -3,15 +3,10 @@
 **Find your bearing on every fare.**
 
 A flight comparison prototype that searches multiple providers, aggregates their offers, and —
-critically — recognises when several providers are selling **the same physical flight**. The
+critically — recognises when several providers are selling **the same marketed flight**. The
 result is a list of flights with a price range attached, not a list of near-duplicate rows.
 
 Built for the North Star Identity Full Stack Developer assessment.
-
-> **Build status.** The API, domain engine and provider adapters are complete and tested.
-> The web interface is in progress — the search UI, comparison view and provider-status
-> display described below are not yet implemented. Everything else here is working and
-> verifiable today via the API.
 
 ---
 
@@ -129,15 +124,18 @@ None of the five providers named in the brief expose a self-service API. Two air
 served with real live data through a legitimate third-party source; three OTAs whose partner
 APIs are commercially gated use documented representative data.
 
-| Provider | Integration | Real data |
-|---|---|---|
-| IndiGo | Live API via SerpApi | Yes |
-| Air India Express | Live API via SerpApi | Yes |
-| Duffel *(beyond the brief)* | Vendor sandbox | No |
-| MakeMyTrip · Goibibo · Cleartrip | Representative | No |
+| Provider | Integration | Source | Direct airline/OTA API? |
+|---|---|---|---|
+| IndiGo | Third-party live flight search | SerpApi Google Flights | No — none published |
+| Air India Express | Third-party live flight search | SerpApi Google Flights | No — none published |
+| MakeMyTrip · Goibibo · Cleartrip | Representative data | Generated | No — commercially gated |
+
+To be unambiguous: **no airline's own API was integrated**, because none of them publish
+one. IndiGo and Air India Express fares are real live Google Flights results obtained
+through SerpApi, a commercial API operating under its own terms.
 
 Provenance is never hidden — every offer carries its `integrationType` in the API response,
-and simulated data will be badged at the point of display in the UI. Full matrix and reasoning: [`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md).
+and simulated data is badged in the UI at the point a price is shown. Full matrix and reasoning: [`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md).
 
 ---
 

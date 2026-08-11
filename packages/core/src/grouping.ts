@@ -19,7 +19,7 @@ import { isLessThan, maxOf, minOf, percentageOf, subtract } from './money';
 export type UnscoredComparisonGroup = Omit<ComparisonGroup, 'score'>;
 
 /**
- * Collapses many provider offers into one entry per physical flight.
+ * Collapses many provider offers into one entry per marketed flight.
  *
  * This implements the brief's requirement to "handle the same flight available through
  * multiple providers". Forty offers from six providers typically become a dozen or so

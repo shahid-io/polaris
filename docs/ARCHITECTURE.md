@@ -49,7 +49,7 @@ POST /api/search
         circuit_open · skipped)
   │
   ▼ @polaris/core
-     groupOffers    canonical key → one entry per physical flight
+     groupOffers    canonical key → one entry per marketed flight
      scoreGroups    weighted value score, normalised across the result set
      filterGroups   user constraints
      sortGroups     requested ordering

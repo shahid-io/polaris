@@ -3,6 +3,10 @@ import type { FlightSegment, Itinerary, NormalizedOffer } from '@polaris/contrac
 /**
  * Builds the canonical identity of a single flown leg.
  *
+ * The unit of identity here is the **marketed flight** — what a ticket is sold as — not the
+ * physical aircraft. Those usually coincide and sometimes do not; see the codeshare note
+ * below for why this distinction is deliberate rather than a shortcut.
+ *
  * This is the function the whole product rests on. The brief requires handling
  * "the same flight available through multiple providers"; two offers belong to the same
  * {@link ComparisonGroup} exactly when this returns the same string for both.
