@@ -53,7 +53,7 @@ export default function HomePage() {
           Compare the same flight across every provider
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground sm:text-base">
-          One row per flight, with each seller&apos;s price beside it, not one row per offer.
+          One row per flight, with every seller&apos;s price beside it. Not one row per offer.
         </p>
       </div>
 
