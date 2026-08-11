@@ -33,3 +33,11 @@ test-results/
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Assessment brief — North Star Identity's material, kept locally in docs/ but not
+# republished. Remove this line if the brief is intended to ship with the repo.
+docs/assessment-brief.pdf
+
+# Private working plan — build strategy, phase timeline and demo preparation.
+# Kept locally; not part of the deliverable.
+PLAN.md
