@@ -11,7 +11,9 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "demo:capture": "playwright test e2e/demo.spec.ts",
+    "demo": "pnpm demo:capture && node scripts/make-gif.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
@@ -51,7 +53,9 @@
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^5.0.0",
+    "gifenc": "^1.0.3",
     "jsdom": "^26.1.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10"

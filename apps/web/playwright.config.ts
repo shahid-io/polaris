@@ -13,6 +13,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './e2e',
+  // demo.spec.ts builds a README asset rather than verifying behaviour, so it is excluded
+  // from the default run and invoked explicitly by `pnpm demo`.
+  testIgnore: process.env.CAPTURE_DEMO ? [] : ['**/demo.spec.ts'],
   // A browser test that hangs should fail rather than stall the run.
   timeout: 60_000,
   expect: { timeout: 15_000 },

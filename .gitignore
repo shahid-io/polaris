@@ -37,3 +37,6 @@ pnpm-debug.log*
 # Assessment brief — North Star Identity's material, kept locally in docs/ but not
 # republished. Remove this line if the brief is intended to ship with the repo.
 docs/assessment-brief.pdf
+
+# demo capture scratch
+apps/web/.demo-frames/

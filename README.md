@@ -8,6 +8,8 @@ result is a list of flights with a price range attached, not a list of near-dupl
 
 Built for the North Star Identity Full Stack Developer assessment.
 
+![Searching DEL to BOM, comparing one flight across three providers, filtering to non-stop and sorting by price](./docs/demo.gif)
+
 ---
 
 ## Quickstart
