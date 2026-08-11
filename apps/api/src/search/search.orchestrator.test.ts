@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { searchQuerySchema, type SearchRequest } from '@polaris/contracts';
@@ -89,9 +89,7 @@ async function buildOrchestrator(
 describe('SearchOrchestrator', () => {
   describe('the happy path', () => {
     it('aggregates and groups offers across providers', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const response = await orchestrator.search(request());
 
@@ -102,9 +100,7 @@ describe('SearchOrchestrator', () => {
     });
 
     it('reports a status for every provider attempted', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const response = await orchestrator.search(request());
 
@@ -114,9 +110,7 @@ describe('SearchOrchestrator', () => {
     });
 
     it('ranks by value by default', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const response = await orchestrator.search(request());
       const scores = response.groups.map((group) => group.score.total);
@@ -284,9 +278,7 @@ describe('SearchOrchestrator', () => {
      * full fan-out — which also protects the live provider's monthly quota.
      */
     it('applies different filters to one cached result set', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const all = await orchestrator.search(request());
       const cheap = await orchestrator.search(request({ filters: { maxPriceMinor: 500_000 } }));
@@ -377,9 +369,7 @@ describe('SearchOrchestrator', () => {
 
   describe('filtering and sorting', () => {
     it('applies a requested sort', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const response = await orchestrator.search(request({ sort: { key: 'price' } }));
       const prices = response.groups.map((group) => group.priceSpread.min.amountMinor);
@@ -388,9 +378,7 @@ describe('SearchOrchestrator', () => {
     });
 
     it('applies requested filters', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const response = await orchestrator.search(
         request({ filters: { departureWindow: { from: '06:00', to: '12:00' } } }),
@@ -403,9 +391,7 @@ describe('SearchOrchestrator', () => {
     });
 
     it('narrows to the providers named in the query', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const response = await orchestrator.search({
         query: searchQuerySchema.parse({
@@ -428,9 +414,7 @@ describe('SearchOrchestrator', () => {
      * morning flight was shown red-eyes and late-evening departures.
      */
     it('returns only flights departing inside the requested window', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const response = await orchestrator.search({
         query: searchQuerySchema.parse({
@@ -451,9 +435,7 @@ describe('SearchOrchestrator', () => {
     it('excludes an after-midnight departure from a morning search', async () => {
       // DEL-BOM 6E-2134 leaves at 00:45 local. It must not appear under "morning", and
       // must be matched on local time rather than its 19:15Z instant.
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const morning = await orchestrator.search({
         query: searchQuerySchema.parse({
@@ -523,9 +505,7 @@ describe('SearchOrchestrator', () => {
     });
 
     it('lets an explicit departureWindow filter override the query window', async () => {
-      const orchestrator = await buildOrchestrator(
-        createOtaProviders({ simulateLatency: false }),
-      );
+      const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 
       const response = await orchestrator.search({
         query: searchQuerySchema.parse({

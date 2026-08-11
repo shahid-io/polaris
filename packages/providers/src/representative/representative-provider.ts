@@ -8,7 +8,7 @@ import {
   type SearchQuery,
 } from '@polaris/contracts';
 import type { FlightProvider, ProviderContext, ProviderResult } from '../types';
-import { ProviderUnavailableError, ProviderTimeoutError } from '../types';
+import { ProviderUnavailableError } from '../types';
 import { findFlights, type ScheduledFlight } from '../schedule/flight-schedule';
 import { findAirport, requireAirport } from '../schedule/airports';
 import { addMinutes, toScheduledTime } from '../schedule/scheduled-time';
@@ -276,7 +276,11 @@ export class RepresentativeProvider implements FlightProvider {
       price: { total: { amountMinor: totalMinor, currency: 'INR' } },
       cabinClass: query.cabinClass,
       fareFamily: fareFamily.name,
-      benefits: pickSome(rng, this.config.benefitPool, intInRange(rng, 0, this.config.maxBenefitsPerOffer)),
+      benefits: pickSome(
+        rng,
+        this.config.benefitPool,
+        intInRange(rng, 0, this.config.maxBenefitsPerOffer),
+      ),
       baggage: { cabinKg: 7, checkedKg: fareFamily.checkedKg },
       refundable: fareFamily.refundable,
       seatsAvailable: intInRange(rng, 1, 9),

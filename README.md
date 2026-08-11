@@ -37,11 +37,11 @@ curl -X POST http://localhost:4000/api/search \
 search proceeds with the rest — the same partial-results path used when a provider fails.
 Optional extras:
 
-| Variable | Enables |
-|---|---|
-| `SERPAPI_KEY` | Live IndiGo and Air India Express fares |
-| `DUFFEL_ACCESS_TOKEN` | The Duffel sandbox adapter |
-| `MONGODB_URI` | Search analytics (`docker compose up -d mongo`) |
+| Variable              | Enables                                         |
+| --------------------- | ----------------------------------------------- |
+| `SERPAPI_KEY`         | Live IndiGo and Air India Express fares         |
+| `DUFFEL_ACCESS_TOKEN` | The Duffel sandbox adapter                      |
+| `MONGODB_URI`         | Search analytics (`docker compose up -d mongo`) |
 
 MongoDB is optional by design: with it stopped, searches still work and analytics silently
 no-ops.
@@ -50,7 +50,7 @@ no-ops.
 
 ## What it does
 
-- **Searches six providers concurrently**, with a six-second budget each
+- **Searches six providers concurrently**, with a ten-second budget each
 - **Deduplicates across providers** — one row per marketed flight, with every seller's price
 - **Ranks by transparent value score**, returning the sub-scores and weights that produced it
 - **Filters and sorts** on price, duration, departure, stops, airline, provider and benefits
@@ -72,13 +72,13 @@ IX-1592  07:40   ₹4,724  score 0.97  2×  spread ₹384 (8.1%)
 
 ## Layout
 
-| Package | Purpose | |
-|---|---|---|
-| [`apps/api`](./apps/api/README.md) | NestJS — fan-out, caching, analytics | 38 tests |
-| [`apps/web`](./apps/web/README.md) | Next.js — search, results, comparison | 46 tests |
-| [`packages/contracts`](./packages/contracts/README.md) | Zod schemas shared across the boundary | 10 tests |
-| [`packages/core`](./packages/core/README.md) | group · score · filter · sort — pure, no I/O | 68 tests |
-| [`packages/providers`](./packages/providers/README.md) | 6 adapters + resilience primitives | 67 tests |
+| Package                                                | Purpose                                      |          |
+| ------------------------------------------------------ | -------------------------------------------- | -------- |
+| [`apps/api`](./apps/api/README.md)                     | NestJS — fan-out, caching, analytics         | 41 tests |
+| [`apps/web`](./apps/web/README.md)                     | Next.js — search, results, comparison        | 52 tests |
+| [`packages/contracts`](./packages/contracts/README.md) | Zod schemas shared across the boundary       | 15 tests |
+| [`packages/core`](./packages/core/README.md)           | group · score · filter · sort — pure, no I/O | 79 tests |
+| [`packages/providers`](./packages/providers/README.md) | 6 adapters + resilience primitives           | 76 tests |
 
 Each package has its own README covering what it does and why it is built that way.
 
@@ -92,19 +92,19 @@ apps/api ─┼─→ core ──→ contracts
 ```
 
 Nothing points back. `core` imports no framework, no HTTP client and no provider, which is
-why its 68 tests run in ~20 ms with no mocks — and why the browser can run the same
+why its 79 tests run in ~20 ms with no mocks — and why the browser can run the same
 comparison functions the server does.
 
 ---
 
 ## API
 
-| Endpoint | Purpose |
-|---|---|
-| `POST /api/search` | Search, aggregate, compare |
+| Endpoint             | Purpose                                                          |
+| -------------------- | ---------------------------------------------------------------- |
+| `POST /api/search`   | Search, aggregate, compare                                       |
 | `GET /api/providers` | Each provider's integration type, data provenance, circuit state |
-| `GET /api/analytics` | Recorded search performance |
-| `GET /api/health` | Liveness, provider mode, credential and analytics status |
+| `GET /api/analytics` | Recorded search performance                                      |
+| `GET /api/health`    | Liveness, provider mode, credential and analytics status         |
 
 Every response carries `providerStatuses`, so partial results are visible rather than silent:
 
@@ -113,9 +113,13 @@ Every response carries `providerStatuses`, so partial results are visible rather
   "meta": { "partial": true, "providersSucceeded": 2, "providersAttempted": 3 },
   "providerStatuses": [
     { "providerId": "makemytrip", "status": "ok", "latencyMs": 454, "offerCount": 11 },
-    { "providerId": "goibibo",    "status": "ok", "latencyMs": 396, "offerCount": 9 },
-    { "providerId": "cleartrip",  "status": "timeout", "latencyMs": 6002,
-      "message": "Did not respond within 6000ms" }
+    { "providerId": "goibibo", "status": "ok", "latencyMs": 396, "offerCount": 9 },
+    {
+      "providerId": "cleartrip",
+      "status": "timeout",
+      "latencyMs": 6002,
+      "message": "Did not respond within 10000ms"
+    }
   ]
 }
 ```
@@ -134,11 +138,11 @@ None of the five providers named in the brief expose a self-service API. Two air
 served with real live data through a legitimate third-party source; three OTAs whose partner
 APIs are commercially gated use documented representative data.
 
-| Provider | Integration | Source | Direct airline/OTA API? |
-|---|---|---|---|
-| IndiGo | Third-party live flight search | SerpApi Google Flights | No — none published |
-| Air India Express | Third-party live flight search | SerpApi Google Flights | No — none published |
-| MakeMyTrip · Goibibo · Cleartrip | Representative data | Generated | No — commercially gated |
+| Provider                         | Integration                    | Source                 | Direct airline/OTA API? |
+| -------------------------------- | ------------------------------ | ---------------------- | ----------------------- |
+| IndiGo                           | Third-party live flight search | SerpApi Google Flights | No — none published     |
+| Air India Express                | Third-party live flight search | SerpApi Google Flights | No — none published     |
+| MakeMyTrip · Goibibo · Cleartrip | Representative data            | Generated              | No — commercially gated |
 
 To be unambiguous: **no airline's own API was integrated**, because none of them publish
 one. IndiGo and Air India Express fares are real live Google Flights results obtained
@@ -162,8 +166,8 @@ pnpm test        # 263 unit, component and integration tests
 pnpm --filter @polaris/web test:e2e   # browser smoke test (needs both servers running)
 ```
 
-Several tests are named after the wrong answer they prevent — *"measures spread per provider,
-not across fare families"* — because those are the regressions that would otherwise return
+Several tests are named after the wrong answer they prevent — _"measures spread per provider,
+not across fare families"_ — because those are the regressions that would otherwise return
 silently.
 
 ---
@@ -175,26 +179,30 @@ silently.
   round-trip without a breaking change
 - Money is integer minor units (paise); float arithmetic would surface as off-by-one-paisa
   errors in cross-provider spreads
+- **No cookies, no third-party scripts, and no personal data in analytics** — searches are
+  recorded by route and timing, never by who ran them, so there is nothing a consent banner
+  would be asking about. Reasoning in [Limitations](./docs/LIMITATIONS.md#privacy)
 
 ---
 
 ## Documentation
 
-| | |
-|---|---|
-| [Architecture](./docs/ARCHITECTURE.md) | How it fits together and why each decision went that way |
-| [Integrations](./docs/INTEGRATIONS.md) | Provider matrix, what is real, what is not, and why |
-| [Limitations](./docs/LIMITATIONS.md) | Known boundaries, privacy stance, roadmap |
-| [AI usage](./docs/AI-USAGE.md) | Where AI helped, where it was wrong, and how that was caught |
+|                                        |                                                              |
+| -------------------------------------- | ------------------------------------------------------------ |
+| [Architecture](./docs/ARCHITECTURE.md) | How it fits together and why each decision went that way     |
+| [Integrations](./docs/INTEGRATIONS.md) | Provider matrix, what is real, what is not, and why          |
+| [Limitations](./docs/LIMITATIONS.md)   | Known boundaries, privacy stance, roadmap                    |
+| [AI usage](./docs/AI-USAGE.md)         | Where AI helped, where it was wrong, and how that was caught |
 
 ---
 
 ## Scripts
 
-| Command | Does |
-|---|---|
-| `pnpm dev` | Run api and web together |
-| `pnpm build` | Build all packages and apps |
-| `pnpm test` | Run all tests |
-| `pnpm typecheck` | Type-check everything |
-| `pnpm format` | Format with Prettier |
+| Command          | Does                                         |
+| ---------------- | -------------------------------------------- |
+| `pnpm dev`       | Run api and web together                     |
+| `pnpm build`     | Build all packages and apps                  |
+| `pnpm test`      | Run all tests                                |
+| `pnpm typecheck` | Type-check everything                        |
+| `pnpm lint`      | Lint everything (`pnpm lint:fix` to autofix) |
+| `pnpm format`    | Format with Prettier                         |

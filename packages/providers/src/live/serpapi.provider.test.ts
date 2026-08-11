@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { searchQuerySchema, type SearchQuery } from '@polaris/contracts';
-import { canonicalKeyForOffer, groupOffers } from '@polaris/core';
+import { canonicalKeyForOffer } from '@polaris/core';
 import {
   AIR_INDIA_EXPRESS_CONFIG,
   INDIGO_CONFIG,
@@ -86,8 +86,8 @@ describe('SerpApiProvider', () => {
     const provider = new SerpApiProvider(INDIGO_CONFIG, undefined, 'fixture');
 
     const { offers } = await provider.search(query(), ctx());
-    const redEye = offers.find((o) =>
-      o.itinerary.segments[0]!.departure.local.slice(11, 16) < '01:00',
+    const redEye = offers.find(
+      (o) => o.itinerary.segments[0]!.departure.local.slice(11, 16) < '01:00',
     );
 
     if (redEye) {
@@ -186,9 +186,7 @@ describe('SerpApiProvider', () => {
     // Live mode with no key: not retryable, and the orchestrator maps it to "skipped".
     const provider = new SerpApiProvider(INDIGO_CONFIG, undefined, 'live');
 
-    await expect(provider.search(query(), ctx())).rejects.toThrow(
-      ProviderCredentialsMissingError,
-    );
+    await expect(provider.search(query(), ctx())).rejects.toThrow(ProviderCredentialsMissingError);
   });
 
   it('falls back to a fixture in hybrid mode when the API is unavailable', async () => {
@@ -214,7 +212,10 @@ describe('SerpApiProvider', () => {
   it('does not let one provider cancellation abort the shared request', async () => {
     let resolveUpstream: (value: Response) => void = () => {};
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
-      () => new Promise<Response>((resolve) => { resolveUpstream = resolve; }),
+      () =>
+        new Promise<Response>((resolve) => {
+          resolveUpstream = resolve;
+        }),
     );
 
     const [indigo, express] = createSerpApiProviders('key', 'live');
@@ -269,9 +270,9 @@ describe('createSerpApiProviders', () => {
    */
   it('coalesces the two providers into a single upstream call', async () => {
     const fixture = { best_flights: [], other_flights: [] };
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(JSON.stringify(fixture), { status: 200 }),
-    );
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response(JSON.stringify(fixture), { status: 200 }));
 
     const providers = createSerpApiProviders('key', 'live');
     await Promise.all(providers.map((p) => p.search(query(), ctx())));

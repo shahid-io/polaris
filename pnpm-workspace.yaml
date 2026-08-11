@@ -1,9 +1,25 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - 'apps/*'
+  - 'packages/*'
 # Build scripts are blocked by default in pnpm. esbuild is a Vitest dependency and
 # needs its postinstall to link the platform binary — allowed deliberately.
 allowBuilds:
   esbuild: true
   # Next.js image optimisation. Needs its postinstall to link native binaries.
   sharp: true
+  # Native module resolver behind eslint-import-resolver-typescript, which reaches us
+  # through eslint-config-next. It falls back to a JavaScript implementation when the
+  # binary is absent, so this buys resolution speed rather than correctness.
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@typescript-eslint/eslint-plugin@8.67.0'
+  - '@typescript-eslint/parser@8.67.0'
+  - '@typescript-eslint/project-service@8.67.0'
+  - '@typescript-eslint/scope-manager@8.67.0'
+  - '@typescript-eslint/tsconfig-utils@8.67.0'
+  - '@typescript-eslint/type-utils@8.67.0'
+  - '@typescript-eslint/types@8.67.0'
+  - '@typescript-eslint/typescript-estree@8.67.0'
+  - '@typescript-eslint/utils@8.67.0'
+  - '@typescript-eslint/visitor-keys@8.67.0'
+  - typescript-eslint@8.67.0

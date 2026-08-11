@@ -2,9 +2,28 @@
 
 import { useTheme } from 'next-themes';
 import { MoonIcon, SunIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 import { Button } from '@/components/ui/button';
+
+/** Nothing to subscribe to — whether we are on the client never changes after hydration. */
+const subscribe = () => () => {};
+
+/**
+ * True once hydrated, false while rendering on the server.
+ *
+ * The usual spelling of this is `useState(false)` plus an effect that immediately sets it
+ * true, but that is a state update in an effect purely to learn something React already
+ * knows, and it costs a second render on every mount. `useSyncExternalStore` takes a server
+ * snapshot and a client snapshot as separate arguments, which is exactly the shape of the
+ * question — no effect, and no lying to React about why the value changed.
+ */
+const useHasHydrated = () =>
+  useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
 
 /**
  * Switches between light and dark.
@@ -21,14 +40,12 @@ import { Button } from '@/components/ui/button';
  */
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const hasHydrated = useHasHydrated();
 
   // The server cannot know a stored preference, so rendering the real icon during SSR
   // would produce markup the client disagrees with. The placeholder holds the same space
   // so the header does not shift when the button appears.
-  if (!mounted) {
+  if (!hasHydrated) {
     return <div className="size-9" aria-hidden="true" />;
   }
 

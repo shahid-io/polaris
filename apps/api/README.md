@@ -13,13 +13,13 @@ Runs on `:4000`.
 
 ## Endpoints
 
-| Method | Path | Purpose |
-|---|---|---|
-| `POST` | `/api/search` | Search, aggregate, compare |
-| `GET` | `/api/providers` | Each provider's integration type, provenance and circuit state |
-| `GET` | `/api/airports` | Served airports and origin→destination adjacency |
-| `GET` | `/api/analytics` | Recorded search performance |
-| `GET` | `/api/health` | Liveness, provider mode, credential and analytics status |
+| Method | Path             | Purpose                                                        |
+| ------ | ---------------- | -------------------------------------------------------------- |
+| `POST` | `/api/search`    | Search, aggregate, compare                                     |
+| `GET`  | `/api/providers` | Each provider's integration type, provenance and circuit state |
+| `GET`  | `/api/airports`  | Served airports and origin→destination adjacency               |
+| `GET`  | `/api/analytics` | Recorded search performance                                    |
+| `GET`  | `/api/health`    | Liveness, provider mode, credential and analytics status       |
 
 ### Searching
 
@@ -44,8 +44,12 @@ silent:
   "meta": { "partial": true, "providersSucceeded": 2, "providersAttempted": 3 },
   "providerStatuses": [
     { "providerId": "makemytrip", "status": "ok", "latencyMs": 454, "offerCount": 11 },
-    { "providerId": "cleartrip", "status": "timeout", "latencyMs": 6002,
-      "message": "Did not respond within 6000ms" }
+    {
+      "providerId": "cleartrip",
+      "status": "timeout",
+      "latencyMs": 6002,
+      "message": "Did not respond within 10000ms"
+    }
   ]
 }
 ```
@@ -119,7 +123,7 @@ returns before the fan-out — so a cached timeout is a failure the circuit brea
 to reconsider. At the full 300s that would turn a blip into an apparent five-minute outage.
 
 Such a search is kept for `CACHE_PARTIAL_TTL_SECONDS` instead: long enough that the
-providers that *did* answer are not re-fetched on every filter toggle, short enough that the
+providers that _did_ answer are not re-fetched on every filter toggle, short enough that the
 one that did not is retried while the user is still on the page. A provider that is merely
 unconfigured does not count — it cannot recover without a restart, so shortening the window
 on its account would buy nothing.
@@ -146,19 +150,19 @@ search hangs".
 Every variable has a default; the service runs with an empty `.env`. Providers without
 credentials report `skipped` and the search continues with the rest.
 
-| Variable | Default | Purpose |
-|---|---|---|
-| `API_PORT` | `4000` | |
-| `PROVIDER_MODE` | `hybrid` | `live` · `fixture` · `hybrid` |
-| `PROVIDER_TIMEOUT_MS` | `10000` | Per-provider ceiling |
-| `CACHE_TTL_SECONDS` | `300` | Lifetime of a search where every provider answered |
-| `CACHE_PARTIAL_TTL_SECONDS` | `30` | Lifetime when one failed, so it is retried soon |
-| `CIRCUIT_FAILURE_THRESHOLD` | `3` | Failures before a provider is skipped |
-| `CIRCUIT_RESET_MS` | `30000` | Before a half-open probe |
-| `SERPAPI_KEY` | — | Enables live airline fares |
-| `DUFFEL_ACCESS_TOKEN` | — | Enables the sandbox adapter |
-| `MONGODB_URI` | — | Enables search analytics |
-| `SIMULATED_FAILURES` | — | e.g. `cleartrip:timeout` — demonstrates partial results |
+| Variable                    | Default  | Purpose                                                 |
+| --------------------------- | -------- | ------------------------------------------------------- |
+| `API_PORT`                  | `4000`   |                                                         |
+| `PROVIDER_MODE`             | `hybrid` | `live` · `fixture` · `hybrid`                           |
+| `PROVIDER_TIMEOUT_MS`       | `10000`  | Per-provider ceiling                                    |
+| `CACHE_TTL_SECONDS`         | `300`    | Lifetime of a search where every provider answered      |
+| `CACHE_PARTIAL_TTL_SECONDS` | `30`     | Lifetime when one failed, so it is retried soon         |
+| `CIRCUIT_FAILURE_THRESHOLD` | `3`      | Failures before a provider is skipped                   |
+| `CIRCUIT_RESET_MS`          | `30000`  | Before a half-open probe                                |
+| `SERPAPI_KEY`               | —        | Enables live airline fares                              |
+| `DUFFEL_ACCESS_TOKEN`       | —        | Enables the sandbox adapter                             |
+| `MONGODB_URI`               | —        | Enables search analytics                                |
+| `SIMULATED_FAILURES`        | —        | e.g. `cleartrip:timeout` — demonstrates partial results |
 
 Environment is validated with Zod at boot, so a malformed value fails immediately rather
 than surfacing later as a provider returning nothing.

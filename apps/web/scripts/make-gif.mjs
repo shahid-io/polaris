@@ -1,4 +1,4 @@
-import { readdir, readFile, writeFile, rm } from 'node:fs/promises';
+import { readdir, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 // gifenc ships CommonJS, so its exports arrive on the default binding rather than as
 // named ESM exports.

@@ -80,7 +80,7 @@ only for after-midnight departures, which is exactly when nobody notices.
 site makes the choice explicitly rather than accidentally.
 
 **Marketing carrier, not operating carrier.** Marketing carrier and flight number are what a
-ticket is *sold* as and what providers agree on. On a codeshare the operating carrier differs,
+ticket is _sold_ as and what providers agree on. On a codeshare the operating carrier differs,
 so one aircraft sold under two numbers appears as two flights. That is a documented
 limitation, not an oversight — see [`LIMITATIONS.md`](./LIMITATIONS.md).
 
@@ -96,7 +96,7 @@ producing a meaningless figure.
 A comparison group can hold several fares from one seller — IndiGo SAVER at ₹5,199 and IndiGo
 FLEXI at ₹7,499. Measuring the spread across every offer would report a ₹2,300 difference and
 imply a provider choice worth ₹2,300, when both cheap fares come from the same seller. The
-spread compares each provider's *cheapest* offer, which answers the question the user
+spread compares each provider's _cheapest_ offer, which answers the question the user
 actually has: where should I book this flight?
 
 ### Scoring is transparent, and runs before filtering
@@ -151,7 +151,7 @@ flights on this route" from "nothing answered". A thrown error collapses those i
 indistinguishable failure. An empty provider result is likewise recorded as success, not
 failure.
 
-### Timeouts abort *and* race
+### Timeouts abort _and_ race
 
 `withTimeout` passes an `AbortSignal` into the operation **and** races a rejecting deadline.
 Each covers the other's blind spot: the signal stops the underlying work (racing alone would
@@ -162,7 +162,7 @@ exists to contain). Neither alone is sufficient.
 ### Circuit breakers
 
 A provider that has failed three times running will fail the fourth, and each attempt costs
-the full six-second budget in latency the user pays for nothing. The breaker converts slow
+the full ten-second budget in latency the user pays for nothing. The breaker converts slow
 failure into instant failure, and into an honest `circuit_open` status.
 
 A failed half-open probe re-opens immediately, ignoring the threshold: the probe exists to ask
@@ -221,16 +221,16 @@ No IP address, cookie or session is recorded. See [`LIMITATIONS.md`](./LIMITATIO
 
 ## Testing
 
-| Package | Tests | What they cover |
-|---|---|---|
-| `core` | 68 | Canonical keys, grouping, scoring, filtering, sorting — pure functions, no mocks |
-| `providers` | 54 | Circuit breaker, timeout, retry, representative adapters, cross-provider grouping |
-| `api` | 18 | Orchestration through real DI: partial results, total failure, circuit opening, caching |
-| `contracts` | 7 | Schema validation and defaults |
+| Package     | Tests | What they cover                                                                         |
+| ----------- | ----- | --------------------------------------------------------------------------------------- |
+| `core`      | 68    | Canonical keys, grouping, scoring, filtering, sorting — pure functions, no mocks        |
+| `providers` | 54    | Circuit breaker, timeout, retry, representative adapters, cross-provider grouping       |
+| `api`       | 18    | Orchestration through real DI: partial results, total failure, circuit opening, caching |
+| `contracts` | 7     | Schema validation and defaults                                                          |
 
-Several tests are named after the wrong answer they prevent — *"measures spread per provider,
-not across fare families"*, *"keys an after-midnight departure to its local date, not the UTC
-date"* — because those are the regressions that would otherwise return silently.
+Several tests are named after the wrong answer they prevent — _"measures spread per provider,
+not across fare families"_, _"keys an after-midnight departure to its local date, not the UTC
+date"_ — because those are the regressions that would otherwise return silently.
 
 Simulated provider latency is on by default so timeout and circuit-breaker paths are
 exercised by ordinary development use, and off in tests, where it was costing 13 seconds a

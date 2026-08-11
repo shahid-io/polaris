@@ -43,6 +43,11 @@ jobs:
         # the ones committed, so CI validates the dependency set that was reviewed.
         run: pnpm install --frozen-lockfile
 
+      - name: Lint
+        # Runs here because the previous lint script had been failing for some time without
+        # anyone noticing — nothing executed it. A check nobody runs is not a check.
+        run: pnpm lint
+
       - name: Typecheck
         run: pnpm typecheck
 

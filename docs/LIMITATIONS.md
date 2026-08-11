@@ -54,7 +54,7 @@ The canonical key uses the **marketing** carrier and flight number. One aircraft
 `6E-2134` and a partner's number appears as two flights.
 
 This is deliberate. Collapsing codeshares reliably needs operating carrier, equipment and slot
-data that providers do not consistently expose. A *wrong* merge is worse than a missed one: it
+data that providers do not consistently expose. A _wrong_ merge is worse than a missed one: it
 would show a user a fare they cannot actually buy under the flight number displayed. Given
 partial data, the design fails toward showing two rows rather than one incorrect row.
 
@@ -63,7 +63,7 @@ departure instant plus route, and merge only on full agreement.
 
 ### Airport timezones are fixed offsets
 
-Each airport carries a fixed UTC offset. This is *correct* for every airport currently
+Each airport carries a fixed UTC offset. This is _correct_ for every airport currently
 served — India observes UTC+05:30 year-round with no daylight saving — but it is a landmine
 for expansion. Adding an airport in a DST-observing country would produce silent one-hour
 errors twice a year.
@@ -82,7 +82,7 @@ rather than assigned an invented number.
 
 Conditional benefits — "₹500 off with HDFC cards" — are excluded too. Most users cannot claim
 them, and counting them would systematically over-rank whichever provider advertises the most
-card promotions. A user who *does* hold the card sees a benefit the score ignores.
+card promotions. A user who _does_ hold the card sees a benefit the score ignores.
 
 **To fix:** let users declare which cards they hold, and score conditional benefits for them.
 
@@ -142,6 +142,30 @@ Route and travel date are stored; they describe the query, not the person.
 /24, hash with a rotating salt, and expire after 30 days — a deliberate decision with a stated
 basis, not a default that accumulated.
 
+### Why there is no cookie banner
+
+Because there is nothing to consent to. The app sets **no cookies at all** — no session, no
+`Set-Cookie`, no `document.cookie` — and loads **no third-party scripts**: no analytics tag,
+no pixel, no tag manager.
+
+The only thing written to the browser is a single `localStorage` entry holding the theme you
+picked. It never leaves the device and is never sent to the API.
+
+Consent obligations attach to what is stored or read on someone's device, not to being a
+website. The EU ePrivacy rule that drives most banners exempts storage that is strictly
+necessary for something the user explicitly asked for, and a preference set by pressing a
+toggle is squarely that. India's DPDP Act — the regime that actually applies here — has no
+cookie-consent mechanism at all; it governs the processing of personal data, which a theme
+string on a laptop is not.
+
+The reason most sites show a banner is advertising and cross-site tracking. This has neither,
+so adding one would ask permission for something that does not happen, and put a dialog
+between the user and the search box.
+
+**This changes** the moment there are accounts (a session cookie is still exempt as strictly
+necessary, but the surrounding obligations grow) or any third-party analytics is added — at
+which point non-essential tracking needs real consent before it loads, not after.
+
 ---
 
 ## Roadmap
@@ -149,25 +173,30 @@ basis, not a default that accumulated.
 Deliberately out of scope for the assessment, with the approach sketched.
 
 ### Booking flow
+
 Comparison ends at a deep link. Real booking needs payment, PNR management, ticketing rules,
 cancellation and refunds — and, critically, a commercial agreement with each provider. That
 agreement is the same blocker preventing the OTA integrations in the first place.
 
 ### User accounts and saved searches
+
 Needs authentication first. A user document, saved-search collection, and a re-run job would
 follow naturally from the existing Mongoose setup.
 
 ### Price alerts
+
 A scheduled job re-running saved searches and comparing against a stored baseline, with
 notification on movement. The search pipeline is already deterministic and cacheable, which is
 most of what this requires; the missing pieces are a scheduler and a delivery channel.
 
 ### Flexible dates
+
 A ±3-day price matrix. Straightforward against representative providers, but it multiplies
 live provider calls — and against a 250-a-month quota that is the binding constraint, not the
 engineering.
 
 ### Multi-currency
+
 `Money` already carries a currency and refuses unsafe comparison. What is missing is a rate
 source and a display preference.
 
