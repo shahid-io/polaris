@@ -105,6 +105,19 @@ environment feature cannot masquerade as a component bug.
 
 ---
 
+## Regenerating the demo GIF
+
+```bash
+pnpm dev      # both servers must be running — the capture drives the real app
+pnpm demo     # from the repo root
+```
+
+Playwright walks the flow and screenshots each state, `sharp` decodes the frames and
+`gifenc` writes `docs/demo.gif`. No ffmpeg: needing a system install to rebuild a README
+asset would mean it could not be regenerated on a machine that lacks one.
+
+---
+
 ## Configuration
 
 | Variable | Default |
