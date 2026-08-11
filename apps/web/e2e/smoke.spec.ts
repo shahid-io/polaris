@@ -17,7 +17,10 @@ test('a user can search and compare fares', async ({ page }) => {
 
   await page.goto('/');
 
-  await expect(page.getByRole('heading', { name: 'Polaris' })).toBeVisible();
+  // The page heading, not the brand in the header. The brand is a span on purpose: an h1
+  // belongs to the page's subject, and a site name repeated on every route is not that.
+  await expect(page.getByRole('heading', { level: 1 })).toContainText(/Compare the same flight/);
+  await expect(page.getByRole('banner').getByText('Polaris')).toBeVisible();
 
   // The airport list loads client-side, so the form appears once it arrives.
   const from = page.getByRole('combobox', { name: /^From/ });
@@ -42,13 +45,16 @@ test('a user can search and compare fares', async ({ page }) => {
   // Provider status is always reported, whether every provider answered or not.
   await expect(page.getByText(/providers responded|Showing results from/)).toBeVisible();
 
-  // Filtering narrows without a round trip.
+  // Filtering narrows without a round trip. Asserted unconditionally: an `if (visible)`
+  // guard here would let the whole check disappear the day the control is renamed, and
+  // report success for having tested nothing.
   const nonStop = page.getByRole('checkbox', { name: /Non-stop only/ });
-  if (await nonStop.isVisible()) {
-    const before = await page.getByRole('article').count();
-    await nonStop.check();
-    expect(await page.getByRole('article').count()).toBeLessThanOrEqual(before);
-  }
+  await expect(nonStop).toBeVisible();
+
+  const before = await page.getByRole('article').count();
+  await nonStop.check();
+  await expect(nonStop).toBeChecked();
+  expect(await page.getByRole('article').count()).toBeLessThanOrEqual(before);
 
   // Sorting re-orders the list.
   await page.getByLabel(/Sort by/).selectOption('price');
