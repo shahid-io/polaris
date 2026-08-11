@@ -115,7 +115,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
           ) : (
             <p className="mt-0.5 text-xs text-muted-foreground">Single seller</p>
           )}
-          <p className="tabular mt-2 flex items-center gap-1 text-xs text-muted-foreground sm:justify-end">
+          <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground sm:justify-end">
             <ChevronDownIcon
               className={cn('size-3 transition-transform', isExpanded && 'rotate-180')}
               aria-hidden="true"
@@ -125,16 +125,34 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
         </div>
       </button>
 
-      <div className="flex justify-end px-4 pb-1 sm:-mt-8">
+      {/* Outside the toggle button: it opens its own popover, and nesting an interactive
+          element inside a button is invalid and breaks keyboard behaviour. */}
+      <div className="-mt-1 flex justify-end px-4 pb-2">
         <ScoreBreakdown score={group.score} />
       </div>
 
-      {/* ── Providers selling this flight ───────────────────────── */}
+      {/* ── Providers selling this flight ─────────────────────────
+          A single seller needs no comparison table — the price is already on the card
+          above, so repeating it under a "sold by 1 provider" heading is pure noise. The
+          seller's name and badge move up into a single quiet line instead. */}
+      {providerCount === 1 ? (
+        <div className="border-t border-border px-4 py-2.5">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <PlaneIcon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <span className="text-muted-foreground">Only on</span>
+            <span className="font-medium">{offers[0]!.providerDisplayName}</span>
+            <Badge variant={offers[0]!.integrationType === 'representative' ? 'simulated' : 'live'}>
+              {offers[0]!.integrationType === 'representative' ? 'Representative' : 'Live'}
+            </Badge>
+          </div>
+          {/* Benefits still belong here — what disappears for a single seller is the
+              comparison framing, not what the fare actually includes. */}
+          <OfferPerks offer={offers[0]!} />
+        </div>
+      ) : (
       <div className="border-t border-border px-4 py-3">
         <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-          {providerCount === 1
-            ? 'Sold by 1 provider'
-            : `Compare ${providerCount} providers · prices vary ${priceSpread.percentage}%`}
+          Compare {providerCount} providers · prices vary {priceSpread.percentage}%
         </p>
 
         <ul className="flex flex-col gap-1">
@@ -190,6 +208,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
           </Button>
         )}
       </div>
+      )}
 
       {isExpanded && <FlightDetail group={group} />}
     </article>

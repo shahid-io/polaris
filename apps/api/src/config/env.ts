@@ -16,8 +16,20 @@ export const envSchema = z.object({
   API_PORT: z.coerce.number().int().positive().default(4000),
   API_CORS_ORIGIN: z.string().default('http://localhost:3000'),
 
-  /** Per-provider ceiling. One slow provider must never hold up the whole search. */
-  PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(6000),
+  /**
+   * Per-provider ceiling. One slow provider must never hold up the whole search.
+   *
+   * 10s rather than something tighter because the live source is genuinely slow on a cold
+   * query — SerpApi caches server-side, so the first request for a route takes around five
+   * seconds and repeats take under one. A 6s budget fitted the repeats and cut off the
+   * first, which meant the live providers timed out on exactly the search a user runs
+   * first.
+   *
+   * The cost is that a genuinely dead provider is waited on for 10s. That is bounded, runs
+   * concurrently with the others, and the circuit breaker stops it recurring after a few
+   * failures — whereas losing live data on every first search is not recoverable.
+   */
+  PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
   CACHE_TTL_SECONDS: z.coerce.number().int().nonnegative().default(300),
 
   CIRCUIT_FAILURE_THRESHOLD: z.coerce.number().int().positive().default(3),
