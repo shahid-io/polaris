@@ -121,8 +121,28 @@ PROVIDER_MODE=hybrid    # live, falling back to a fixture on failure  (default)
 
 Hybrid keeps a live demonstration working when the network drops or SerpApi's 250-a-month
 free tier is exhausted. The same recordings make tests deterministic — the SerpApi adapter
-was developed entirely against one real captured response rather than by iterating against a
+was developed entirely against real captured responses rather than by iterating against a
 metered API.
+
+### Recording fixtures
+
+A recording is a snapshot of one route on one day, and is only ever replayed for the exact
+date it was captured for — so the date you record has to be the date you intend to search.
+Replayed offers are labelled `representative`, never `live-api`; real data that is no longer
+current is closer to representative than to live.
+
+```bash
+pnpm fixtures:record --date 2026-08-27                        # the default routes
+pnpm fixtures:record --date 2026-08-27 --routes DEL-BOM,DEL-MAA
+pnpm fixtures:record --date 2026-08-27 --force                # re-record existing
+```
+
+Each route costs one of the 250 monthly credits. The script reports what it will spend and
+skips anything already recorded.
+
+Currently recorded, all for **2026-08-27**: `DEL-BOM`, `DEL-BLR`, `BOM-GOI`, `DEL-HYD`, plus
+`DEL-BOM` for `2026-09-15`. Any other route or date correctly reports having no data rather
+than substituting the wrong day.
 
 Both airline providers are backed by the same endpoint, so identical concurrent requests are
 **coalesced into a single upstream call**. Without that, one user search would spend two of
