@@ -39,6 +39,26 @@ describe('searchQuerySchema', () => {
     );
   });
 
+  /**
+   * Regression. The pattern alone accepts any four-two-two digit string, so days that do
+   * not exist passed validation and reached the providers as a real search.
+   */
+  it.each(['2026-02-31', '2026-13-01', '2026-00-10', '2026-04-31'])(
+    'rejects %s, which matches the pattern but is not a date',
+    (departureDate) => {
+      expect(searchQuerySchema.safeParse({ ...validQuery, departureDate }).success).toBe(false);
+    },
+  );
+
+  it('accepts a leap day in a leap year and rejects it otherwise', () => {
+    expect(searchQuerySchema.safeParse({ ...validQuery, departureDate: '2028-02-29' }).success).toBe(
+      true,
+    );
+    expect(searchQuerySchema.safeParse({ ...validQuery, departureDate: '2026-02-29' }).success).toBe(
+      false,
+    );
+  });
+
   it('rejects an inverted time range', () => {
     const result = searchQuerySchema.safeParse({
       ...validQuery,

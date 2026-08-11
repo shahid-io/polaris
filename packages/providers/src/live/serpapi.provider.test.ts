@@ -130,7 +130,52 @@ describe('SerpApiProvider', () => {
     const result = await provider.search(query({ destination: 'GAU' }), ctx());
 
     expect(result.offers).toEqual([]);
-    expect(result.message).toContain('No recorded data');
+    expect(result.message).toContain('No data available');
+  });
+
+  /**
+   * Regression, and the most serious defect found in review.
+   *
+   * A recording is a snapshot of one route on one specific day. loadFixture previously
+   * ignored the requested date entirely, so a search for 25 August would be served the
+   * 15 September recording — its offer id carrying the requested date while every
+   * timestamp inside it disagreed.
+   */
+  it('refuses a fixture recorded for a different date', async () => {
+    const provider = new SerpApiProvider(INDIGO_CONFIG, undefined, 'fixture');
+
+    const result = await provider.search(query({ departureDate: '2026-08-25' }), ctx());
+
+    expect(result.offers).toEqual([]);
+    expect(result.message).toContain('2026-08-25');
+  });
+
+  it('returns flights whose dates match the date requested', async () => {
+    const provider = new SerpApiProvider(INDIGO_CONFIG, undefined, 'fixture');
+
+    const { offers } = await provider.search(query(), ctx());
+
+    for (const offer of offers) {
+      expect(offer.itinerary.segments[0]!.departure.local.slice(0, 10)).toBe('2026-09-15');
+    }
+  });
+
+  /**
+   * Provenance must reflect where the data actually came from. A hybrid provider that
+   * fell back to a recording is not serving live data, and a "Live" badge on a stale
+   * price is worse than no badge at all.
+   */
+  it('does not label replayed fixture data as live', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('quota exhausted'));
+    const provider = new SerpApiProvider(INDIGO_CONFIG, 'key', 'hybrid');
+
+    const result = await provider.search(query(), ctx());
+
+    expect(result.offers.length).toBeGreaterThan(0);
+    expect(result.offers.every((o) => o.integrationType === 'representative')).toBe(true);
+    expect(result.offers.some((o) => o.integrationType === 'live-api')).toBe(false);
+    expect(result.message).toContain('replayed a recorded response');
+    fetchSpy.mockRestore();
   });
 
   it('reports missing credentials rather than failing the search', async () => {
@@ -153,6 +198,37 @@ describe('SerpApiProvider', () => {
     const result = await provider.search(query(), ctx());
 
     expect(result.offers.length).toBeGreaterThan(0);
+    fetchSpy.mockRestore();
+  });
+
+  /**
+   * Both airline providers share one upstream call. Creating that call on whichever
+   * caller arrived first meant the first provider's timeout aborted a request the second
+   * was still legitimately waiting on, inside its own untouched budget — one provider's
+   * deadline silently failing another.
+   */
+  it('does not let one provider cancellation abort the shared request', async () => {
+    let resolveUpstream: (value: Response) => void = () => {};
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(
+      () => new Promise<Response>((resolve) => { resolveUpstream = resolve; }),
+    );
+
+    const [indigo, express] = createSerpApiProviders('key', 'live');
+    const firstCaller = new AbortController();
+
+    const abandoned = indigo!.search(query(), ctx(firstCaller.signal));
+    const stillWaiting = express!.search(query(), ctx());
+
+    // The first caller gives up; the shared request must survive for the second.
+    firstCaller.abort();
+    await expect(abandoned).rejects.toThrow(/cancelled by caller/);
+
+    resolveUpstream(
+      new Response(JSON.stringify({ best_flights: [], other_flights: [] }), { status: 200 }),
+    );
+
+    await expect(stillWaiting).resolves.toMatchObject({ offers: [] });
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
     fetchSpy.mockRestore();
   });
 });

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import HomePage from './page';
@@ -119,6 +119,38 @@ describe('the search page', () => {
 
     expect(screen.getAllByRole('article')).toHaveLength(1);
     expect(screen.getByText(/1 shown after filters/)).toBeInTheDocument();
+  });
+
+  /**
+   * Regression. Clear reset every filter it counted except the price ceiling, so
+   * "Clear 2" left the price filter silently applied and the list still narrowed.
+   */
+  it('clears every filter, including the price ceiling', async () => {
+    const user = userEvent.setup();
+    vi.mocked(searchFlights).mockResolvedValue({
+      data: buildSearchResponse({
+        groups: [
+          buildGroup([{ providerId: 'goibibo', displayName: 'Goibibo', priceInr: 3000 }], {
+            canonicalKey: 'cheap',
+          }),
+          buildGroup([{ providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 9000 }], {
+            canonicalKey: 'dear',
+          }),
+        ],
+      }),
+    });
+    render(<HomePage />);
+    await runSearch(user);
+
+    expect(await screen.findAllByRole('article')).toHaveLength(2);
+
+    const priceSlider = screen.getByLabelText(/Max price/);
+    fireEvent.change(priceSlider, { target: { value: '400000' } });
+    expect(screen.getAllByRole('article')).toHaveLength(1);
+
+    await user.click(screen.getByRole('button', { name: /Clear/ }));
+
+    expect(screen.getAllByRole('article')).toHaveLength(2);
   });
 
   it('reorders when the sort changes', async () => {

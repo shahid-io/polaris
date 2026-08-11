@@ -92,11 +92,14 @@ export function ResultControls({
             <button
               type="button"
               onClick={() =>
+                // Every filter counted by activeCount must be reset here, or "Clear 2"
+                // leaves one of them silently applied.
                 onFiltersChange({
                   nonStopOnly: false,
                   refundableOnly: false,
                   airlines: [],
                   providers: [],
+                  maxPriceMinor: undefined,
                 })
               }
               className="text-xs text-primary hover:underline"
