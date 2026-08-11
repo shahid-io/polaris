@@ -11,26 +11,38 @@
  */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Hue 275 — a deep indigo, not the stock corporate blue.
+ *
+ * Every neutral carries a trace of the same hue rather than being a true grey. A grey at
+ * zero chroma next to a saturated accent reads as two unrelated decisions; a grey biased a
+ * few thousandths toward the accent reads as one palette. The effect is invisible named and
+ * obvious removed.
+ *
+ * Deliberately still in the blue family. The status colours below have to keep meaning what
+ * they mean — green is the cheapest fare, amber is a tight connection — and an accent that
+ * strayed toward either would blunt them.
+ */
 :root {
-  --background: oklch(0.99 0.002 250);
-  --foreground: oklch(0.21 0.02 255);
+  --background: oklch(0.99 0.003 275);
+  --foreground: oklch(0.22 0.02 275);
 
   --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
 
-  --primary: oklch(0.45 0.13 250);
+  --primary: oklch(0.47 0.17 275);
   --primary-foreground: oklch(0.99 0 0);
 
-  --secondary: oklch(0.96 0.005 250);
-  --secondary-foreground: oklch(0.3 0.02 255);
+  --secondary: oklch(0.96 0.006 275);
+  --secondary-foreground: oklch(0.31 0.02 275);
 
-  --muted: oklch(0.96 0.005 250);
-  --muted-foreground: oklch(0.52 0.02 255);
+  --muted: oklch(0.96 0.006 275);
+  --muted-foreground: oklch(0.52 0.02 275);
 
-  --accent: oklch(0.95 0.01 250);
-  --accent-foreground: oklch(0.3 0.02 255);
+  --accent: oklch(0.95 0.014 275);
+  --accent-foreground: oklch(0.31 0.02 275);
 
   --destructive: oklch(0.58 0.19 27);
   --destructive-foreground: oklch(0.99 0 0);
@@ -39,43 +51,59 @@
   --success: oklch(0.55 0.13 155);
   --warning: oklch(0.62 0.14 70);
 
-  --border: oklch(0.92 0.005 250);
-  --input: oklch(0.92 0.005 250);
-  --ring: oklch(0.45 0.13 250);
+  --border: oklch(0.92 0.007 275);
+  --input: oklch(0.92 0.007 275);
+  --ring: oklch(0.47 0.17 275);
 
   --radius: 0.5rem;
+
+  /*
+   * Tells the browser which theme its own widgets should adopt — checkboxes, the date
+   * picker, scrollbars, focus rings on native controls. Without it those stay light no
+   * matter what the tokens say, which is how a dark page ends up with white checkboxes.
+   */
+  color-scheme: light;
+  accent-color: var(--primary);
 }
 
+/*
+ * Dark is not an inversion. The accent is lifted to L 0.70 and slightly desaturated,
+ * because the same indigo that reads as considered on white reads as a hole punched in a
+ * dark card — a saturated mid-tone against a dark ground is where accents usually fail.
+ */
 .dark {
-  --background: oklch(0.17 0.015 255);
-  --foreground: oklch(0.93 0.01 250);
+  --background: oklch(0.17 0.016 275);
+  --foreground: oklch(0.93 0.011 275);
 
-  --card: oklch(0.21 0.018 255);
+  --card: oklch(0.21 0.019 275);
   --card-foreground: var(--foreground);
-  --popover: oklch(0.21 0.018 255);
+  --popover: oklch(0.21 0.019 275);
   --popover-foreground: var(--foreground);
 
-  --primary: oklch(0.68 0.12 250);
-  --primary-foreground: oklch(0.17 0.015 255);
+  --primary: oklch(0.7 0.15 275);
+  --primary-foreground: oklch(0.17 0.016 275);
 
-  --secondary: oklch(0.26 0.018 255);
-  --secondary-foreground: oklch(0.93 0.01 250);
+  --secondary: oklch(0.26 0.019 275);
+  --secondary-foreground: oklch(0.93 0.011 275);
 
-  --muted: oklch(0.26 0.018 255);
-  --muted-foreground: oklch(0.68 0.015 255);
+  --muted: oklch(0.26 0.019 275);
+  --muted-foreground: oklch(0.68 0.016 275);
 
-  --accent: oklch(0.28 0.02 255);
-  --accent-foreground: oklch(0.93 0.01 250);
+  --accent: oklch(0.28 0.022 275);
+  --accent-foreground: oklch(0.93 0.011 275);
 
   --destructive: oklch(0.65 0.17 27);
-  --destructive-foreground: oklch(0.17 0.015 255);
+  --destructive-foreground: oklch(0.17 0.016 275);
 
   --success: oklch(0.68 0.13 155);
   --warning: oklch(0.75 0.14 70);
 
-  --border: oklch(0.3 0.02 255);
-  --input: oklch(0.3 0.02 255);
-  --ring: oklch(0.68 0.12 250);
+  --border: oklch(0.3 0.022 275);
+  --input: oklch(0.3 0.022 275);
+  --ring: oklch(0.7 0.15 275);
+
+  color-scheme: dark;
+  accent-color: var(--primary);
 }
 
 @theme inline {

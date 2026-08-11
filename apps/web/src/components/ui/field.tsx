@@ -32,12 +32,13 @@ const controlClassName =
   'h-[42px] w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50';
 
 /**
- * The date input's calendar button is drawn by the browser in a fixed dark colour, which
- * disappears against a dark background. Inverting it in dark mode is the only handle CSS
- * has on that control.
+ * The date input's calendar button is drawn by the browser, so CSS reaches very little of
+ * it. It used to be inverted in dark mode to stop it disappearing against a dark ground;
+ * `color-scheme` in `globals.css` now makes the browser draw it correctly for the active
+ * theme, and inverting on top of that would break it in the other direction.
  */
 const dateInputClassName =
-  '[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 dark:[&::-webkit-calendar-picker-indicator]:invert';
+  '[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60';
 
 function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   return (
