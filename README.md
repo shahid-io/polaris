@@ -140,7 +140,7 @@ Every response carries `providerStatuses`, so partial results are visible rather
     {
       "providerId": "cleartrip",
       "status": "timeout",
-      "latencyMs": 6002,
+      "latencyMs": 10003,
       "message": "Did not respond within 10000ms"
     }
   ]
