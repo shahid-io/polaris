@@ -70,20 +70,28 @@ IX-1592  07:40   ₹4,724  score 0.97  2×  spread ₹384 (8.1%)
 
 ## Layout
 
+| Package | Purpose | |
+|---|---|---|
+| [`apps/api`](./apps/api/README.md) | NestJS — fan-out, caching, analytics | 38 tests |
+| [`apps/web`](./apps/web/README.md) | Next.js — search, results, comparison | 46 tests |
+| [`packages/contracts`](./packages/contracts/README.md) | Zod schemas shared across the boundary | 10 tests |
+| [`packages/core`](./packages/core/README.md) | group · score · filter · sort — pure, no I/O | 68 tests |
+| [`packages/providers`](./packages/providers/README.md) | 6 adapters + resilience primitives | 67 tests |
+
+Each package has its own README covering what it does and why it is built that way.
+
+Dependencies point inward only:
+
 ```
-apps/
-  api/          NestJS — orchestration, caching, analytics
-  web/          Next.js — search, results, comparison UI
-packages/
-  contracts/    Zod schemas — single source of truth across the service boundary
-  core/         normalize · group · score · filter · sort   (pure, no I/O)
-  providers/    6 adapters + resilience primitives
-docs/           architecture, integrations, limitations, AI usage
+apps/web ─┐
+          ├─→ contracts
+apps/api ─┼─→ core ──→ contracts
+          └─→ providers ─→ core ─→ contracts
 ```
 
-Dependencies point inward only. `core` imports no framework, no HTTP client and no provider,
-which is why its 68 tests run in ~20 ms with no mocks. That is the return on splitting the
-packages; the rest is convention.
+Nothing points back. `core` imports no framework, no HTTP client and no provider, which is
+why its 68 tests run in ~20 ms with no mocks — and why the browser can run the same
+comparison functions the server does.
 
 ---
 
@@ -145,12 +153,12 @@ and simulated data is badged in the UI at the point a price is shown. Full matri
 pnpm test
 ```
 
-| Package | Tests |
-|---|---|
-| `core` | 68 |
-| `providers` | 54 |
-| `api` | 18 |
-| `contracts` | 7 |
+229 tests across the workspace, plus a Playwright smoke test in a real browser:
+
+```bash
+pnpm test        # 229 unit, component and integration tests
+pnpm --filter @polaris/web test:e2e   # browser smoke test (needs both servers running)
+```
 
 Several tests are named after the wrong answer they prevent — *"measures spread per provider,
 not across fare families"* — because those are the regressions that would otherwise return
