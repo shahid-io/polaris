@@ -135,7 +135,7 @@ describe('canonicalKeyForOffer', () => {
   });
 
   it('matches different fare families of the same flight', () => {
-    // SAVER and FLEXI are distinct offers, but they are the same physical flight and
+    // SAVER and FLEXI are distinct offers, but they are the same marketed flight and
     // belong in one group so the user sees the full price range for that departure.
     const itinerary = buildItinerary();
     const saver = buildOffer({ itinerary, fareFamily: 'SAVER', priceInr: 5199 });

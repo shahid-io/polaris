@@ -27,6 +27,43 @@ import { FLIGHT_PROVIDERS } from '../providers/providers.module';
 import { CACHE_STORE, buildCacheKey, type CacheStore } from '../cache/cache.store';
 import type { Env } from '../config/env';
 
+/**
+ * Folds the query's preferred time range into the effective filters.
+ *
+ * `timeRange` is one of the four search criteria the brief names, and it was previously
+ * accepted, validated and then ignored — a stated capability that silently did nothing.
+ *
+ * It is applied here, after grouping and scoring, rather than inside each adapter. Three
+ * reasons:
+ *
+ * 1. **Quota.** Providers fetch a whole day for a route. One cached fetch then serves a
+ *    morning search, an evening search and an unfiltered one. Pushing the window down to
+ *    the adapters would make each window its own upstream call, and the live source allows
+ *    250 a month.
+ * 2. **Consistent scoring.** Scores are normalised across the full day's flights, so a
+ *    flight's value does not change depending on which window the user asked for — the
+ *    same principle that puts filtering after scoring.
+ * 3. **One implementation.** SerpApi has no time-window parameter, so a post-filter would
+ *    be needed regardless. Doing it once in the domain layer beats doing it per adapter.
+ *
+ * An explicit `filters.departureWindow` wins if the caller supplies one, since it is the
+ * more specific instruction.
+ *
+ * @param filters - Filters from the request, if any.
+ * @param query - The validated query, carrying the preferred time range.
+ * @returns Filters with the query's window applied.
+ * @internal
+ */
+function mergeTimeRange(
+  filters: SearchRequest['filters'],
+  query: SearchRequest['query'],
+): SearchRequest['filters'] {
+  if (!query.timeRange) return filters;
+  if (filters?.departureWindow) return filters;
+
+  return { ...filters, departureWindow: query.timeRange };
+}
+
 /** What one provider contributed to a search, before assembly into the response. */
 interface ProviderOutcome {
   status: ProviderStatus;
@@ -105,7 +142,11 @@ export class SearchOrchestrator {
     // Grouping and scoring run over the complete result set, then filtering narrows it.
     // Filtering earlier would rescale every score as the user toggles a checkbox.
     const allGroups = scoreGroups(groupOffers(offers));
-    const visible = sortGroups(filterGroups(allGroups, filters), sort?.key, sort?.direction);
+    const visible = sortGroups(
+      filterGroups(allGroups, mergeTimeRange(filters, query)),
+      sort?.key,
+      sort?.direction,
+    );
 
     const succeeded = providerStatuses.filter(
       (status) => status.status === 'ok' || status.status === 'empty',

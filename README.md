@@ -49,7 +49,7 @@ no-ops.
 ## What it does
 
 - **Searches six providers concurrently**, with a six-second budget each
-- **Deduplicates across providers** — one row per physical flight, with every seller's price
+- **Deduplicates across providers** — one row per marketed flight, with every seller's price
 - **Ranks by transparent value score**, returning the sub-scores and weights that produced it
 - **Filters and sorts** on price, duration, departure, stops, airline, provider and benefits
 - **Degrades honestly** — a failed provider becomes a visible status, never a failed search

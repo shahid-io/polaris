@@ -74,7 +74,7 @@ const CABIN_MULTIPLIERS: Record<CabinClass, number> = {
  * than being quietly passed off as real.
  *
  * Crucially, all representative providers price the *same shared timetable*, so the same
- * physical flight really does appear across providers at different prices — which is the
+ * marketed flight really does appear across providers at different prices — which is the
  * behaviour the comparison engine exists to handle.
  *
  * Everything is derived from a seed built out of the query, so results are identical run

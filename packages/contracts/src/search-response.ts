@@ -12,7 +12,7 @@ export const searchMetaSchema = z.object({
   searchId: z.string(),
   /** Total offers across all providers, before grouping. */
   totalOffers: z.number().int().nonnegative(),
-  /** Distinct physical flights after grouping. Lower than totalOffers when dedup fired. */
+  /** Distinct marketed flights after grouping. Lower than totalOffers when dedup fired. */
   totalGroups: z.number().int().nonnegative(),
   /** Groups sold by more than one provider — the dedup working, quantified. */
   multiProviderGroups: z.number().int().nonnegative(),

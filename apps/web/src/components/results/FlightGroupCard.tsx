@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDownIcon, PlaneIcon, TrendingDownIcon } from 'lucide-react';
+import { ChevronDownIcon, GiftIcon, LuggageIcon, PlaneIcon, RotateCcwIcon, TrendingDownIcon } from 'lucide-react';
 import type { ComparisonGroup, NormalizedOffer } from '@polaris/contracts';
 
 import { Badge } from '@/components/ui/badge';
@@ -116,10 +116,8 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
 
         <ul className="flex flex-col gap-1">
           {visibleOffers.map((offer, index) => (
-            <li
-              key={offer.id}
-              className="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 text-sm even:bg-muted/40"
-            >
+            <li key={offer.id} className="rounded-md px-2 py-1.5 even:bg-muted/40">
+              <div className="flex items-center justify-between gap-3 text-sm">
               <span className="flex min-w-0 items-center gap-2">
                 <PlaneIcon
                   className={cn('size-3.5 shrink-0', index === 0 ? 'text-success' : 'text-muted-foreground')}
@@ -144,6 +142,9 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
                   {formatRupees(offer.price.total.amountMinor)}
                 </span>
               </span>
+              </div>
+
+              <OfferPerks offer={offer} />
             </li>
           ))}
         </ul>
@@ -167,6 +168,53 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
         )}
       </div>
     </article>
+  );
+}
+
+/**
+ * What a provider includes beyond the fare.
+ *
+ * The brief lists "benefits or offers" as a field every result must display, and asks
+ * users to compare on them. Showing only price would leave a ₹5,499 fare with free
+ * cancellation and 20 kg of baggage looking identical to a ₹5,499 fare with neither.
+ *
+ * Conditional benefits are marked rather than hidden. They are real, and a user holding
+ * the right card should see them — but they are excluded from the value score, so the
+ * marker explains why a visible saving did not move the ranking.
+ */
+function OfferPerks({ offer }: { offer: NormalizedOffer }) {
+  const baggage = offer.baggage?.checkedKg;
+  const hasAnything =
+    offer.benefits.length > 0 || offer.refundable !== undefined || baggage !== undefined;
+
+  if (!hasAnything) return null;
+
+  return (
+    <ul className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 pl-5.5 text-[11px] text-muted-foreground">
+      {offer.refundable && (
+        <li className="flex items-center gap-1 text-success">
+          <RotateCcwIcon className="size-3" aria-hidden="true" />
+          Refundable
+        </li>
+      )}
+      {baggage !== undefined && (
+        <li className="flex items-center gap-1">
+          <LuggageIcon className="size-3" aria-hidden="true" />
+          {baggage} kg checked
+        </li>
+      )}
+      {offer.benefits.map((benefit) => (
+        <li key={benefit.label} className="flex items-center gap-1">
+          <GiftIcon className="size-3" aria-hidden="true" />
+          {benefit.label}
+          {benefit.conditional && (
+            <span className="text-warning" title="Conditional — excluded from the value score">
+              *
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }
 

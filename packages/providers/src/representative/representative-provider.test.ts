@@ -252,7 +252,7 @@ describe('RepresentativeProvider', () => {
 describe('the three OTAs together', () => {
   /**
    * The payoff of a shared timetable, asserted end to end: several providers really do
-   * sell the same physical flight, so grouping has something to group.
+   * sell the same marketed flight, so grouping has something to group.
    */
   it('sell overlapping flights that deduplicate into shared groups', async () => {
     const providers = createOtaProviders({ simulateLatency: false });

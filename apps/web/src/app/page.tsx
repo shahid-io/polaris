@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import { PlaneTakeoffIcon, SearchXIcon } from 'lucide-react';
-import type { ComparisonGroup, SortKey } from '@polaris/contracts';
+import type { ComparisonGroup, FlightFilters, SortKey } from '@polaris/contracts';
+import { filterGroups, sortGroups } from '@polaris/core';
 
 import { SearchForm } from '@/components/search/SearchForm';
 import { FlightGroupCard } from '@/components/results/FlightGroupCard';
@@ -13,7 +14,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAirports } from '@/hooks/useAirports';
 import { useFlightSearch } from '@/hooks/useFlightSearch';
 
-const NO_FILTERS: FilterState = { nonStopOnly: false, airlines: [], providers: [] };
+const NO_FILTERS: FilterState = {
+  nonStopOnly: false,
+  refundableOnly: false,
+  airlines: [],
+  providers: [],
+};
 
 /**
  * The search page.
@@ -32,8 +38,11 @@ export default function HomePage() {
   const groups = useMemo(() => response?.groups ?? [], [response]);
   // Built from the unfiltered result, so no option ever yields zero.
   const available = useMemo(() => buildFilterOptions(groups), [groups]);
+  // Filtering and sorting come from @polaris/core — the same functions the API runs.
+  // Reimplementing them here would give the UI and the API two definitions of "cheapest
+  // first", which agree today and drift the first time either gains a tie-breaker.
   const visible = useMemo(
-    () => sortGroups(applyFilters(groups, filters), sort),
+    () => sortGroups(filterGroups(groups, toCoreFilters(filters)), sort),
     [groups, filters, sort],
   );
 
@@ -174,8 +183,10 @@ function buildFilterOptions(groups: readonly ComparisonGroup[]) {
   let minPriceMinor = Number.POSITIVE_INFINITY;
   let maxPriceMinor = 0;
   let hasConnections = false;
+  let hasRefundable = false;
 
   for (const group of groups) {
+    if (group.offers.some((offer) => offer.refundable === true)) hasRefundable = true;
     for (const segment of group.itinerary.segments) airlines.add(segment.marketingCarrier);
     for (const offer of group.offers) providers.set(offer.providerId, offer.providerDisplayName);
 
@@ -190,84 +201,28 @@ function buildFilterOptions(groups: readonly ComparisonGroup[]) {
     minPriceMinor: Number.isFinite(minPriceMinor) ? minPriceMinor : 0,
     maxPriceMinor,
     hasConnections,
+    hasRefundable,
   };
 }
 
 /**
- * Applies filters client-side.
+ * Maps the UI's filter state onto the domain filter contract.
  *
- * @param groups - Unfiltered groups.
- * @param filters - Active constraints, combined with AND.
- * @returns Matching groups.
+ * The UI models "non-stop only" as a checkbox; the domain models it as `maxStops`. Keeping
+ * that translation in one place lets the view state stay shaped for the controls while the
+ * filtering itself remains the shared implementation.
+ *
+ * @param filters - UI filter state.
+ * @returns Domain filters.
  */
-function applyFilters(
-  groups: readonly ComparisonGroup[],
-  filters: FilterState,
-): ComparisonGroup[] {
-  return groups.filter((group) => {
-    if (filters.nonStopOnly && group.itinerary.stops > 0) return false;
-
-    if (
-      filters.maxPriceMinor !== undefined &&
-      group.priceSpread.min.amountMinor > filters.maxPriceMinor
-    ) {
-      return false;
-    }
-
-    if (
-      filters.airlines.length > 0 &&
-      !group.itinerary.segments.some((segment) =>
-        filters.airlines.includes(segment.marketingCarrier),
-      )
-    ) {
-      return false;
-    }
-
-    if (
-      filters.providers.length > 0 &&
-      !group.providerIds.some((providerId) => filters.providers.includes(providerId))
-    ) {
-      return false;
-    }
-
-    return true;
-  });
-}
-
-/**
- * Orders groups by the chosen criterion.
- *
- * Non-mutating, and value sorts descending because a higher score is better while every
- * other criterion is better when lower.
- *
- * @param groups - Filtered groups.
- * @param sort - Criterion.
- * @returns A new sorted array.
- */
-function sortGroups(groups: readonly ComparisonGroup[], sort: SortKey): ComparisonGroup[] {
-  const sorted = [...groups];
-
-  switch (sort) {
-    case 'value':
-      return sorted.sort((a, b) => b.score.total - a.score.total);
-    case 'price':
-      return sorted.sort((a, b) => a.priceSpread.min.amountMinor - b.priceSpread.min.amountMinor);
-    case 'duration':
-      return sorted.sort(
-        (a, b) => a.itinerary.totalDurationMinutes - b.itinerary.totalDurationMinutes,
-      );
-    case 'departure':
-      return sorted.sort((a, b) =>
-        a.itinerary.segments[0]!.departure.local.localeCompare(
-          b.itinerary.segments[0]!.departure.local,
-        ),
-      );
-    case 'arrival':
-      return sorted.sort((a, b) => lastArrival(a).localeCompare(lastArrival(b)));
-  }
-}
-
-/** @returns Local arrival time of a journey's final leg. */
-function lastArrival(group: ComparisonGroup): string {
-  return group.itinerary.segments[group.itinerary.segments.length - 1]!.arrival.local;
+function toCoreFilters(filters: FilterState): FlightFilters {
+  return {
+    ...(filters.nonStopOnly ? { maxStops: 0 } : {}),
+    ...(filters.refundableOnly ? { refundableOnly: true } : {}),
+    ...(filters.airlines.length > 0 ? { airlines: filters.airlines } : {}),
+    ...(filters.providers.length > 0
+      ? { providers: filters.providers as FlightFilters['providers'] }
+      : {}),
+    ...(filters.maxPriceMinor !== undefined ? { maxPriceMinor: filters.maxPriceMinor } : {}),
+  };
 }

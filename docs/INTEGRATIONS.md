@@ -125,7 +125,7 @@ fetching them.
 All three price the **same shared timetable**. This is the design decision that makes the
 whole thing meaningful: had each provider invented its own flights, nothing would ever
 deduplicate and the comparison this application exists to perform would have had nothing to
-compare. Because they share a timetable, the same physical flight genuinely appears across
+compare. Because they share a timetable, the same marketed flight genuinely appears across
 providers at different prices.
 
 The timetable models real Indian domestic patterns — 13 routes across 10 airports, IndiGo
