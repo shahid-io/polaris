@@ -17,3 +17,4 @@ export * from './grouping';
 export * from './scoring';
 export * from './filtering';
 export * from './sorting';
+export * from './itinerary';
