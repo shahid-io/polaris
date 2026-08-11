@@ -60,7 +60,9 @@ describe('the search page', () => {
 
     expect(await screen.findByRole('article')).toBeInTheDocument();
     expect(screen.getByText('6E 2134')).toBeInTheDocument();
-    expect(screen.getByText(/2 offers · 1 flights/)).toBeInTheDocument();
+    // Header states the reduction: N offers from M providers → K flights.
+    expect(screen.getByText('offers from')).toBeInTheDocument();
+    expect(screen.getByText('flights')).toBeInTheDocument();
   });
 
   it('sends the chosen route to the API', async () => {
@@ -118,7 +120,7 @@ describe('the search page', () => {
     await user.click(screen.getByRole('checkbox', { name: /Non-stop only/ }));
 
     expect(screen.getAllByRole('article')).toHaveLength(1);
-    expect(screen.getByText(/1 shown after filters/)).toBeInTheDocument();
+    expect(screen.getByText(/1 after filters/)).toBeInTheDocument();
   });
 
   /**
