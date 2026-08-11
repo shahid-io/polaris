@@ -144,10 +144,14 @@ describe('SerpApiProvider', () => {
   it('refuses a fixture recorded for a different date', async () => {
     const provider = new SerpApiProvider(INDIGO_CONFIG, undefined, 'fixture');
 
-    const result = await provider.search(query({ departureDate: '2026-08-25' }), ctx());
+    // Deliberately far outside any date we would ever record for. An earlier version of
+    // this test used a near-term date, which silently stopped testing anything the moment
+    // a fixture was recorded for it — the assertion inverted without the test failing
+    // until a later, unrelated change.
+    const result = await provider.search(query({ departureDate: '2030-01-01' }), ctx());
 
     expect(result.offers).toEqual([]);
-    expect(result.message).toContain('2026-08-25');
+    expect(result.message).toContain('2030-01-01');
   });
 
   it('returns flights whose dates match the date requested', async () => {
