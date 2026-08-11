@@ -70,6 +70,29 @@ IX-1592  07:40   ₹4,724  score 0.97  2×  spread ₹384 (8.1%)
 
 ---
 
+## Stack
+
+Versions are the ones this was built and verified against, not floors.
+
+|             |              |                                                           |
+| ----------- | ------------ | --------------------------------------------------------- |
+| **Runtime** | Node         | 20+ (developed on 26)                                     |
+|             | pnpm         | 11.21                                                     |
+|             | TypeScript   | 5.9                                                       |
+| **API**     | NestJS       | 11.1                                                      |
+|             | Mongoose     | 9.9 — optional, analytics only                            |
+| **Web**     | Next.js      | 16.3 — App Router                                         |
+|             | React        | 19.2                                                      |
+|             | Tailwind CSS | 4.3 — CSS-first `@theme`, no config file                  |
+| **Shared**  | Zod          | 4.4 — schemas are the source of truth; types are inferred |
+| **Tooling** | Turborepo    | 2.10                                                      |
+|             | Vitest       | 4.1                                                       |
+|             | Playwright   | 1.62 — Chromium                                           |
+|             | ESLint       | 9.39 — held below 10, see `eslint.config.mjs`             |
+|             | Prettier     | 3.9                                                       |
+
+---
+
 ## Layout
 
 | Package                                                | Purpose                                      |          |
