@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   verify:
-    name: Lint, typecheck, build and test
+    name: Typecheck, build and test
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -36,7 +36,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          # Caches the pnpm store keyed on the lockfile.
           cache: pnpm
 
       - name: Install dependencies
@@ -55,3 +54,59 @@ jobs:
         # live adapters fall back to recorded fixtures and providers without keys report
         # "skipped", which is the same path a user hits on a clean checkout.
         run: pnpm test
+
+  e2e:
+    name: Browser smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Only worth the browser download once the cheap checks have passed.
+    needs: verify
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        # Only Chromium: this suite answers "does it work in a real browser", not
+        # "does it work in every browser", and downloading three engines to answer the
+        # first question is time spent for nothing.
+        run: pnpm --filter @polaris/web exec playwright install chromium --with-deps
+
+      - name: Build
+        run: pnpm build
+
+      - name: Start API and web
+        # Backgrounded rather than driven by Playwright's webServer so a failure to boot
+        # shows up as its own step with its own logs, instead of as an opaque test timeout.
+        run: |
+          node apps/api/dist/main.js > /tmp/api.log 2>&1 &
+          pnpm --filter @polaris/web exec next start --port 3000 > /tmp/web.log 2>&1 &
+
+      - name: Wait for both servers
+        run: |
+          npx --yes wait-on http://localhost:4000/api/health http://localhost:3000 --timeout 90000
+
+      - name: Run smoke test
+        run: pnpm --filter @polaris/web exec playwright test
+
+      - name: Server logs on failure
+        if: failure()
+        run: |
+          echo "── api ──"; tail -50 /tmp/api.log || true
+          echo "── web ──"; tail -50 /tmp/web.log || true
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 7
