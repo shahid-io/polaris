@@ -121,4 +121,24 @@
   .tabular {
     font-variant-numeric: tabular-nums;
   }
+
+  /*
+   * Tailwind 4's preflight sets `cursor: default` on buttons — a deliberate change from v3,
+   * and from what every browser does on its own. The result is that nothing on the page
+   * reads as clickable: the expand control on a flight card, "Clear filters" and the theme
+   * toggle all show an arrow.
+   *
+   * Restored here rather than as a utility on each component, because the components are
+   * not the whole set. Radix and cmdk render their own buttons, and the next one added
+   * would silently arrive with the wrong cursor — a rule in the base layer is the same
+   * decision applied once, in the same place the rest of the resets live.
+   *
+   * Disabled controls are excluded so they keep the default arrow, which is the honest
+   * signal that pressing them does nothing.
+   */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  input[type='checkbox']:not(:disabled) {
+    cursor: pointer;
+  }
 }
