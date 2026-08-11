@@ -46,14 +46,14 @@ export const priceSpreadSchema = z.object({
  * THE core abstraction of Polaris.
  *
  * The brief requires handling "the same flight available through multiple providers".
- * A ComparisonGroup is one physical flight with every provider's offer for it attached.
+ * A ComparisonGroup is one marketed flight with every provider's offer for it attached.
  * IndiGo 6E-2134 DEL→BOM sold by MakeMyTrip, Goibibo and IndiGo direct is ONE group with
  * three offers — not three rows in a list. The price spread across those offers is the
  * comparison value the product exists to surface.
  */
 export const comparisonGroupSchema = z.object({
   /**
-   * Deterministic identity of the physical flight:
+   * Deterministic identity of the marketed flight:
    *   {carrier}-{flightNumber}-{localDepartureDate}-{origin}-{destination}
    * Multi-segment itineraries hash the ordered segment list. Computed in @polaris/core.
    */

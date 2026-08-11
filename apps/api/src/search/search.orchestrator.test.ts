@@ -340,6 +340,128 @@ describe('SearchOrchestrator', () => {
     });
   });
 
+  describe('the preferred time range', () => {
+    /**
+     * Regression. timeRange is one of the four search criteria the brief names. It was
+     * previously accepted, validated, and then ignored entirely — so a user asking for a
+     * morning flight was shown red-eyes and late-evening departures.
+     */
+    it('returns only flights departing inside the requested window', async () => {
+      const orchestrator = await buildOrchestrator(
+        createOtaProviders({ simulateLatency: false }),
+      );
+
+      const response = await orchestrator.search({
+        query: searchQuerySchema.parse({
+          origin: 'DEL',
+          destination: 'BOM',
+          departureDate: '2026-08-20',
+          timeRange: { from: '06:00', to: '12:00' },
+        }),
+      });
+
+      expect(response.groups.length).toBeGreaterThan(0);
+      for (const group of response.groups) {
+        const departure = group.itinerary.segments[0]!.departure.local.slice(11, 16);
+        expect(departure >= '06:00' && departure <= '12:00').toBe(true);
+      }
+    });
+
+    it('excludes an after-midnight departure from a morning search', async () => {
+      // DEL-BOM 6E-2134 leaves at 00:45 local. It must not appear under "morning", and
+      // must be matched on local time rather than its 19:15Z instant.
+      const orchestrator = await buildOrchestrator(
+        createOtaProviders({ simulateLatency: false }),
+      );
+
+      const morning = await orchestrator.search({
+        query: searchQuerySchema.parse({
+          origin: 'DEL',
+          destination: 'BOM',
+          departureDate: '2026-08-20',
+          timeRange: { from: '06:00', to: '12:00' },
+        }),
+      });
+      const earlyMorning = await orchestrator.search({
+        query: searchQuerySchema.parse({
+          origin: 'DEL',
+          destination: 'BOM',
+          departureDate: '2026-08-20',
+          timeRange: { from: '00:00', to: '06:00' },
+        }),
+      });
+
+      const has2134 = (r: typeof morning) =>
+        r.groups.some((g) => g.itinerary.segments[0]!.flightNumber === '2134');
+
+      expect(has2134(morning)).toBe(false);
+      expect(has2134(earlyMorning)).toBe(true);
+    });
+
+    /**
+     * The cache stores the whole day, so different windows are different views over one
+     * provider fetch. This is what makes omitting timeRange from the cache key correct
+     * rather than a latent bug — and it is where the original defect would have resurfaced.
+     */
+    it('serves different windows from one cached provider fetch', async () => {
+      let calls = 0;
+      const orchestrator = await buildOrchestrator([
+        fakeProvider('makemytrip', async (fakeCtx) => {
+          calls += 1;
+          const real = createOtaProviders({ simulateLatency: false })[0]!;
+          return real.search(request().query, fakeCtx);
+        }),
+      ]);
+
+      const morning = await orchestrator.search({
+        query: searchQuerySchema.parse({
+          origin: 'DEL',
+          destination: 'BOM',
+          departureDate: '2026-08-20',
+          timeRange: { from: '06:00', to: '12:00' },
+        }),
+      });
+      const evening = await orchestrator.search({
+        query: searchQuerySchema.parse({
+          origin: 'DEL',
+          destination: 'BOM',
+          departureDate: '2026-08-20',
+          timeRange: { from: '18:00', to: '23:59' },
+        }),
+      });
+
+      expect(calls).toBe(1);
+      expect(evening.meta.cached).toBe(true);
+      // Same cache entry, genuinely different results — not the morning list repeated.
+      expect(evening.groups.map((g) => g.canonicalKey)).not.toEqual(
+        morning.groups.map((g) => g.canonicalKey),
+      );
+      for (const group of evening.groups) {
+        expect(group.itinerary.segments[0]!.departure.local.slice(11, 16) >= '18:00').toBe(true);
+      }
+    });
+
+    it('lets an explicit departureWindow filter override the query window', async () => {
+      const orchestrator = await buildOrchestrator(
+        createOtaProviders({ simulateLatency: false }),
+      );
+
+      const response = await orchestrator.search({
+        query: searchQuerySchema.parse({
+          origin: 'DEL',
+          destination: 'BOM',
+          departureDate: '2026-08-20',
+          timeRange: { from: '06:00', to: '12:00' },
+        }),
+        filters: { departureWindow: { from: '18:00', to: '23:59' } },
+      });
+
+      for (const group of response.groups) {
+        expect(group.itinerary.segments[0]!.departure.local.slice(11, 16) >= '18:00').toBe(true);
+      }
+    });
+  });
+
   it('returns no flights for an unserved route without failing', async () => {
     const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
 

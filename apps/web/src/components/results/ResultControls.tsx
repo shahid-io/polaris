@@ -2,7 +2,6 @@
 
 import type { SortKey } from '@polaris/contracts';
 
-import { Badge } from '@/components/ui/badge';
 import { Select } from '@/components/ui/field';
 import { formatRupees } from '@/lib/utils';
 
@@ -17,6 +16,8 @@ const SORT_OPTIONS: { value: SortKey; label: string }[] = [
 /** Filter state held by the results view. */
 export interface FilterState {
   nonStopOnly: boolean;
+  /** Keep only flights where at least one seller offers a refundable fare. */
+  refundableOnly: boolean;
   airlines: string[];
   providers: string[];
   maxPriceMinor?: number;
@@ -32,6 +33,7 @@ export interface ResultControlsProps {
     minPriceMinor: number;
     maxPriceMinor: number;
     hasConnections: boolean;
+    hasRefundable: boolean;
   };
   onSortChange: (sort: SortKey) => void;
   onFiltersChange: (filters: FilterState) => void;
@@ -58,6 +60,7 @@ export function ResultControls({
 
   const activeCount =
     (filters.nonStopOnly ? 1 : 0) +
+    (filters.refundableOnly ? 1 : 0) +
     filters.airlines.length +
     filters.providers.length +
     (filters.maxPriceMinor !== undefined ? 1 : 0);
@@ -89,7 +92,12 @@ export function ResultControls({
             <button
               type="button"
               onClick={() =>
-                onFiltersChange({ nonStopOnly: false, airlines: [], providers: [] })
+                onFiltersChange({
+                  nonStopOnly: false,
+                  refundableOnly: false,
+                  airlines: [],
+                  providers: [],
+                })
               }
               className="text-xs text-primary hover:underline"
             >
@@ -103,6 +111,14 @@ export function ResultControls({
             label="Non-stop only"
             checked={filters.nonStopOnly}
             onChange={(checked) => onFiltersChange({ ...filters, nonStopOnly: checked })}
+          />
+        )}
+
+        {available.hasRefundable && (
+          <Checkbox
+            label="Refundable fares"
+            checked={filters.refundableOnly}
+            onChange={(checked) => onFiltersChange({ ...filters, refundableOnly: checked })}
           />
         )}
 

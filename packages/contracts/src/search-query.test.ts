@@ -54,6 +54,33 @@ describe('searchQuerySchema', () => {
     }
   });
 
+  describe('provider selection', () => {
+    it('accepts known provider ids', () => {
+      expect(
+        searchQuerySchema.safeParse({ ...validQuery, providers: ['indigo', 'goibibo'] }).success,
+      ).toBe(true);
+    });
+
+    /**
+     * Regression. This previously accepted any string, so a typo passed validation, matched
+     * no provider, and produced a successful-looking response in which nothing had actually
+     * been searched — a silent wrong answer instead of a 400 naming the bad value.
+     */
+    it('rejects an unknown provider id rather than searching nothing', () => {
+      const result = searchQuerySchema.safeParse({
+        ...validQuery,
+        providers: ['makemytrp'],
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects an empty provider list', () => {
+      // "search no providers" and "search all providers" must not be spelled the same way.
+      expect(searchQuerySchema.safeParse({ ...validQuery, providers: [] }).success).toBe(false);
+    });
+  });
+
   it('caps passengers at the 9 supported by the providers', () => {
     expect(searchQuerySchema.safeParse({ ...validQuery, passengers: 9 }).success).toBe(true);
     expect(searchQuerySchema.safeParse({ ...validQuery, passengers: 10 }).success).toBe(false);

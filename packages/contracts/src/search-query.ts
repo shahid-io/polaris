@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { iataAirportCodeSchema, isoDateSchema, timeOfDaySchema } from './common';
+import { providerIdSchema } from './provider';
 
 export const cabinClassSchema = z.enum(['economy', 'premium_economy', 'business', 'first']);
 
@@ -49,8 +50,18 @@ export const searchQuerySchema = z
     timeRange: timeRangeSchema.optional(),
     passengers: z.number().int().min(1).max(9).default(1),
     cabinClass: cabinClassSchema.default('economy'),
-    /** Restrict the search to specific providers. Empty/omitted means all enabled. */
-    providers: z.array(z.string()).optional(),
+    /**
+     * Restrict the search to specific providers. Omitted means all enabled.
+     *
+     * Validated against the known provider ids rather than accepting any string. A typo
+     * would otherwise pass validation, match no provider, and produce a successful-looking
+     * response in which nothing was actually searched — a silent wrong answer rather than
+     * a 400 naming the bad value.
+     *
+     * `.min(1)` because an empty array is not a meaningful request: "search no providers"
+     * and "search all providers" should not be spelled the same way.
+     */
+    providers: z.array(providerIdSchema).min(1).optional(),
   })
   .refine((q) => q.origin !== q.destination, {
     message: 'Origin and destination must be different airports',

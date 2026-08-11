@@ -115,9 +115,26 @@ export class InMemoryCacheStore implements CacheStore {
  * whose output depends on property insertion order — two identical searches arriving with
  * differently-ordered JSON would otherwise miss the cache and cost a full provider fan-out.
  *
- * Filters and sort are deliberately excluded: the cached value is the full unfiltered
- * result set, so narrowing filters is served from the same entry rather than re-querying
- * every provider.
+ * ### The invariant
+ * **The key must contain every field that changes what providers return.** Anything a
+ * provider reads but the key omits means two different searches share one cached answer,
+ * and the second silently receives the first's results.
+ *
+ * What providers currently read: origin, destination, departureDate, passengers,
+ * cabinClass — all present — plus `providers`, which selects which adapters run.
+ *
+ * ### Why `timeRange` is deliberately absent
+ * It is not a provider input. Adapters fetch a whole day for a route, and the preferred
+ * departure window is applied afterwards in the domain layer, so one cached fetch serves a
+ * morning search, an evening search and an unfiltered one alike. That matters against a
+ * live source capped at 250 searches a month.
+ *
+ * **If a future adapter ever narrows its upstream request by time, this key must gain
+ * `timeRange` in the same change** — otherwise an evening search will be served a morning
+ * result. Guarded by a test in `cache.store.test.ts`.
+ *
+ * Filters and sort are excluded for the same reason: the cached value is the full
+ * unfiltered result set, so narrowing is served from the same entry.
  *
  * @param query - The validated search query.
  * @returns A deterministic key.

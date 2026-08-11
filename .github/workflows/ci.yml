@@ -1,0 +1,53 @@
+name: CI
+
+# Runs on main only, plus pull requests targeting it. Feature branches are validated
+# through their PR rather than on every push, which keeps the signal on the branch that
+# has to stay green.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# A newer push to the same ref supersedes an in-flight run — no point finishing a build
+# for a commit that has already been replaced.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Lint, typecheck, build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          # Caches the pnpm store keyed on the lockfile.
+          cache: pnpm
+
+      - name: Install dependencies
+        # --frozen-lockfile fails rather than silently resolving different versions than
+        # the ones committed, so CI validates the dependency set that was reviewed.
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        # No credentials are configured here on purpose. The suite must pass with none —
+        # live adapters fall back to recorded fixtures and providers without keys report
+        # "skipped", which is the same path a user hits on a clean checkout.
+        run: pnpm test

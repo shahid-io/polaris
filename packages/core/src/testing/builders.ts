@@ -99,7 +99,7 @@ export function buildBenefit(overrides: Partial<Benefit> = {}): Benefit {
   };
 }
 
-/** Convenience: the same physical flight sold by several providers at different prices. */
+/** Convenience: the same marketed flight sold by several providers at different prices. */
 export function buildSameFlightAcrossProviders(
   prices: Partial<Record<ProviderId, number>>,
 ): NormalizedOffer[] {
