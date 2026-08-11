@@ -160,6 +160,21 @@ differences rather than noise:
 Inventory coverage is deliberately below 100%: no OTA sells every seat on every flight.
 Without that, every comparison group would contain all three providers and look identical.
 
+### Overlap with live data
+
+Several Delhi–Mumbai services carry **real IndiGo flight numbers, departure times and block
+times**, taken from a recorded Google Flights response for the route.
+
+This matters for what the product demonstrates. The live adapter returns the flights that
+genuinely operate; the representative providers price a timetable. If those two sets never
+intersect, a live fare can never appear on the same card as an agency fare, and every
+cross-provider comparison comes from simulated data alone — the deduplication would never be
+shown working on anything real.
+
+It is also the more plausible arrangement. Travel agencies sell real airline services; an
+agency offering flights that do not exist was the less realistic of the two options, not the
+more.
+
 ### Determinism
 
 Every value derives from a seed built from the search query — never `Math.random()`. The same
