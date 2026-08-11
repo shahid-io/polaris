@@ -1,0 +1,765 @@
+{
+  "search_metadata": {
+    "id": "6a7adfc6f0114ab4e667e67e",
+    "status": "Success",
+    "json_endpoint": "https://serpapi.com/searches/8GiL_8XLLUiHNx66zFTUMQ/6a7adfc6f0114ab4e667e67e.json",
+    "created_at": "2026-08-11 08:39:34 UTC",
+    "processed_at": "2026-08-11 08:39:34 UTC",
+    "google_flights_url": "https://www.google.com/travel/flights?hl=en&gl=in&curr=INR&tfs=CBwQAhoeEgoyMDI2LTA4LTI1agcIARIDQk9NcgcIARIDR09JQAFIAXABmAEC&tfu=EgIIAQ",
+    "raw_html_file": "https://serpapi.com/searches/8GiL_8XLLUiHNx66zFTUMQ/6a7adfc6f0114ab4e667e67e.html",
+    "prettify_html_file": "https://serpapi.com/searches/8GiL_8XLLUiHNx66zFTUMQ/6a7adfc6f0114ab4e667e67e.prettify",
+    "total_time_taken": 10.79
+  },
+  "search_parameters": {
+    "engine": "google_flights",
+    "hl": "en",
+    "gl": "in",
+    "type": "2",
+    "departure_id": "BOM",
+    "arrival_id": "GOI",
+    "outbound_date": "2026-08-25",
+    "travel_class": 1,
+    "adults": 1,
+    "currency": "INR"
+  },
+  "best_flights": [
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 05:00"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 06:05"
+          },
+          "duration": 65,
+          "airplane": "Airbus A321neo",
+          "airline": "IndiGo",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+          "travel_class": "Economy",
+          "flight_number": "6E 6361",
+          "legroom": "28 in",
+          "extensions": [
+            "Below average legroom (28 in)",
+            "Carbon emissions estimate: 44 kg"
+          ]
+        }
+      ],
+      "total_duration": 65,
+      "carbon_emissions": {
+        "this_flight": 45000,
+        "typical_for_this_route": 46000,
+        "difference_percent": -2
+      },
+      "price": 3964,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1kyUlRZek5qRWFDZ2o4SGhBQUdnTkpUbEk0SEhDN0lBPT0iLFtbIkJPTSIsIjIwMjYtMDgtMjUiLCJHT0kiLG51bGwsIjZFIiwiNjM2MSJdXV0="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 13:55"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 15:10"
+          },
+          "duration": 75,
+          "airplane": "Airbus A321neo",
+          "airline": "IndiGo",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+          "travel_class": "Economy",
+          "flight_number": "6E 230",
+          "legroom": "28 in",
+          "extensions": [
+            "Below average legroom (28 in)",
+            "Carbon emissions estimate: 44 kg"
+          ]
+        }
+      ],
+      "total_duration": 75,
+      "carbon_emissions": {
+        "this_flight": 45000,
+        "typical_for_this_route": 46000,
+        "difference_percent": -2
+      },
+      "price": 3964,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1UyUlRJek1Cb0tDUHdlRUFBYUEwbE9VamdjY0xzZyIsW1siQk9NIiwiMjAyNi0wOC0yNSIsIkdPSSIsbnVsbCwiNkUiLCIyMzAiXV1d"
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 16:40"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 18:05"
+          },
+          "duration": 85,
+          "airplane": "Airbus A320",
+          "airline": "IndiGo",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+          "travel_class": "Economy",
+          "flight_number": "6E 5241",
+          "legroom": "28 in",
+          "extensions": [
+            "Below average legroom (28 in)",
+            "Carbon emissions estimate: 57 kg"
+          ]
+        }
+      ],
+      "total_duration": 85,
+      "carbon_emissions": {
+        "this_flight": 57000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 24
+      },
+      "price": 3964,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1kyUlRVeU5ERWFDZ2o4SGhBQUdnTkpUbEk0SEhDN0lBPT0iLFtbIkJPTSIsIjIwMjYtMDgtMjUiLCJHT0kiLG51bGwsIjZFIiwiNTI0MSJdXV0="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 13:05"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 14:20"
+          },
+          "duration": 75,
+          "airplane": "Airbus A320neo",
+          "airline": "Air India",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+          "travel_class": "Economy",
+          "flight_number": "AI 2477",
+          "legroom": "28 in",
+          "extensions": [
+            "Below average legroom (28 in)",
+            "In-seat USB outlet",
+            "Stream media to your device",
+            "Carbon emissions estimate: 54 kg"
+          ]
+        }
+      ],
+      "total_duration": 75,
+      "carbon_emissions": {
+        "this_flight": 55000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 20
+      },
+      "price": 4543,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1pCU1RJME56Y2FDZ2kvSXhBQUdnTkpUbEk0SEhDYUpRPT0iLFtbIkJPTSIsIjIwMjYtMDgtMjUiLCJHT0kiLG51bGwsIkFJIiwiMjQ3NyJdXV0="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 12:25"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 13:45"
+          },
+          "duration": 80,
+          "airplane": "Boeing 737MAX 8 Passenger",
+          "airline": "Air India Express",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/IX.png",
+          "travel_class": "Economy",
+          "flight_number": "IX 1238",
+          "legroom": "30 in",
+          "extensions": [
+            "Average legroom (30 in)",
+            "Carbon emissions estimate: 55 kg"
+          ]
+        }
+      ],
+      "total_duration": 80,
+      "carbon_emissions": {
+        "this_flight": 55000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 20
+      },
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/IX.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1pKV0RFeU16ZzRIQT09IixbWyJCT00iLCIyMDI2LTA4LTI1IiwiR09JIixudWxsLCJJWCIsIjEyMzgiXV1d"
+    }
+  ],
+  "other_flights": [
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 22:10"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 23:30"
+          },
+          "duration": 80,
+          "airplane": "Airbus A320neo",
+          "airline": "IndiGo",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+          "travel_class": "Economy",
+          "flight_number": "6E 5106",
+          "legroom": "28 in",
+          "extensions": [
+            "Below average legroom (28 in)",
+            "Carbon emissions estimate: 49 kg"
+          ]
+        }
+      ],
+      "total_duration": 80,
+      "carbon_emissions": {
+        "this_flight": 49000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 7
+      },
+      "price": 4226,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1kyUlRVeE1EWWFDZ2lDSVJBQUdnTkpUbEk0SEhETklnPT0iLFtbIkJPTSIsIjIwMjYtMDgtMjUiLCJHT0kiLG51bGwsIjZFIiwiNTEwNiJdXV0="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 05:10"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 06:30"
+          },
+          "duration": 80,
+          "airplane": "Airbus A319",
+          "airline": "Air India",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+          "travel_class": "Economy",
+          "flight_number": "AI 603",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Stream media to your device",
+            "Carbon emissions estimate: 78 kg"
+          ]
+        }
+      ],
+      "total_duration": 80,
+      "carbon_emissions": {
+        "this_flight": 78000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 70
+      },
+      "price": 4543,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1ZCU1RZd014b0tDTDhqRUFBYUEwbE9VamdjY0pvbCIsW1siQk9NIiwiMjAyNi0wOC0yNSIsIkdPSSIsbnVsbCwiQUkiLCI2MDMiXV1d"
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 15:30"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 16:50"
+          },
+          "duration": 80,
+          "airplane": "Airbus A319",
+          "airline": "Air India",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+          "travel_class": "Economy",
+          "flight_number": "AI 2745",
+          "legroom": "31 in",
+          "extensions": [
+            "Average legroom (31 in)",
+            "Stream media to your device",
+            "Carbon emissions estimate: 78 kg"
+          ]
+        }
+      ],
+      "total_duration": 80,
+      "carbon_emissions": {
+        "this_flight": 78000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 70
+      },
+      "price": 4543,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1pCU1RJM05EVWFDZ2kvSXhBQUdnTkpUbEk0SEhDYUpRPT0iLFtbIkJPTSIsIjIwMjYtMDgtMjUiLCJHT0kiLG51bGwsIkFJIiwiMjc0NSJdXV0="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 11:20"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 12:30"
+          },
+          "duration": 70,
+          "airplane": "Airbus A321neo",
+          "airline": "IndiGo",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+          "travel_class": "Economy",
+          "flight_number": "6E 261",
+          "legroom": "28 in",
+          "extensions": [
+            "Below average legroom (28 in)",
+            "Carbon emissions estimate: 44 kg"
+          ]
+        }
+      ],
+      "total_duration": 70,
+      "carbon_emissions": {
+        "this_flight": 45000,
+        "typical_for_this_route": 46000,
+        "difference_percent": -2
+      },
+      "price": 4804,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/6E.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1UyUlRJMk1Sb0tDTVFsRUFBYUEwbE9VamdjY0tzbiIsW1siQk9NIiwiMjAyNi0wOC0yNSIsIkdPSSIsbnVsbCwiNkUiLCIyNjEiXV1d"
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 19:25"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 20:50"
+          },
+          "duration": 85,
+          "airplane": "Airbus A320neo",
+          "airline": "Air India",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+          "travel_class": "Economy",
+          "flight_number": "AI 2505",
+          "legroom": "28 in",
+          "extensions": [
+            "Below average legroom (28 in)",
+            "In-seat USB outlet",
+            "Stream media to your device",
+            "Carbon emissions estimate: 54 kg"
+          ]
+        }
+      ],
+      "total_duration": 85,
+      "carbon_emissions": {
+        "this_flight": 55000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 20
+      },
+      "price": 5100,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1pCU1RJMU1EVWFDZ2pzSnhBQUdnTkpUbEk0SEhEaEtRPT0iLFtbIkJPTSIsIjIwMjYtMDgtMjUiLCJHT0kiLG51bGwsIkFJIiwiMjUwNSJdXV0="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 11:20"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 12:40"
+          },
+          "duration": 80,
+          "airplane": "Airbus A320neo",
+          "airline": "Air India",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+          "travel_class": "Economy",
+          "flight_number": "AI 2841",
+          "legroom": "28 in",
+          "extensions": [
+            "Below average legroom (28 in)",
+            "In-seat USB outlet",
+            "Stream media to your device",
+            "Carbon emissions estimate: 54 kg"
+          ],
+          "often_delayed_by_over_30_min": true
+        }
+      ],
+      "total_duration": 80,
+      "carbon_emissions": {
+        "this_flight": 55000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 20
+      },
+      "price": 5262,
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/AI.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1pCU1RJNE5ERWFDZ2lPS1JBQUdnTkpUbEk0SEhDTEt3PT0iLFtbIkJPTSIsIjIwMjYtMDgtMjUiLCJHT0kiLG51bGwsIkFJIiwiMjg0MSJdXV0="
+    },
+    {
+      "flights": [
+        {
+          "departure_airport": {
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai",
+            "id": "BOM",
+            "time": "2026-08-25 16:30"
+          },
+          "arrival_airport": {
+            "name": "Goa Dabolim International Airport",
+            "id": "GOI",
+            "time": "2026-08-25 17:40"
+          },
+          "duration": 70,
+          "airplane": "Boeing 737MAX 8 Passenger",
+          "airline": "Air India Express",
+          "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/IX.png",
+          "travel_class": "Economy",
+          "flight_number": "IX 1242",
+          "legroom": "30 in",
+          "extensions": [
+            "Average legroom (30 in)",
+            "Carbon emissions estimate: 55 kg"
+          ],
+          "often_delayed_by_over_30_min": true
+        }
+      ],
+      "total_duration": 70,
+      "carbon_emissions": {
+        "this_flight": 55000,
+        "typical_for_this_route": 46000,
+        "difference_percent": 20
+      },
+      "type": "One way",
+      "airline_logo": "https://www.gstatic.com/flights/airline_logos/70px/IX.png",
+      "booking_token": "WyJDalJJY0ZCUFYxUk9helJhVkd0QlExQXdSbmRDUnkwdExTMHRMUzB0TFhaMGNXVXhNRUZCUVVGQlIzQTJNemxCVERKdU1HRkJFZ1pKV0RFeU5ESTRIQT09IixbWyJCT00iLCIyMDI2LTA4LTI1IiwiR09JIixudWxsLCJJWCIsIjEyNDIiXV1d"
+    }
+  ],
+  "price_insights": {
+    "lowest_price": 3964,
+    "price_level": "typical",
+    "typical_price_range": [
+      3500,
+      4850
+    ],
+    "price_history": [
+      [
+        1781202600,
+        3269
+      ],
+      [
+        1781289000,
+        3269
+      ],
+      [
+        1781375400,
+        3269
+      ],
+      [
+        1781461800,
+        3269
+      ],
+      [
+        1781548200,
+        3269
+      ],
+      [
+        1781634600,
+        3269
+      ],
+      [
+        1781721000,
+        3269
+      ],
+      [
+        1781807400,
+        3269
+      ],
+      [
+        1781893800,
+        3269
+      ],
+      [
+        1781980200,
+        3269
+      ],
+      [
+        1782066600,
+        3269
+      ],
+      [
+        1782153000,
+        3269
+      ],
+      [
+        1782239400,
+        3269
+      ],
+      [
+        1782325800,
+        3269
+      ],
+      [
+        1782412200,
+        3504
+      ],
+      [
+        1782498600,
+        3567
+      ],
+      [
+        1782585000,
+        3567
+      ],
+      [
+        1782671400,
+        3567
+      ],
+      [
+        1782757800,
+        3567
+      ],
+      [
+        1782844200,
+        3567
+      ],
+      [
+        1782930600,
+        3567
+      ],
+      [
+        1783017000,
+        3567
+      ],
+      [
+        1783103400,
+        3567
+      ],
+      [
+        1783189800,
+        3567
+      ],
+      [
+        1783276200,
+        3567
+      ],
+      [
+        1783362600,
+        3567
+      ],
+      [
+        1783449000,
+        3567
+      ],
+      [
+        1783535400,
+        3565
+      ],
+      [
+        1783621800,
+        3565
+      ],
+      [
+        1783708200,
+        3565
+      ],
+      [
+        1783794600,
+        3565
+      ],
+      [
+        1783881000,
+        3565
+      ],
+      [
+        1783967400,
+        3565
+      ],
+      [
+        1784053800,
+        3565
+      ],
+      [
+        1784140200,
+        3565
+      ],
+      [
+        1784226600,
+        3565
+      ],
+      [
+        1784313000,
+        3567
+      ],
+      [
+        1784399400,
+        3567
+      ],
+      [
+        1784485800,
+        3567
+      ],
+      [
+        1784572200,
+        3567
+      ],
+      [
+        1784658600,
+        3567
+      ],
+      [
+        1784745000,
+        3792
+      ],
+      [
+        1784831400,
+        3867
+      ],
+      [
+        1784917800,
+        3867
+      ],
+      [
+        1785004200,
+        3867
+      ],
+      [
+        1785090600,
+        3867
+      ],
+      [
+        1785177000,
+        3867
+      ],
+      [
+        1785263400,
+        3867
+      ],
+      [
+        1785349800,
+        3867
+      ],
+      [
+        1785436200,
+        3867
+      ],
+      [
+        1785522600,
+        3867
+      ],
+      [
+        1785609000,
+        3867
+      ],
+      [
+        1785695400,
+        3867
+      ],
+      [
+        1785781800,
+        3964
+      ],
+      [
+        1785868200,
+        3964
+      ],
+      [
+        1785954600,
+        3964
+      ],
+      [
+        1786041000,
+        3964
+      ],
+      [
+        1786127400,
+        3964
+      ],
+      [
+        1786213800,
+        3964
+      ],
+      [
+        1786300200,
+        3964
+      ],
+      [
+        1786386600,
+        3964
+      ]
+    ]
+  },
+  "airports": [
+    {
+      "departure": [
+        {
+          "airport": {
+            "id": "BOM",
+            "name": "Chhatrapati Shivaji Maharaj International Airport Mumbai"
+          },
+          "city": "Mumbai",
+          "country": "India",
+          "country_code": "IN",
+          "image": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTJ5Q0R5IIxjWsuWKt6lnlBIOlNfNwTqC8yBtOP_uMdzFrluYmn3jZ-6dyEWo6AbIH3x57scrUgF3gvWA",
+          "thumbnail": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRMqVWevN4qkQ8u4HrxtHbv2Oy7UigPckL8bgZUJQWQgjvmJxG7oggYxd2Rw5MwjiBYzZFpr939opSbON9CxkwdD-7DK9it3TPq1ea8pxU"
+        }
+      ],
+      "arrival": [
+        {
+          "airport": {
+            "id": "GOI",
+            "name": "Goa Dabolim International Airport"
+          },
+          "city": "Goa",
+          "country": "India",
+          "country_code": "IN",
+          "image": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSV9ZBaJnlVAyvxpnpLgJSQcw8iTKl-RmtMpyb-V1vzMbHVJMdMyzus4HNee9WyA8GYbl0VlSpmxXeN8A",
+          "thumbnail": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTua5WXy2lHX1J7yNO9J0DpWHP2z9NzByWFLCiCQqzgt4DsYURWFHTkRpwW0zr4nQMQUrX8m6Hk3OlSIZVmCZczvsIlrrx4sHDLXST1fmU"
+        }
+      ]
+    }
+  ]
+}

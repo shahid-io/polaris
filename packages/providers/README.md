@@ -140,9 +140,9 @@ pnpm fixtures:record --date 2026-08-27 --force                # re-record existi
 Each route costs one of the 250 monthly credits. The script reports what it will spend and
 skips anything already recorded.
 
-Currently recorded, all for **2026-08-27**: `DEL-BOM`, `DEL-BLR`, `BOM-GOI`, `DEL-HYD`, plus
-`DEL-BOM` for `2026-09-15`. Any other route or date correctly reports having no data rather
-than substituting the wrong day.
+Currently recorded — `DEL-BOM`, `DEL-BLR`, `BOM-GOI` and `DEL-HYD` for both **2026-08-25**
+and **2026-08-27**, plus `DEL-BOM` for `2026-09-15`. Any other route or date correctly
+reports having no data rather than substituting the wrong day.
 
 Both airline providers are backed by the same endpoint, so identical concurrent requests are
 **coalesced into a single upstream call**. Without that, one user search would spend two of
