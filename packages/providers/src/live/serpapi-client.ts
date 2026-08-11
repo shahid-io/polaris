@@ -20,7 +20,7 @@ export interface SerpApiSegment {
 export interface SerpApiItinerary {
   flights: SerpApiSegment[];
   total_duration: number;
-  /** Whole currency units — rupees when the request asks for INR. */
+  /** Whole currency units, rupees when the request asks for INR. */
   price: number;
   type?: string;
   airline_logo?: string;
@@ -56,7 +56,7 @@ const SERPAPI_ENDPOINT = 'https://serpapi.com/search.json';
  * In-flight and recently-completed requests, keyed by search parameters.
  *
  * One SerpApi response contains every carrier on a route, and Polaris registers two
- * providers backed by it — IndiGo and Air India Express. Without this, a single user
+ * providers backed by it, IndiGo and Air India Express. Without this, a single user
  * search would issue two identical HTTP calls and consume two of the 250 credits the free
  * tier allows each month, for data that is byte-identical.
  *
@@ -68,7 +68,7 @@ const SERPAPI_ENDPOINT = 'https://serpapi.com/search.json';
  * The shared request deliberately runs on its **own** AbortSignal rather than the signal
  * of whichever caller happened to arrive first. Otherwise the first provider's timeout
  * would abort a request the second provider is still legitimately waiting on, inside its
- * own untouched budget — one provider's deadline silently failing another, which is
+ * own untouched budget, one provider's deadline silently failing another, which is
  * exactly the coupling the per-provider isolation exists to prevent.
  *
  * Deliberately short-lived. This coalesces concurrent callers within one search; caching
@@ -118,7 +118,7 @@ export function fetchGoogleFlights(
   const promise = performRequest(params, apiKey, shared.signal);
   inFlight.set(key, { promise, controller: shared, expiresAtMs: now + COALESCE_WINDOW_MS });
 
-  // A failure must not be cached — the next search should be free to retry rather than
+  // A failure must not be cached, the next search should be free to retry rather than
   // replaying a rejection for the whole window.
   promise.catch(() => inFlight.delete(key));
 
@@ -222,11 +222,11 @@ export interface LoadedFixture {
  * ### The date must match
  * A recording is a snapshot of one route on one specific day, and the flight times inside
  * it are that day's. Returning it for a different date would present September departures
- * as though they were August's — the offer would carry the requested date in its id while
+ * as though they were August's, the offer would carry the requested date in its id while
  * every timestamp inside it disagreed.
  *
  * So a fixture is only usable for the exact date it was captured for. The date is part of
- * the filename — `serpapi-del-bom-2026-08-27.json` — so several dates can be recorded for
+ * the filename: `serpapi-del-bom-2026-08-27.json`, so several dates can be recorded for
  * one route, and a lookup for an unrecorded date simply finds nothing. The recorded
  * `outbound_date` is still verified afterwards, so a mislabelled file cannot slip through.
  *
@@ -273,7 +273,7 @@ export async function loadFixture(
  * Builds the filename a recording is stored under.
  *
  * Exported so the recording script and the loader cannot disagree about where fixtures
- * live — a mismatch would show up as "no data" with no obvious cause.
+ * live, a mismatch would show up as "no data" with no obvious cause.
  *
  * @param origin - Origin IATA code.
  * @param destination - Destination IATA code.
@@ -292,7 +292,7 @@ export function fixtureFileName(
  * Collects every itinerary, removing the overlap between Google's picks and the full list.
  *
  * `best_flights` is a curated subset that also appears in `other_flights`. Concatenating
- * them naively would list those itineraries twice — which the comparison engine would then
+ * them naively would list those itineraries twice, which the comparison engine would then
  * group into one flight with a phantom second "offer" at an identical price.
  *
  * @param response - A SerpApi response.

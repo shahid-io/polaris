@@ -5,11 +5,11 @@ import { join } from 'node:path';
 /**
  * Captures the frames for the README demo.
  *
- * Not really a test — it asserts only enough to fail loudly if the flow breaks, so a broken
+ * Not really a test, it asserts only enough to fail loudly if the flow breaks, so a broken
  * UI produces an error rather than a GIF of an error. Run via `pnpm demo`.
  *
  * Frames are discrete stills rather than a video recording. A GIF assembled from held
- * frames stays readable — each state sits on screen long enough to be understood — and the
+ * frames stays readable, each state sits on screen long enough to be understood, and the
  * file is a fraction of the size of a frame-by-frame capture of the same walkthrough.
  */
 

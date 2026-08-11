@@ -1,9 +1,9 @@
 /**
  * States of a circuit breaker.
  *
- * - `closed` — calls pass through, failures are counted.
- * - `open` — calls are rejected immediately without touching the provider.
- * - `half_open` — one probe is allowed through to test recovery.
+ * - `closed`: calls pass through, failures are counted.
+ * - `open`: calls are rejected immediately without touching the provider.
+ * - `half_open`, one probe is allowed through to test recovery.
  */
 export type CircuitState = 'closed' | 'open' | 'half_open';
 
@@ -23,7 +23,7 @@ export interface CircuitBreakerOptions {
  * A provider that has failed three times in a row will almost certainly fail the fourth
  * time too. Continuing to call it costs the full timeout on every search, which the user
  * pays for in latency while getting nothing back. The breaker converts that slow failure
- * into an instant one, and — equally important — into an honest `circuit_open` status the
+ * into an instant one, and, equally important, into an honest `circuit_open` status the
  * UI can explain rather than an unexplained gap in results.
  *
  * Recovery is automatic: after `resetMs` a single probe is allowed through, and a success
@@ -65,7 +65,7 @@ export class CircuitBreaker {
    * from having to drive the state machine themselves.
    *
    * `half_open` therefore means *the probe is already taken*, and this returns `false`
-   * until it resolves. Returning `true` there instead — which reads as the obvious thing —
+   * until it resolves. Returning `true` there instead, which reads as the obvious thing,
    * would let every caller arriving during the probe through at once, defeating the state
    * entirely. That is not theoretical here: the orchestrator fans out concurrently, so two
    * searches racing the end of the reset window would both be admitted, and a provider we
@@ -91,7 +91,7 @@ export class CircuitBreaker {
    * Records a successful call, closing the circuit, clearing the failure count and
    * releasing the half-open probe.
    *
-   * A success in `half_open` fully closes the circuit rather than requiring several — a
+   * A success in `half_open` fully closes the circuit rather than requiring several, a
    * provider that answers correctly after a cooldown is working, and demanding more probes
    * would keep results hidden from users for no benefit.
    */
@@ -118,7 +118,7 @@ export class CircuitBreaker {
   /**
    * Current state, without side effects.
    *
-   * Reports `open` even when the reset window has elapsed — only {@link canAttempt} performs
+   * Reports `open` even when the reset window has elapsed, only {@link canAttempt} performs
    * the transition. Intended for diagnostics and the provider health dashboard.
    *
    * @returns The current state.

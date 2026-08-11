@@ -9,7 +9,7 @@ import type { Env } from './config/env';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   // bufferLogs holds every startup message until this is called. Without it the buffer is
-  // never drained and the process runs completely silently — including the errors you most
+  // never drained and the process runs completely silently, including the errors you most
   // need when something fails to start.
   app.flushLogs();
 

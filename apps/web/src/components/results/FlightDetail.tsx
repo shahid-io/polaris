@@ -95,8 +95,8 @@ export function FlightDetail({ group }: { group: ComparisonGroup }) {
                       <ClockIcon className="size-3.5 shrink-0" aria-hidden="true" />
                       <span>
                         {formatDuration(layover.minutes)} in {layover.airport}
-                        {layover.isTight && ' — tight connection'}
-                        {layover.isLong && ' — long wait'}
+                        {layover.isTight && ': tight connection'}
+                        {layover.isLong && ': long wait'}
                       </span>
                     </div>
                   )}
@@ -115,7 +115,7 @@ export function FlightDetail({ group }: { group: ComparisonGroup }) {
             />
             <Stat label="Airline" value={carriers.join(' + ')} />
             {carriers.length > 1 && (
-              <Stat label="Note" value="Two carriers — baggage may not transfer" />
+              <Stat label="Note" value="Two carriers, baggage may not transfer" />
             )}
           </dl>
         </section>
@@ -216,7 +216,7 @@ function FareRow({ offer, isCheapest }: { offer: NormalizedOffer; isCheapest: bo
             <GiftIcon className="size-3" aria-hidden="true" />
             {benefit.label}
             {benefit.conditional && (
-              <span className="text-warning" title="Conditional — excluded from the value score">
+              <span className="text-warning" title="Conditional: excluded from the value score">
                 *
               </span>
             )}

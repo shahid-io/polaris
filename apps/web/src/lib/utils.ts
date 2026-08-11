@@ -23,7 +23,7 @@ export function cn(...inputs: ClassValue[]) {
 /**
  * Formats an integer minor-unit amount as Indian rupees.
  *
- * Prices cross the wire as integer paise — see the `Money` contract — so every display
+ * Prices cross the wire as integer paise, see the `Money` contract, so every display
  * path converts here rather than each component dividing by 100 and hoping.
  *
  * @param amountMinor - Amount in paise.
@@ -92,7 +92,7 @@ export function formatLocalTime(localDateTime: string): string {
  */
 export function formatDate(isoDate: string): string {
   const [year, month, day] = isoDate.split('-').map(Number);
-  // Date.UTC, then read back in UTC — the same reason as formatLocalTime.
+  // Date.UTC, then read back in UTC, the same reason as formatLocalTime.
   const date = new Date(Date.UTC(year ?? 1970, (month ?? 1) - 1, day ?? 1));
 
   return new Intl.DateTimeFormat('en-IN', {

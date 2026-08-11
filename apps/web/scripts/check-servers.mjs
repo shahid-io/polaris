@@ -3,7 +3,7 @@
  *
  * The capture drives the real application, so both servers must already be running. Without
  * this check Playwright reports a selector timeout thirty seconds later, which reads as a
- * broken test rather than a missing server — and sends you looking in the wrong place.
+ * broken test rather than a missing server, and sends you looking in the wrong place.
  */
 const TARGETS = [
   { name: 'API', url: 'http://localhost:4000/api/health' },
@@ -28,4 +28,4 @@ if (down.length > 0) {
   process.exit(1);
 }
 
-console.log('Both servers are up — recording.');
+console.log('Both servers are up, recording.');

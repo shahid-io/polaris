@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 /**
  * 404.
  *
- * Offers the one action that is always useful — get back to a working search — rather than
+ * Offers the one action that is always useful, get back to a working search, rather than
  * a dead end. The copy stays in the product's voice instead of reading like a server log.
  */
 export default function NotFound() {

@@ -138,7 +138,7 @@ describe('SerpApiProvider', () => {
    *
    * A recording is a snapshot of one route on one specific day. loadFixture previously
    * ignored the requested date entirely, so a search for 25 August would be served the
-   * 15 September recording — its offer id carrying the requested date while every
+   * 15 September recording, its offer id carrying the requested date while every
    * timestamp inside it disagreed.
    */
   it('refuses a fixture recorded for a different date', async () => {
@@ -146,7 +146,7 @@ describe('SerpApiProvider', () => {
 
     // Deliberately far outside any date we would ever record for. An earlier version of
     // this test used a near-term date, which silently stopped testing anything the moment
-    // a fixture was recorded for it — the assertion inverted without the test failing
+    // a fixture was recorded for it, the assertion inverted without the test failing
     // until a later, unrelated change.
     const result = await provider.search(query({ departureDate: '2030-01-01' }), ctx());
 
@@ -206,7 +206,7 @@ describe('SerpApiProvider', () => {
   /**
    * Both airline providers share one upstream call. Creating that call on whichever
    * caller arrived first meant the first provider's timeout aborted a request the second
-   * was still legitimately waiting on, inside its own untouched budget — one provider's
+   * was still legitimately waiting on, inside its own untouched budget, one provider's
    * deadline silently failing another.
    */
   it('does not let one provider cancellation abort the shared request', async () => {

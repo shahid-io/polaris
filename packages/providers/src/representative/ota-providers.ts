@@ -10,12 +10,12 @@ import {
  * The three online travel agencies from the brief, as representative providers.
  *
  * All three have partner APIs, and all three gate them behind a signed commercial
- * agreement with an account manager — genuinely unobtainable for a prototype. Rather than
+ * agreement with an account manager, genuinely unobtainable for a prototype. Rather than
  * omit them and answer only two thirds of the brief, they are modelled with representative
  * data, documented as such in `docs/INTEGRATIONS.md`, and badged as simulated in the UI.
  *
- * Each is given a distinct market position — margin, inventory breadth, and the kind of
- * perk it competes on — so the comparison surfaces meaningful differences rather than
+ * Each is given a distinct market position, margin, inventory breadth, and the kind of
+ * perk it competes on, so the comparison surfaces meaningful differences rather than
  * three providers that only differ by a random number.
  */
 
@@ -36,7 +36,7 @@ const makeMyTripBenefits: readonly Benefit[] = [
     type: 'discount',
     label: '₹750 off with HDFC credit cards',
     value: { amountMinor: 75_000, currency: 'INR' },
-    // Card-gated, so scoring excludes it — most users cannot actually claim it.
+    // Card-gated, so scoring excludes it, most users cannot actually claim it.
     conditional: true,
   },
   {
@@ -91,7 +91,7 @@ const cleartripBenefits: readonly Benefit[] = [
 ];
 
 /**
- * MakeMyTrip — India's largest OTA.
+ * MakeMyTrip: India's largest OTA.
  *
  * Modelled as broad inventory at a slight premium, competing on wallet cashback and
  * flexibility rather than headline price.
@@ -100,7 +100,7 @@ export const MAKEMYTRIP_CONFIG: RepresentativeProviderConfig = {
   providerId: 'makemytrip',
   displayName: 'MakeMyTrip',
   integrationNote:
-    'Partner API exists but is commercially gated — requires a signed agreement and an ' +
+    'Partner API exists but is commercially gated, requires a signed agreement and an ' +
     'assigned account manager. Affiliate programmes are link-and-commission only and expose ' +
     'no flight data feed. Represented with generated data drawn from the shared timetable.',
   priceMultiplier: 1.035,
@@ -112,7 +112,7 @@ export const MAKEMYTRIP_CONFIG: RepresentativeProviderConfig = {
 };
 
 /**
- * Goibibo — same parent company as MakeMyTrip.
+ * Goibibo, same parent company as MakeMyTrip.
  *
  * Modelled as the aggressive-pricing sibling: slightly cheaper, marginally thinner
  * inventory, competing on goCash and fee waivers. Being the cheapest seller on many
@@ -133,7 +133,7 @@ export const GOIBIBO_CONFIG: RepresentativeProviderConfig = {
 };
 
 /**
- * Cleartrip — Flipkart-owned, positioned around a cleaner booking experience.
+ * Cleartrip: Flipkart-owned, positioned around a cleaner booking experience.
  *
  * Modelled with the narrowest inventory and the slowest responses, which also makes it the
  * natural provider to fail on demand when demonstrating partial results.

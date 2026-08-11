@@ -28,7 +28,7 @@ describe('groupOffers', () => {
     expect(groups).toHaveLength(1);
     expect(groups[0]!.offers).toHaveLength(3);
     expect(groups[0]!.providerCount).toBe(3);
-    // Cheapest provider first — derived from the price-sorted offers.
+    // Cheapest provider first, derived from the price-sorted offers.
     expect(groups[0]!.providerIds).toEqual(['indigo', 'goibibo', 'makemytrip']);
   });
 
@@ -87,7 +87,7 @@ describe('groupOffers', () => {
    * Guards a specific wrong answer.
    *
    * A group can hold several fare families from one provider. Measuring the spread across
-   * every offer would report ₹2,300 here — implying a provider choice worth ₹2,300, when
+   * every offer would report ₹2,300 here, implying a provider choice worth ₹2,300, when
    * both cheap fares come from the same seller. The spread must compare each provider's
    * best price.
    */
@@ -102,7 +102,7 @@ describe('groupOffers', () => {
 
     expect(group.offers).toHaveLength(3);
     expect(group.providerCount).toBe(2);
-    // IndiGo's best (5199) vs MakeMyTrip's best (5399) — not 5199 vs 7499.
+    // IndiGo's best (5199) vs MakeMyTrip's best (5399), not 5199 vs 7499.
     expect(rupees(group.priceSpread.delta.amountMinor)).toBe(200);
   });
 

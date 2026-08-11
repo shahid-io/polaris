@@ -12,13 +12,13 @@ import { integrationTypeSchema, providerIdSchema } from './provider';
  * One flown leg.
  *
  * marketingCarrier/flightNumber are what the ticket is sold as and what providers agree on;
- * operatingCarrier is who actually flies it. They differ on codeshares — see canonical key
+ * operatingCarrier is who actually flies it. They differ on codeshares, see canonical key
  * notes in @polaris/core.
  */
 export const flightSegmentSchema = z.object({
   marketingCarrier: iataAirlineCodeSchema,
   operatingCarrier: iataAirlineCodeSchema.optional(),
-  /** Digits only, without the carrier prefix — "2134", not "6E-2134". */
+  /** Digits only, without the carrier prefix, "2134", not "6E-2134". */
   flightNumber: z.string().regex(/^\d{1,4}[A-Z]?$/, 'Flight number without carrier prefix'),
   origin: iataAirportCodeSchema,
   destination: iataAirportCodeSchema,
@@ -28,7 +28,7 @@ export const flightSegmentSchema = z.object({
   aircraft: z.string().optional(),
 });
 
-/** A full journey from origin to destination — one segment when non-stop. */
+/** A full journey from origin to destination, one segment when non-stop. */
 export const itinerarySchema = z.object({
   segments: z.array(flightSegmentSchema).min(1),
   origin: iataAirportCodeSchema,
@@ -42,7 +42,7 @@ export const itinerarySchema = z.object({
 /**
  * The brief's "benefits or offers".
  *
- * Typed rather than free text so benefits can be scored comparably across providers —
+ * Typed rather than free text so benefits can be scored comparably across providers,
  * "₹500 cashback" on MakeMyTrip and "free meal" on IndiGo have to be weighable against
  * each other for the value score to mean anything.
  */
@@ -66,7 +66,7 @@ export const benefitSchema = z.object({
   /** Display text as the provider phrases it, e.g. "₹500 off with HDFC cards". */
   label: z.string().min(1),
   /**
-   * Monetary value where one can be established — enables benefits to contribute to the
+   * Monetary value where one can be established, enables benefits to contribute to the
    * value score. Left absent when the benefit is real but not priceable.
    */
   value: moneySchema.optional(),
@@ -93,7 +93,7 @@ export const priceBreakdownSchema = z.object({
  * A single purchasable offer from one provider, in Polaris's canonical shape.
  *
  * Every adapter's job is to produce this from its provider's native payload. Nothing
- * downstream — grouping, scoring, filtering, the UI — knows about provider-native formats.
+ * downstream: grouping, scoring, filtering, the UI, knows about provider-native formats.
  */
 export const normalizedOfferSchema = z.object({
   /** Stable within a single search response. */
@@ -116,7 +116,7 @@ export const normalizedOfferSchema = z.object({
 
   /** Where a user would go to book. Absent for representative providers. */
   deepLink: z.string().url().optional(),
-  /** When this offer was fetched — fares are volatile and the UI shows staleness. */
+  /** When this offer was fetched, fares are volatile and the UI shows staleness. */
   retrievedAt: z.string(),
 });
 

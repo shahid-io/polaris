@@ -11,7 +11,7 @@ const { GIFEncoder, quantize, applyPalette } = gifenc;
  * Assembles the captured frames into an animated GIF.
  *
  * Deliberately no ffmpeg. Requiring a system install to produce a README asset means the
- * asset cannot be regenerated on a machine that lacks it — including CI. sharp is already
+ * asset cannot be regenerated on a machine that lacks it, including CI. sharp is already
  * present as a Next.js dependency and gifenc is a few kilobytes, so this runs anywhere the
  * repository installs.
  *
@@ -71,7 +71,7 @@ await writeFile(OUTPUT, gif);
 await rm(FRAME_DIR, { recursive: true, force: true });
 
 const megabytes = (gif.length / 1024 / 1024).toFixed(2);
-console.log(`Wrote docs/demo.gif — ${files.length} frames, ${megabytes} MB`);
+console.log(`Wrote docs/demo.gif: ${files.length} frames, ${megabytes} MB`);
 
 if (gif.length > 10 * 1024 * 1024) {
   console.warn('Over 10 MB. Re-run with a smaller --width, or hold fewer frames.');

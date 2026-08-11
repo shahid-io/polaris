@@ -13,7 +13,7 @@ import { validateEnv } from './config/env';
 /**
  * Load the root .env before the module decorators below are evaluated.
  *
- * ConfigModule also reads this file, but it does so during application bootstrap — after
+ * ConfigModule also reads this file, but it does so during application bootstrap, after
  * the @Module metadata here has already been constructed. AnalyticsModule.forRoot needs
  * the connection string at metadata-construction time to decide whether to wire Mongoose
  * at all, which is earlier than ConfigService can answer. Node's built-in loadEnvFile

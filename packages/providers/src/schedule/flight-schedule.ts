@@ -21,7 +21,7 @@ export interface ScheduledFlight {
  *
  * Tuples rather than objects because this file is mostly data. Roughly 150 departures in
  * object form would be four times longer and materially harder to scan for the patterns
- * that make a timetable look real — morning banks, evening peaks, sensible gaps.
+ * that make a timetable look real, morning banks, evening peaks, sensible gaps.
  */
 type Departure = readonly [
   carrier: IataAirlineCode,
@@ -48,14 +48,14 @@ interface RouteSchedule {
  * nothing would ever deduplicate and the comparison the product exists to make would have
  * nothing to compare. Because MakeMyTrip, Goibibo and Cleartrip all price the same
  * underlying departures, the same flight genuinely appears across providers at different
- * prices — which is the behaviour the brief asks us to handle.
+ * prices, which is the behaviour the brief asks us to handle.
  *
  * Modelled on real Indian domestic patterns: IndiGo (6E) dominating frequency with Air
  * India Express (IX) on a thinner network, early-morning and evening peaks on trunk routes,
  * thinner regional schedules, a weekend-only leisure service, and a red-eye on Delhi–Mumbai
  * so the local-date canonical key has a real case to prove itself against.
  *
- * Fares scale roughly with sector length and carry route-level variation — trunk routes are
+ * Fares scale roughly with sector length and carry route-level variation, trunk routes are
  * competitive, regional monopolistic sectors less so.
  */
 const ROUTES: readonly RouteSchedule[] = [
@@ -83,8 +83,8 @@ const ROUTES: readonly RouteSchedule[] = [
       // Google Flights response for this route, so a live IndiGo fare and these
       // representative OTA fares produce the same canonical key and land on one card.
       //
-      // Without this the two data sets never intersect — the live adapter returns the
-      // flights that genuinely operate, the OTAs price invented ones — so every
+      // Without this the two data sets never intersect, the live adapter returns the
+      // flights that genuinely operate, the OTAs price invented ones, so every
       // cross-provider comparison would come from simulated data alone. Real travel
       // agencies sell real IndiGo services, so an OTA offering flights that do not exist
       // was the less plausible arrangement, not the more.
@@ -543,7 +543,7 @@ const ALL_FLIGHTS: readonly ScheduledFlight[] = ROUTES.flatMap((route) =>
  * @param destination - Destination IATA code.
  * @param isoDate - Travel date, `YYYY-MM-DD`, local to the origin.
  * @returns Flights operating that day, ordered by departure time. Empty when the route
- *   is not served — a legitimate answer, not an error.
+ *   is not served, a legitimate answer, not an error.
  *
  * @example
  * ```ts
@@ -595,7 +595,7 @@ export function allScheduledFlights(): readonly ScheduledFlight[] {
  * Day of week for a calendar date, without timezone interference.
  *
  * Parses the parts and uses `Date.UTC` rather than `new Date('2026-08-20')`, which some
- * runtimes interpret in local time — shifting the day and, for a weekend-only flight,
+ * runtimes interpret in local time, shifting the day and, for a weekend-only flight,
  * making it appear or vanish depending on where the server runs.
  *
  * @param isoDate - `YYYY-MM-DD`.

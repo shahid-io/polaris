@@ -4,7 +4,7 @@
  * Declared as an interface so the implementation is a deployment decision rather than an
  * architectural one. The in-memory store below is right for a prototype demoed on one
  * machine; swapping it for Redis when there is more than one API instance means providing
- * another implementation of this interface and changing one line in the module — no caller
+ * another implementation of this interface and changing one line in the module, no caller
  * changes at all.
  */
 export interface CacheStore {
@@ -33,7 +33,7 @@ export interface CacheStore {
   size(): number;
 }
 
-/** Injection token — consumers depend on the interface, never on a concrete store. */
+/** Injection token: consumers depend on the interface, never on a concrete store. */
 export const CACHE_STORE = Symbol('CACHE_STORE');
 
 interface CacheEntry {
@@ -47,7 +47,7 @@ interface CacheEntry {
  * ### Why this is worth having at all
  * Flight searches are expensive and repetitive: a user toggling filters, going back, or
  * re-running the same route hits identical provider calls. On the live SerpApi adapter the
- * cache also protects a hard monthly quota of 250 searches — without it, a demo could
+ * cache also protects a hard monthly quota of 250 searches, without it, a demo could
  * plausibly exhaust the free tier during rehearsal.
  *
  * ### Eviction
@@ -112,7 +112,7 @@ export class InMemoryCacheStore implements CacheStore {
  * Builds a stable cache key from a search request.
  *
  * Field order is fixed explicitly rather than relying on `JSON.stringify` of the object,
- * whose output depends on property insertion order — two identical searches arriving with
+ * whose output depends on property insertion order, two identical searches arriving with
  * differently-ordered JSON would otherwise miss the cache and cost a full provider fan-out.
  *
  * ### The invariant
@@ -121,7 +121,7 @@ export class InMemoryCacheStore implements CacheStore {
  * and the second silently receives the first's results.
  *
  * What providers currently read: origin, destination, departureDate, passengers,
- * cabinClass — all present — plus `providers`, which selects which adapters run.
+ * cabinClass: all present, plus `providers`, which selects which adapters run.
  *
  * ### Why `timeRange` is deliberately absent
  * It is not a provider input. Adapters fetch a whole day for a route, and the preferred
@@ -130,7 +130,7 @@ export class InMemoryCacheStore implements CacheStore {
  * live source capped at 250 searches a month.
  *
  * **If a future adapter ever narrows its upstream request by time, this key must gain
- * `timeRange` in the same change** — otherwise an evening search will be served a morning
+ * `timeRange` in the same change**, otherwise an evening search will be served a morning
  * result. Guarded by a test in `cache.store.test.ts`.
  *
  * Filters and sort are excluded for the same reason: the cached value is the full

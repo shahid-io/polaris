@@ -1,6 +1,6 @@
 import type { ApiError, SearchRequestInput, SearchResponse } from '@polaris/contracts';
 
-/** Result of any API call — either data or a structured error, never both. */
+/** Result of any API call, either data or a structured error, never both. */
 export interface ApiResult<T> {
   data?: T;
   error?: ApiError['error'];
@@ -23,7 +23,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4
  * Performs a request and normalises every outcome into {@link ApiResult}.
  *
  * Components never call `fetch` directly. Centralising it means one place decides how a
- * network failure, a non-2xx response and a malformed body are represented — and callers
+ * network failure, a non-2xx response and a malformed body are represented, and callers
  * get the same shape from all three instead of having to handle a rejected promise, a
  * falsy `ok` and a parse error separately.
  *
@@ -57,7 +57,7 @@ async function request<T>(
 
     if (!response.ok) {
       // The API returns a canonical { error: { code, message } } envelope. Fall back
-      // only when something upstream — a proxy, say — returned a non-conforming body.
+      // only when something upstream, a proxy, say, returned a non-conforming body.
       return {
         error: (body as ApiError | undefined)?.error ?? {
           code: 'INTERNAL_ERROR',
@@ -149,7 +149,7 @@ export interface AirportsResponse {
 /**
  * Lists served airports and the origin-to-destination adjacency.
  *
- * Fetched rather than bundled so the picker cannot drift out of sync with the timetable —
+ * Fetched rather than bundled so the picker cannot drift out of sync with the timetable,
  * an airport offered in the UI but absent from the schedule would give the user a search
  * that silently returns nothing.
  *

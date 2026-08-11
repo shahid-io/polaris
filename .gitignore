@@ -17,7 +17,7 @@ coverage/
 playwright-report/
 test-results/
 
-# env — never commit real keys
+# env: never commit real keys
 .env
 .env.local
 .env.*.local
@@ -34,7 +34,7 @@ test-results/
 npm-debug.log*
 pnpm-debug.log*
 
-# Assessment brief — North Star Identity's material, kept locally in docs/ but not
+# Assessment brief: North Star Identity's material, kept locally in docs/ but not
 # republished. Remove this line if the brief is intended to ship with the repo.
 docs/assessment-brief.pdf
 

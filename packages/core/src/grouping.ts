@@ -29,7 +29,7 @@ export type UnscoredComparisonGroup = Omit<ComparisonGroup, 'score'>;
  * @example
  * ```ts
  * const groups = groupOffers([mmtOffer, goibiboOffer, indigoOffer]);
- * groups.length;               // 1 — all three sell 6E-2134
+ * groups.length;               // 1, all three sell 6E-2134
  * groups[0].providerCount;     // 3
  * groups[0].priceSpread.delta; // ₹300 between the cheapest and dearest provider
  * ```
@@ -79,8 +79,8 @@ function buildGroup(canonicalKey: string, offers: NormalizedOffer[]): UnscoredCo
 
   return {
     canonicalKey,
-    // Every offer in a group shares an itinerary by construction — the canonical key is
-    // derived from it — so taking the cheapest offer's copy is safe.
+    // Every offer in a group shares an itinerary by construction, the canonical key is
+    // derived from it, so taking the cheapest offer's copy is safe.
     itinerary: cheapest.itinerary,
     offers: sorted,
     cheapestOfferId: cheapest.id,
@@ -122,7 +122,7 @@ function computePriceSpread(
 }
 
 /**
- * Counts flights sold by more than one provider — the deduplication working, quantified.
+ * Counts flights sold by more than one provider, the deduplication working, quantified.
  *
  * Surfaced in the search response meta, and worth showing in the demo: it is the number
  * that proves grouping did something.

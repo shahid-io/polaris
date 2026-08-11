@@ -13,7 +13,7 @@ export type { FlightFilters };
  *
  * Filtering happens **after** grouping and scoring, not before, for two reasons. Scores are
  * normalised across the result set, so filtering first would silently rescale every score
- * as the user toggles a checkbox — a flight's "value" would change simply because another
+ * as the user toggles a checkbox, a flight's "value" would change simply because another
  * flight was hidden. Second, a provider filter must be able to inspect every offer in a
  * group, which only exists post-grouping.
  *
@@ -86,7 +86,7 @@ function matchesAll(group: ComparisonGroup, filters: FlightFilters): boolean {
  * Tests whether a flight departs inside a time window.
  *
  * Compares the origin's local wall-clock time, matching how a user thinks about "a morning
- * flight" — 06:00 at the departure gate, not 06:00 UTC. The window is inclusive at both
+ * flight": 06:00 at the departure gate, not 06:00 UTC. The window is inclusive at both
  * ends so a preset ending at 12:00 still matches a noon departure.
  *
  * @param group - The group under test.

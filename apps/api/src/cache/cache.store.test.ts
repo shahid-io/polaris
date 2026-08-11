@@ -17,7 +17,7 @@ describe('buildCacheKey', () => {
   /**
    * These are the fields adapters actually read. Any one of them colliding means two
    * different searches share a cached answer and the second silently gets the first's
-   * results — the failure this whole test group exists to prevent.
+   * results, the failure this whole test group exists to prevent.
    */
   it.each([
     ['origin', { origin: 'BOM' }],
@@ -41,7 +41,7 @@ describe('buildCacheKey', () => {
    * Pins the deliberate exclusion documented on buildCacheKey.
    *
    * Adapters fetch a whole day and the preferred window is applied afterwards, so one
-   * cached fetch serves every window — which matters against a 250-a-month live quota.
+   * cached fetch serves every window, which matters against a 250-a-month live quota.
    *
    * If this test ever fails because someone pushed the time window down into an adapter's
    * upstream request, the fix is to ADD timeRange to the key, not to delete this test:

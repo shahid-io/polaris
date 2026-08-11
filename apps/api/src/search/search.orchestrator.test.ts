@@ -36,7 +36,7 @@ const ENV: Record<string, unknown> = {
  * A provider that behaves exactly as a test needs.
  *
  * Overriding the FLIGHT_PROVIDERS token with fakes is what makes the failure paths
- * testable at all — waiting for a real provider to break is not a test strategy.
+ * testable at all, waiting for a real provider to break is not a test strategy.
  */
 function fakeProvider(
   providerId: 'makemytrip' | 'goibibo' | 'cleartrip',
@@ -275,7 +275,7 @@ describe('SearchOrchestrator', () => {
 
     /**
      * The cache holds the unfiltered result, so narrowing is instant rather than another
-     * full fan-out — which also protects the live provider's monthly quota.
+     * full fan-out, which also protects the live provider's monthly quota.
      */
     it('applies different filters to one cached result set', async () => {
       const orchestrator = await buildOrchestrator(createOtaProviders({ simulateLatency: false }));
@@ -292,7 +292,7 @@ describe('SearchOrchestrator', () => {
 
   /**
    * A cache hit reproduces the provider statuses as well as the offers, and does so without
-   * reaching the fan-out — so a cached failure is a failure the circuit breaker never gets
+   * reaching the fan-out, so a cached failure is a failure the circuit breaker never gets
    * to reconsider. At the full TTL one timeout would present as a five-minute outage.
    */
   describe('caching a search that partly failed', () => {
@@ -342,7 +342,7 @@ describe('SearchOrchestrator', () => {
     });
 
     /**
-     * An unconfigured provider is not a transient failure — it cannot recover without an
+     * An unconfigured provider is not a transient failure, it cannot recover without an
      * environment change and a restart, so shortening the TTL would re-fetch the healthy
      * providers on a loop and buy nothing.
      */
@@ -410,7 +410,7 @@ describe('SearchOrchestrator', () => {
   describe('the preferred time range', () => {
     /**
      * Regression. timeRange is one of the four search criteria the brief names. It was
-     * previously accepted, validated, and then ignored entirely — so a user asking for a
+     * previously accepted, validated, and then ignored entirely, so a user asking for a
      * morning flight was shown red-eyes and late-evening departures.
      */
     it('returns only flights departing inside the requested window', async () => {
@@ -464,7 +464,7 @@ describe('SearchOrchestrator', () => {
     /**
      * The cache stores the whole day, so different windows are different views over one
      * provider fetch. This is what makes omitting timeRange from the cache key correct
-     * rather than a latent bug — and it is where the original defect would have resurfaced.
+     * rather than a latent bug, and it is where the original defect would have resurfaced.
      */
     it('serves different windows from one cached provider fetch', async () => {
       let calls = 0;
@@ -495,7 +495,7 @@ describe('SearchOrchestrator', () => {
 
       expect(calls).toBe(1);
       expect(evening.meta.cached).toBe(true);
-      // Same cache entry, genuinely different results — not the morning list repeated.
+      // Same cache entry, genuinely different results, not the morning list repeated.
       expect(evening.groups.map((g) => g.canonicalKey)).not.toEqual(
         morning.groups.map((g) => g.canonicalKey),
       );

@@ -14,7 +14,7 @@ import type { ApiError, ApiErrorCode } from '@polaris/contracts';
  * Gives every error one shape.
  *
  * Without this, Nest returns its own envelope for `HttpException`, a bare 500 for anything
- * else, and the pipe returns a third shape — so a client would need three parsers for what
+ * else, and the pipe returns a third shape, so a client would need three parsers for what
  * is conceptually one thing. Every failure now arrives as `{ error: { code, message } }`
  * with a machine-readable code, so the UI can branch on `code` rather than matching
  * message strings that change whenever wording is edited.

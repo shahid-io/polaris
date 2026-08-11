@@ -8,11 +8,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  # Lets the pipeline be run on demand — useful for verifying a change to the workflow
+  # Lets the pipeline be run on demand, useful for verifying a change to the workflow
   # itself without pushing a commit to main just to trigger it.
   workflow_dispatch:
 
-# A newer push to the same ref supersedes an in-flight run — no point finishing a build
+# A newer push to the same ref supersedes an in-flight run, no point finishing a build
 # for a commit that has already been replaced.
 concurrency:
   group: ci-${{ github.ref }}
@@ -45,7 +45,7 @@ jobs:
 
       - name: Lint
         # Runs here because the previous lint script had been failing for some time without
-        # anyone noticing — nothing executed it. A check nobody runs is not a check.
+        # anyone noticing. Nothing executed it. A check nobody runs is not a check.
         run: pnpm lint
 
       - name: Typecheck
@@ -55,7 +55,7 @@ jobs:
         run: pnpm build
 
       - name: Test
-        # No credentials are configured here on purpose. The suite must pass with none —
+        # No credentials are configured here on purpose. The suite must pass with none,
         # live adapters fall back to recorded fixtures and providers without keys report
         # "skipped", which is the same path a user hits on a clean checkout.
         run: pnpm test

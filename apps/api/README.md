@@ -75,7 +75,7 @@ results providers had already returned. Settling every promise is what makes par
 possible.
 
 **A search never fails because a provider did.** Even with every provider down the response
-is a 200 with zero flights and an honest account of why — so a client can distinguish "no
+is a 200 with zero flights and an honest account of why, so a client can distinguish "no
 flights on this route" from "nothing answered". An HTTP error collapses those into one
 indistinguishable failure.
 
@@ -91,14 +91,14 @@ one contract drift apart. A twenty-line `ZodValidationPipe` validates against
 `@polaris/contracts` directly.
 
 `nestjs-zod` was the first choice and was rejected on inspection: its `createZodDto` expects
-a `ZodObject`, and several schemas end in `.refine(...)` — origin must differ from
-destination — producing a wrapped effect type the library does not accept.
+a `ZodObject`, and several schemas end in `.refine(...)`, origin must differ from
+destination: producing a wrapped effect type the library does not accept.
 
 ### Providers register under one DI token
 
 `ProvidersModule.forRoot()` collects every adapter under `FLIGHT_PROVIDERS`. The orchestrator
 depends on the array and never names a concrete provider, so adding one touches a single
-line. Tests override the token with deliberately failing fakes — the only practical way to
+line. Tests override the token with deliberately failing fakes, the only practical way to
 exercise the failure paths, since waiting for a real provider to break is not a test
 strategy.
 
@@ -108,7 +108,7 @@ Toggling a filter is served from the same entry rather than re-querying every pr
 which also protects SerpApi's 250-a-month free tier.
 
 **The key must contain every field that changes what providers return.** `timeRange` is
-deliberately absent because adapters fetch a whole day and the window is applied afterwards —
+deliberately absent because adapters fetch a whole day and the window is applied afterwards,
 so one fetch serves morning, evening and unfiltered searches alike. A test pins this: if
 anyone pushes time-filtering down into an adapter, `timeRange` must join the key in the same
 change.
@@ -119,13 +119,13 @@ line in `CacheModule`.
 ### A search that partly failed is cached only briefly
 
 The cached value carries the provider statuses as well as the offers, and a cache hit
-returns before the fan-out — so a cached timeout is a failure the circuit breaker never gets
+returns before the fan-out, so a cached timeout is a failure the circuit breaker never gets
 to reconsider. At the full 300s that would turn a blip into an apparent five-minute outage.
 
 Such a search is kept for `CACHE_PARTIAL_TTL_SECONDS` instead: long enough that the
 providers that _did_ answer are not re-fetched on every filter toggle, short enough that the
 one that did not is retried while the user is still on the page. A provider that is merely
-unconfigured does not count — it cannot recover without a restart, so shortening the window
+unconfigured does not count, it cannot recover without a restart, so shortening the window
 on its account would buy nothing.
 
 Caching each provider's result under its own key would be more precise, and is the right
@@ -137,7 +137,7 @@ key surface while the whole fan-out is a few hundred milliseconds.
 Writes are not awaited and the service swallows its own errors. With no `MONGODB_URI` the
 module registers without a model and every method no-ops. Mongoose is configured with
 `bufferCommands: false` and a 2-second server-selection timeout, because the default queues
-operations indefinitely against a dead connection — turning "Mongo is not running" into "the
+operations indefinitely against a dead connection, turning "Mongo is not running" into "the
 search hangs".
 
 **No IP address, cookie or session is recorded.** See
@@ -159,10 +159,10 @@ credentials report `skipped` and the search continues with the rest.
 | `CACHE_PARTIAL_TTL_SECONDS` | `30`     | Lifetime when one failed, so it is retried soon         |
 | `CIRCUIT_FAILURE_THRESHOLD` | `3`      | Failures before a provider is skipped                   |
 | `CIRCUIT_RESET_MS`          | `30000`  | Before a half-open probe                                |
-| `SERPAPI_KEY`               | —        | Enables live airline fares                              |
-| `DUFFEL_ACCESS_TOKEN`       | —        | Enables the sandbox adapter                             |
-| `MONGODB_URI`               | —        | Enables search analytics                                |
-| `SIMULATED_FAILURES`        | —        | e.g. `cleartrip:timeout` — demonstrates partial results |
+| `SERPAPI_KEY`               | -        | Enables live airline fares                              |
+| `DUFFEL_ACCESS_TOKEN`       | -        | Enables the sandbox adapter                             |
+| `MONGODB_URI`               | -        | Enables search analytics                                |
+| `SIMULATED_FAILURES`        | -        | e.g. `cleartrip:timeout` (demonstrates partial results) |
 
 Environment is validated with Zod at boot, so a malformed value fails immediately rather
 than surfacing later as a provider returning nothing.

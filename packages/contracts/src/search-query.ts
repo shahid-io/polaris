@@ -34,7 +34,7 @@ export const timeRangePresetSchema = z.enum(['early_morning', 'morning', 'aftern
  * A flight search request.
  *
  * Scope note: one-way only, matching the brief ("travel date", singular). The shape is
- * extensible to round-trip later without a breaking change — a returnDate field slots in.
+ * extensible to round-trip later without a breaking change, a returnDate field slots in.
  */
 export const searchQuerySchema = z
   .object({
@@ -50,7 +50,7 @@ export const searchQuerySchema = z
      *
      * Validated against the known provider ids rather than accepting any string. A typo
      * would otherwise pass validation, match no provider, and produce a successful-looking
-     * response in which nothing was actually searched — a silent wrong answer rather than
+     * response in which nothing was actually searched, a silent wrong answer rather than
      * a 400 naming the bad value.
      *
      * `.min(1)` because an empty array is not a meaningful request: "search no providers"
@@ -67,5 +67,5 @@ export type CabinClass = z.infer<typeof cabinClassSchema>;
 export type TimeRange = z.infer<typeof timeRangeSchema>;
 export type TimeRangePreset = z.infer<typeof timeRangePresetSchema>;
 export type SearchQuery = z.infer<typeof searchQuerySchema>;
-/** Pre-parse shape — what a client sends, before defaults are applied. */
+/** Pre-parse shape: what a client sends, before defaults are applied. */
 export type SearchQueryInput = z.input<typeof searchQuerySchema>;

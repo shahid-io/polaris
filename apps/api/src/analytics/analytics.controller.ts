@@ -10,7 +10,7 @@ export class AnalyticsController {
    *
    * Returns 200 with `connected: false` when the database is unavailable, rather than an
    * error. Analytics being offline is a degraded state of a working system, not a failure
-   * of the request — and the UI needs to distinguish "offline" from "no searches yet".
+   * of the request, and the UI needs to distinguish "offline" from "no searches yet".
    *
    * @param days - Window in days. Defaults to 7.
    * @returns Headline figures, top routes and per-provider performance.

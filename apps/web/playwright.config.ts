@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
  * End-to-end configuration.
  *
  * The jsdom suite covers behaviour; this exists to answer a question jsdom structurally
- * cannot — does the application actually render and work in a real browser? Hydration
+ * cannot: does the application actually render and work in a real browser? Hydration
  * errors, CSS that collapses a layout, and client-only failures all pass a jsdom test and
  * break in front of a user.
  *

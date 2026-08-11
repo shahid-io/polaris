@@ -3,7 +3,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 /**
  * Route-level loading state.
  *
- * Shaped like the page it replaces — header, search form, results — so the layout does not
+ * Shaped like the page it replaces, header, search form, results, so the layout does not
  * jump when content arrives. A centred spinner would be less work and a worse experience.
  */
 export default function Loading() {

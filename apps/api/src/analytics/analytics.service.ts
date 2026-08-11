@@ -10,7 +10,7 @@ export interface ProviderPerformance {
   providerId: string;
   calls: number;
   successRate: number;
-  /** Mean latency over successful calls only — failures skew the average uselessly. */
+  /** Mean latency over successful calls only, failures skew the average uselessly. */
   averageLatencyMs: number;
   timeouts: number;
   errors: number;
@@ -23,7 +23,7 @@ export interface AnalyticsSummary {
   partialRate: number;
   cacheHitRate: number;
   averageTookMs: number;
-  /** Mean groups sold by more than one provider — deduplication, measured. */
+  /** Mean groups sold by more than one provider, deduplication, measured. */
   averageMultiProviderGroups: number;
   topRoutes: { route: string; searches: number }[];
   providerPerformance: ProviderPerformance[];
@@ -33,8 +33,8 @@ export interface AnalyticsSummary {
  * Records searches and answers operational questions about them.
  *
  * ### Fail-open by design
- * Every write is best-effort. If MongoDB is unreachable — not running, still starting,
- * container stopped — the search still succeeds and the failure is logged once rather than
+ * Every write is best-effort. If MongoDB is unreachable, not running, still starting,
+ * container stopped, the search still succeeds and the failure is logged once rather than
  * propagated. Telemetry is not worth failing a user's search over, and a database being
  * down should never be the reason a demo breaks.
  *
@@ -62,14 +62,14 @@ export class AnalyticsService {
   /**
    * Records a completed search.
    *
-   * Deliberately not awaited by the caller — see {@link recordSearch} usage in the
+   * Deliberately not awaited by the caller, see {@link recordSearch} usage in the
    * controller. A failure here is swallowed after one warning.
    *
    * @param response - The response that was returned to the client.
    */
   async recordSearch(response: SearchResponse): Promise<void> {
     if (!this.isConnected()) {
-      this.warnOnce('MongoDB unavailable — search analytics are being skipped');
+      this.warnOnce('MongoDB unavailable: search analytics are being skipped');
       return;
     }
 
@@ -112,7 +112,7 @@ export class AnalyticsService {
    *
    * @param sinceDays - Window to summarise. Defaults to the last 7 days.
    * @returns The summary, with `connected: false` and zeroed figures when the database is
-   *   unavailable — so the UI can say "analytics offline" rather than "zero searches",
+   *   unavailable, so the UI can say "analytics offline" rather than "zero searches",
    *   which would be a lie.
    */
   async summary(sinceDays = 7): Promise<AnalyticsSummary> {
@@ -202,7 +202,7 @@ function topRoutes(events: readonly { route: string }[]): { route: string; searc
  * Aggregates per-provider behaviour.
  *
  * Average latency counts successful calls only. Including a 6000 ms timeout would drag the
- * mean toward the timeout ceiling and make a fast-but-flaky provider look uniformly slow —
+ * mean toward the timeout ceiling and make a fast-but-flaky provider look uniformly slow,
  * two different problems that need telling apart. The timeout and error counts carry that
  * information separately.
  *

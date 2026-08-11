@@ -21,7 +21,7 @@ export class AirportsController {
    * Lists served airports and which destinations each origin reaches.
    *
    * Served from the API rather than duplicated in the frontend so the picker cannot drift
-   * out of sync with the timetable — an airport offered in the UI but absent from the
+   * out of sync with the timetable, an airport offered in the UI but absent from the
    * schedule would give the user a search that silently returns nothing.
    *
    * The adjacency map lets the destination picker show only routes that have flights,

@@ -60,7 +60,7 @@ describe('SearchForm', () => {
       'data-disabled',
       'true',
     );
-    // Not reachable — shown, but explained rather than silently missing.
+    // Not reachable: shown, but explained rather than silently missing.
     const unreachable = screen.getByRole('option', { name: /Guwahati/ });
     expect(unreachable).toHaveAttribute('data-disabled', 'true');
     expect(unreachable).toHaveTextContent(/no route/i);

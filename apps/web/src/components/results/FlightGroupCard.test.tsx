@@ -124,7 +124,7 @@ describe('FlightGroupCard', () => {
 
   /**
    * Conditional benefits are shown because they are real, but marked because they are
-   * excluded from the value score — so a visible saving that did not move the ranking
+   * excluded from the value score, so a visible saving that did not move the ranking
    * explains itself rather than looking like a scoring bug.
    */
   it('marks a card-conditional benefit', () => {
@@ -277,7 +277,7 @@ describe('expanding a flight', () => {
   });
 
   /**
-   * The split between flying and waiting is invisible in a single total duration — two
+   * The split between flying and waiting is invisible in a single total duration, two
    * four-hour journeys are very different if one is a single flight and the other is
    * ninety minutes of flying either side of a wait.
    */

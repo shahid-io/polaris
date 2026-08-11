@@ -6,7 +6,7 @@
  *
  * Schemas are defined once in Zod and types are derived with z.infer, so a contract
  * cannot drift from its validator. This is why the NestJS app deliberately does not use
- * class-validator DTOs — duplicating these as decorated classes would reintroduce exactly
+ * class-validator DTOs: duplicating these as decorated classes would reintroduce exactly
  * the drift this package exists to prevent.
  */
 export * from './common';

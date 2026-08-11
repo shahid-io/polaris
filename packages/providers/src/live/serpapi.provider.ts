@@ -59,7 +59,7 @@ const TRAVEL_CLASS_CODES: Record<CabinClass, 1 | 2 | 3 | 4> = {
  *
  * Applied only to connection points SerpApi returns that are outside our own airport
  * table. Assuming IST is correct for the Indian domestic market this prototype covers, and
- * wrong the moment it is not — recorded in docs/LIMITATIONS.md alongside the same
+ * wrong the moment it is not, recorded in docs/LIMITATIONS.md alongside the same
  * assumption in the airport table itself.
  */
 const ASSUMED_TIMEZONE = { timeZone: 'Asia/Kolkata', utcOffsetMinutes: 330 };
@@ -67,13 +67,13 @@ const ASSUMED_TIMEZONE = { timeZone: 'Asia/Kolkata', utcOffsetMinutes: 330 };
 /**
  * A real airline's fares, sourced live through SerpApi's Google Flights engine.
  *
- * Neither IndiGo nor Air India Express publishes a developer API — both run partner-only
+ * Neither IndiGo nor Air India Express publishes a developer API, both run partner-only
  * distribution. They do sell through Google Flights, so their live schedules and prices are
  * obtainable through SerpApi, a commercial API operating under its own terms. This is a
  * legitimate route to current data rather than scraping performed by this application.
  *
  * One SerpApi response contains every carrier on the route. Each provider instance filters
- * to its own designator, so `indigo` returns 6E flights and `airindiaexpress` returns IX —
+ * to its own designator, so `indigo` returns 6E flights and `airindiaexpress` returns IX,
  * which is what makes them genuinely separate providers in the comparison rather than one
  * source wearing two labels.
  */
@@ -150,7 +150,7 @@ export class SerpApiProvider implements FlightProvider {
       // Surfaced in the provider status so a viewer can tell a degraded search from a
       // healthy one, not only from the per-offer badge.
       ...(source === 'fixture'
-        ? { message: 'Live request failed — replayed a recorded response' }
+        ? { message: 'Live request failed, replayed a recorded response' }
         : {}),
     };
   }
@@ -199,7 +199,7 @@ export class SerpApiProvider implements FlightProvider {
       return { response, source: 'live' };
     } catch (error) {
       // Falling back is what keeps a live walkthrough working when the network drops or
-      // the free tier's monthly ceiling is reached mid-demonstration — but the result is
+      // the free tier's monthly ceiling is reached mid-demonstration, but the result is
       // labelled as a replay, not passed off as live.
       if (this.mode === 'hybrid') {
         const fixture = await replay();
@@ -239,7 +239,7 @@ export class SerpApiProvider implements FlightProvider {
       providerId: this.config.providerId,
       providerDisplayName: this.config.displayName,
       // Reflects where this offer actually came from. A replayed recording is real data
-      // that is no longer current, which is closer to representative than to live — and
+      // that is no longer current, which is closer to representative than to live, and
       // claiming otherwise would put a "Live" badge on a stale price.
       integrationType: source === 'live' ? 'live-api' : 'representative',
       itinerary: {
@@ -300,7 +300,7 @@ function toSegment(segment: SerpApiSegment): FlightSegment {
  *
  * SerpApi reports wall-clock time at the airport with no offset. The UTC instant is
  * derived from the airport's offset so the canonical key can use the local date while
- * durations and ordering have a real instant to work from — the distinction the whole
+ * durations and ordering have a real instant to work from, the distinction the whole
  * grouping design rests on.
  *
  * @param serpTime - Local time, `YYYY-MM-DD HH:MM`.
@@ -326,18 +326,18 @@ function toScheduledTime(serpTime: string, airportCode: string): ScheduledTime {
   };
 }
 
-/** IndiGo — India's largest carrier by a wide margin. */
+/** IndiGo: India's largest carrier by a wide margin. */
 export const INDIGO_CONFIG: SerpApiProviderConfig = {
   providerId: 'indigo',
   displayName: 'IndiGo',
   carrierCode: '6E',
   integrationNote:
-    'No public developer API — IndiGo runs a Navitaire passenger service system with ' +
+    'No public developer API. IndiGo runs a Navitaire passenger service system with ' +
     "partner-only access. Live fares are sourced through SerpApi's Google Flights engine, " +
     'a commercial API operating under its own terms.',
 };
 
-/** Air India Express — a thinner network, so a good test of low-inventory routes. */
+/** Air India Express, a thinner network, so a good test of low-inventory routes. */
 export const AIR_INDIA_EXPRESS_CONFIG: SerpApiProviderConfig = {
   providerId: 'airindiaexpress',
   displayName: 'Air India Express',

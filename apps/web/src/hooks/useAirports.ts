@@ -15,7 +15,7 @@ export interface UseAirportsResult {
 /**
  * Loads the airport list once on mount.
  *
- * The list is static in practice — airports do not change while a page is open — so this
+ * The list is static in practice, airports do not change while a page is open, so this
  * fetches once rather than on every render, and the request is aborted on unmount so a
  * navigation away does not leave a pending state update targeting an unmounted component.
  *

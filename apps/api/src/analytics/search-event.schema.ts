@@ -27,7 +27,7 @@ const ProviderOutcomeSchema = SchemaFactory.createForClass(ProviderOutcomeRecord
  * One recorded search.
  *
  * ### What is deliberately absent
- * No IP address, no cookie, no session id, no user agent — nothing that identifies a
+ * No IP address, no cookie, no session id, no user agent, nothing that identifies a
  * person. Storing IP alongside a search query would make this personal data under India's
  * **DPDP Act 2023** and the GDPR, bringing obligations a prototype has no business
  * incurring: a lawful basis, a retention policy, subject-access handling.
@@ -36,14 +36,14 @@ const ProviderOutcomeSchema = SchemaFactory.createForClass(ProviderOutcomeRecord
  * are slow", "how often does the cache hit", "does deduplication actually fire on real
  * traffic" are all answerable from this shape without knowing who searched. If per-request
  * diagnostics ever became necessary, the design would be: truncate IPv4 to /24, hash with
- * a rotating salt, 30-day retention — a deliberate decision, not a default.
+ * a rotating salt, 30-day retention, a deliberate decision, not a default.
  *
- * Route and date are stored, and are not personal data — they describe the query, not the
+ * Route and date are stored, and are not personal data, they describe the query, not the
  * querent.
  */
 @Schema({ collection: 'search_events', timestamps: { createdAt: true, updatedAt: false } })
 export class SearchEvent {
-  /** Denormalised `DEL-BOM`, indexed — the field almost every analytics question groups by. */
+  /** Denormalised `DEL-BOM`, indexed, the field almost every analytics question groups by. */
   @Prop({ required: true, index: true })
   route!: string;
 
@@ -86,7 +86,7 @@ export class SearchEvent {
   @Prop({ required: true })
   cached!: boolean;
 
-  /** True when at least one provider failed — the partial-results rate over time. */
+  /** True when at least one provider failed, the partial-results rate over time. */
   @Prop({ required: true, index: true })
   partial!: boolean;
 

@@ -60,7 +60,7 @@ export function ProviderStatusBanner({
         {failed.map((status) => (
           <li key={status.providerId} className="text-xs text-muted-foreground">
             <span className="font-medium text-foreground">{status.displayName}</span>
-            {' — '}
+            {': '}
             {STATUS_LABEL[status.status] ?? status.status}
             {status.message ? `: ${status.message}` : ''}
           </li>

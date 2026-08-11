@@ -27,7 +27,7 @@ const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(r
  *
  * ### Why jitter
  * When a provider recovers from an outage, every in-flight search retries at the same
- * backoff interval and hits it simultaneously — knocking it straight back over. Randomising
+ * backoff interval and hits it simultaneously, knocking it straight back over. Randomising
  * each delay across the whole window spreads that thundering herd.
  *
  * @typeParam T - What the operation resolves to.

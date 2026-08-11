@@ -17,7 +17,7 @@ export interface ProviderContext {
    *
    * Adapters must pass this to any I/O they perform. The timeout is enforced centrally so
    * one slow provider cannot hold up a search, and so the policy lives in one place rather
-   * than being reimplemented — inconsistently — in six adapters.
+   * than being reimplemented, inconsistently, in six adapters.
    */
   readonly signal: AbortSignal;
 
@@ -37,11 +37,11 @@ export interface ProviderContext {
  * What an adapter returns on success.
  *
  * Note there is no error variant: failure is expressed by throwing. Adapters are free to
- * throw anything — the orchestrator catches, classifies and isolates, so a provider crash
+ * throw anything, the orchestrator catches, classifies and isolates, so a provider crash
  * degrades to a `ProviderStatus` rather than failing the search.
  */
 export interface ProviderResult {
-  /** Offers that normalised and validated cleanly. May be empty — that is a valid answer. */
+  /** Offers that normalised and validated cleanly. May be empty, that is a valid answer. */
   readonly offers: NormalizedOffer[];
 
   /**
@@ -62,7 +62,7 @@ export interface ProviderResult {
  * This is the abstraction the brief's "ability to work with different integration options"
  * criterion is really about. A live REST API, a vendor sandbox, and deterministic
  * representative data all satisfy this same interface, and the orchestrator cannot tell
- * them apart — which is why adding a provider touches one array rather than the pipeline.
+ * them apart, which is why adding a provider touches one array rather than the pipeline.
  *
  * @example
  * ```ts
@@ -76,7 +76,7 @@ export interface ProviderResult {
  * ```
  */
 export interface FlightProvider {
-  /** Static description — integration type, data source, whether the data is real. */
+  /** Static description: integration type, data source, whether the data is real. */
   readonly descriptor: ProviderDescriptor;
 
   /**
@@ -85,7 +85,7 @@ export interface FlightProvider {
    * @param query - The validated search query.
    * @param ctx - Cancellation signal, search id and search-start clock.
    * @returns Normalised offers, plus a count of anything dropped in mapping.
-   * @throws {ProviderError} Or any other error — the orchestrator isolates failures.
+   * @throws {ProviderError} Or any other error, the orchestrator isolates failures.
    */
   search(query: SearchQuery, ctx: ProviderContext): Promise<ProviderResult>;
 }
@@ -94,7 +94,7 @@ export interface FlightProvider {
  * Base class for failures an adapter can describe precisely.
  *
  * Carrying the provider id and a retryability flag lets the orchestrator decide policy
- * without parsing messages — a missing credential should not be retried, a 503 should.
+ * without parsing messages, a missing credential should not be retried, a 503 should.
  */
 export class ProviderError extends Error {
   /**
@@ -102,8 +102,8 @@ export class ProviderError extends Error {
    * @param message - Human-readable explanation, surfaced in the UI.
    * @param retryable - Whether retrying could plausibly succeed.
    * @param cause - The underlying error. Forwarded to the native `Error.cause` rather
-   *   than stored as a own property, so the standard cause chain — and the stack trace
-   *   rendering that reads it — keeps working.
+   *   than stored as a own property, so the standard cause chain, and the stack trace
+   *   rendering that reads it, keeps working.
    */
   constructor(
     readonly providerId: ProviderId,
@@ -128,7 +128,7 @@ export class ProviderCredentialsMissingError extends ProviderError {
    * @param envVar - The environment variable that would supply the credential.
    */
   constructor(providerId: ProviderId, envVar: string) {
-    super(providerId, `No credentials configured — set ${envVar} to enable this provider`, false);
+    super(providerId, `No credentials configured, set ${envVar} to enable this provider`, false);
     this.name = 'ProviderCredentialsMissingError';
   }
 }

@@ -12,7 +12,7 @@ limitation was a genuine trade-off, the reasoning is recorded.
 ### Three providers use representative data
 
 MakeMyTrip, Goibibo and Cleartrip return generated offers, not real fares. Their partner APIs
-are commercially gated and unobtainable for a prototype — see
+are commercially gated and unobtainable for a prototype, see
 [`INTEGRATIONS.md`](./INTEGRATIONS.md#3-providers-not-integrated-and-the-reason).
 
 The prices are plausible, not accurate. They are not scraped, not historical, and must not
@@ -31,7 +31,7 @@ demonstration could exhaust it. A paid tier or a second source would remove the 
 ### One-way, economy-default, INR only
 
 The brief specifies a single travel date, so only one-way search is implemented. `SearchQuery`
-extends to round-trip without a breaking change — a `returnDate` field and a second leg in the
+extends to round-trip without a breaking change, a `returnDate` field and a second leg in the
 itinerary.
 
 All prices are INR. `Money` carries a currency and refuses cross-currency comparison rather
@@ -41,7 +41,7 @@ problem rather than a modelling one.
 ### The timetable covers 13 routes
 
 Representative providers serve 13 route pairs across 10 Indian airports. An unserved route
-returns zero flights — a legitimate empty result, not an error. Live providers are not
+returns zero flights, a legitimate empty result, not an error. Live providers are not
 restricted this way.
 
 ---
@@ -64,7 +64,7 @@ departure instant plus route, and merge only on full agreement.
 ### Airport timezones are fixed offsets
 
 Each airport carries a fixed UTC offset. This is _correct_ for every airport currently
-served — India observes UTC+05:30 year-round with no daylight saving — but it is a landmine
+served: India observes UTC+05:30 year-round with no daylight saving, but it is a landmine
 for expansion. Adding an airport in a DST-observing country would produce silent one-hour
 errors twice a year.
 
@@ -80,7 +80,7 @@ Only benefits with an established monetary value contribute to the score. Lounge
 priority boarding are real but not priceable, so they are displayed and excluded from scoring
 rather than assigned an invented number.
 
-Conditional benefits — "₹500 off with HDFC cards" — are excluded too. Most users cannot claim
+Conditional benefits: "₹500 off with HDFC cards", are excluded too. Most users cannot claim
 them, and counting them would systematically over-rank whichever provider advertises the most
 card promotions. A user who _does_ hold the card sees a benefit the score ignores.
 
@@ -92,7 +92,7 @@ card promotions. A user who _does_ hold the card sees a benefit the score ignore
 derived truth. The weights are exposed as a parameter and echoed in every response so a
 ranking can be explained and reproduced.
 
-**To fix:** let users adjust weights directly — the scoring function already accepts arbitrary
+**To fix:** let users adjust weights directly, the scoring function already accepts arbitrary
 positive weights and normalises them.
 
 ---
@@ -104,7 +104,7 @@ positive weights and normalises them.
 Both live in memory. With more than one API instance, each would keep its own cache and its
 own view of provider health.
 
-`CacheStore` is an interface precisely so this is a deployment change rather than a rewrite —
+`CacheStore` is an interface precisely so this is a deployment change rather than a rewrite,
 a Redis implementation and one changed line in `CacheModule`.
 
 ### No rate limiting
@@ -115,8 +115,8 @@ anything exposed. `@nestjs/throttler` would address it.
 ### Analytics is best-effort
 
 Writes are not awaited and failures are swallowed after one warning. A search that succeeds
-may therefore not be recorded. This is the correct trade — telemetry must not fail a user's
-search — but it means the analytics figures are a lower bound, not an audit.
+may therefore not be recorded. This is the correct trade, telemetry must not fail a user's
+search, but it means the analytics figures are a lower bound, not an audit.
 
 ### No authentication
 
@@ -134,18 +134,18 @@ Storing an IP alongside a search query would make this personal data under India
 2023** and the GDPR, bringing obligations a prototype has no business incurring: a lawful
 basis for processing, a retention policy, and subject-access handling.
 
-Every operationally useful question — which providers are slow, how often the cache hits,
-whether deduplication fires on real traffic — is answerable without knowing who searched.
+Every operationally useful question, which providers are slow, how often the cache hits,
+whether deduplication fires on real traffic, is answerable without knowing who searched.
 Route and travel date are stored; they describe the query, not the person.
 
 **If per-request diagnostics ever became necessary,** the design would be: truncate IPv4 to
-/24, hash with a rotating salt, and expire after 30 days — a deliberate decision with a stated
+/24, hash with a rotating salt, and expire after 30 days, a deliberate decision with a stated
 basis, not a default that accumulated.
 
 ### Why there is no cookie banner
 
-Because there is nothing to consent to. The app sets **no cookies at all** — no session, no
-`Set-Cookie`, no `document.cookie` — and loads **no third-party scripts**: no analytics tag,
+Because there is nothing to consent to. The app sets **no cookies at all**, no session, no
+`Set-Cookie`, no `document.cookie`, and loads **no third-party scripts**: no analytics tag,
 no pixel, no tag manager.
 
 The only thing written to the browser is a single `localStorage` entry holding the theme you
@@ -154,7 +154,7 @@ picked. It never leaves the device and is never sent to the API.
 Consent obligations attach to what is stored or read on someone's device, not to being a
 website. The EU ePrivacy rule that drives most banners exempts storage that is strictly
 necessary for something the user explicitly asked for, and a preference set by pressing a
-toggle is squarely that. India's DPDP Act — the regime that actually applies here — has no
+toggle is squarely that. India's DPDP Act, the regime that actually applies here, has no
 cookie-consent mechanism at all; it governs the processing of personal data, which a theme
 string on a laptop is not.
 
@@ -163,7 +163,7 @@ so adding one would ask permission for something that does not happen, and put a
 between the user and the search box.
 
 **This changes** the moment there are accounts (a session cookie is still exempt as strictly
-necessary, but the surrounding obligations grow) or any third-party analytics is added — at
+necessary, but the surrounding obligations grow) or any third-party analytics is added, at
 which point non-essential tracking needs real consent before it loads, not after.
 
 ---
@@ -175,7 +175,7 @@ Deliberately out of scope for the assessment, with the approach sketched.
 ### Booking flow
 
 Comparison ends at a deep link. Real booking needs payment, PNR management, ticketing rules,
-cancellation and refunds — and, critically, a commercial agreement with each provider. That
+cancellation and refunds, and, critically, a commercial agreement with each provider. That
 agreement is the same blocker preventing the OTA integrations in the first place.
 
 ### User accounts and saved searches
@@ -192,7 +192,7 @@ most of what this requires; the missing pieces are a scheduler and a delivery ch
 ### Flexible dates
 
 A ±3-day price matrix. Straightforward against representative providers, but it multiplies
-live provider calls — and against a 250-a-month quota that is the binding constraint, not the
+live provider calls, and against a 250-a-month quota that is the binding constraint, not the
 engineering.
 
 ### Multi-currency

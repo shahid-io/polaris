@@ -8,13 +8,13 @@ export const sortKeySchema = z.enum(['value', 'price', 'duration', 'departure', 
 export const sortDirectionSchema = z.enum(['asc', 'desc']);
 
 export const searchMetaSchema = z.object({
-  /** Correlates the response with server logs — useful when debugging live. */
+  /** Correlates the response with server logs, useful when debugging live. */
   searchId: z.string(),
   /** Total offers across all providers, before grouping. */
   totalOffers: z.number().int().nonnegative(),
   /** Distinct marketed flights after grouping. Lower than totalOffers when dedup fired. */
   totalGroups: z.number().int().nonnegative(),
-  /** Groups sold by more than one provider — the dedup working, quantified. */
+  /** Groups sold by more than one provider, the dedup working, quantified. */
   multiProviderGroups: z.number().int().nonnegative(),
   /** End-to-end server time. */
   tookMs: z.number().int().nonnegative(),
@@ -26,7 +26,7 @@ export const searchMetaSchema = z.object({
   providersAttempted: z.number().int().nonnegative(),
   /**
    * True when at least one provider failed. The UI uses this to show the partial-results
-   * banner — the brief requires partial results be handled visibly, not silently.
+   * banner, the brief requires partial results be handled visibly, not silently.
    */
   partial: z.boolean(),
 });
@@ -39,7 +39,7 @@ export const searchMetaSchema = z.object({
  * request or a total internal failure is a non-2xx.
  */
 export const searchResponseSchema = z.object({
-  /** Echo of the parsed query, post-defaults — lets the client render exactly what ran. */
+  /** Echo of the parsed query, post-defaults, lets the client render exactly what ran. */
   query: searchQuerySchema,
   groups: z.array(comparisonGroupSchema),
   providerStatuses: z.array(providerStatusSchema),

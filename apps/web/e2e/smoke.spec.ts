@@ -4,8 +4,8 @@ import { expect, test } from '@playwright/test';
  * The one thing jsdom cannot tell us: does this work in a real browser?
  *
  * Deliberately a single test covering the whole happy path rather than several granular
- * ones. Its job is to catch the failures that only appear in a browser — hydration
- * mismatches, a stylesheet that never loads, a client-only crash — not to re-test
+ * ones. Its job is to catch the failures that only appear in a browser, hydration
+ * mismatches, a stylesheet that never loads, a client-only crash, not to re-test
  * behaviour the component suite already pins.
  */
 test('a user can search and compare fares', async ({ page }) => {

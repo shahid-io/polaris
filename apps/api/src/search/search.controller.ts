@@ -14,7 +14,7 @@ export class SearchController {
   /**
    * Searches every provider and returns grouped, ranked flights.
    *
-   * Always 200 when the request is valid, even if every provider failed — the outcome of
+   * Always 200 when the request is valid, even if every provider failed, the outcome of
    * each is reported in `providerStatuses` rather than collapsed into an HTTP error. Only
    * a malformed request (400) or an internal fault (500) is a non-2xx.
    *

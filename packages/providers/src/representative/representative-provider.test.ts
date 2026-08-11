@@ -25,7 +25,7 @@ const noLatency = { simulateLatency: false } as const;
 /**
  * A provider that lists the entire timetable.
  *
- * Structural assertions — timezone resolution, date rollover, day-of-week filtering — need
+ * Structural assertions: timezone resolution, date rollover, day-of-week filtering, need
  * a specific flight to be present. Against a partial-inventory provider those tests would
  * silently pass whenever coverage happened to exclude the flight, asserting nothing.
  */
@@ -39,7 +39,7 @@ const ctx = (signal = new AbortController().signal) => ({
 
 describe('RepresentativeProvider', () => {
   it('declares itself as representative rather than real data', () => {
-    // Honesty by construction — the UI badge and the docs both read from this.
+    // Honesty by construction, the UI badge and the docs both read from this.
     const provider = new RepresentativeProvider(MAKEMYTRIP_CONFIG, noLatency);
 
     expect(provider.descriptor.integrationType).toBe('representative');
@@ -126,7 +126,7 @@ describe('RepresentativeProvider', () => {
 
   it('lists a subset of the timetable, not every flight', async () => {
     // Coverage below 1 is what makes some flights sold by three providers and others by
-    // one — without it every comparison group would look identical.
+    // one, without it every comparison group would look identical.
     const provider = new RepresentativeProvider(CLEARTRIP_CONFIG, noLatency);
 
     const { offers } = await provider.search(query(), ctx());
@@ -176,7 +176,7 @@ describe('RepresentativeProvider', () => {
   });
 
   it('resolves the red-eye to the correct local date', async () => {
-    // DEL–BOM 6E-2134 departs 00:45 IST — 19:15Z the previous day.
+    // DEL–BOM 6E-2134 departs 00:45 IST, 19:15Z the previous day.
     const provider = new RepresentativeProvider(FULL_COVERAGE_CONFIG, noLatency);
 
     const { offers } = await provider.search(query(), ctx());
@@ -242,7 +242,7 @@ describe('RepresentativeProvider', () => {
 
   it('resolves its simulated latency early when the search is cancelled', async () => {
     const controller = new AbortController();
-    // Latency deliberately left on — resolving early is exactly what is under test.
+    // Latency deliberately left on, resolving early is exactly what is under test.
     const provider = new RepresentativeProvider(CLEARTRIP_CONFIG);
 
     const pending = provider.search(query(), ctx(controller.signal));
@@ -331,7 +331,7 @@ describe('overlap with live data', () => {
   });
 
   it('produces identical canonical keys for a shared service', async () => {
-    // Same carrier, number, date and route on both sides — which is all the key uses.
+    // Same carrier, number, date and route on both sides, which is all the key uses.
     const [makeMyTrip] = createOtaProviders({ simulateLatency: false });
     const { offers } = await makeMyTrip!.search(query({ departureDate: '2026-08-25' }), ctx());
 

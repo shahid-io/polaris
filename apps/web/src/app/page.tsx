@@ -38,7 +38,7 @@ export default function HomePage() {
   const groups = useMemo(() => response?.groups ?? [], [response]);
   // Built from the unfiltered result, so no option ever yields zero.
   const available = useMemo(() => buildFilterOptions(groups), [groups]);
-  // Filtering and sorting come from @polaris/core — the same functions the API runs.
+  // Filtering and sorting come from @polaris/core, the same functions the API runs.
   // Reimplementing them here would give the UI and the API two definitions of "cheapest
   // first", which agree today and drift the first time either gains a tie-breaker.
   const visible = useMemo(
@@ -53,7 +53,7 @@ export default function HomePage() {
           Compare the same flight across every provider
         </h1>
         <p className="mt-1.5 text-sm text-muted-foreground sm:text-base">
-          One row per flight, with each seller&apos;s price beside it — not one row per offer.
+          One row per flight, with each seller&apos;s price beside it, not one row per offer.
         </p>
       </div>
 

@@ -24,8 +24,8 @@ export const FLIGHT_PROVIDERS = Symbol('FLIGHT_PROVIDERS');
  *
  * A dynamic module because *which* adapters exist is a runtime decision driven by
  * `PROVIDER_MODE` and by which credentials are present. Registering the set at module
- * construction — rather than having each adapter decide at call time whether it is
- * enabled — means the provider list is a fact about the running system, reportable by
+ * construction, rather than having each adapter decide at call time whether it is
+ * enabled: means the provider list is a fact about the running system, reportable by
  * `GET /api/providers` before any search happens.
  *
  * @example
@@ -61,7 +61,7 @@ export class ProvidersModule {
 /**
  * Assembles the adapter list for the current configuration.
  *
- * The three representative OTAs are always registered — they need no credentials, which is
+ * The three representative OTAs are always registered, they need no credentials, which is
  * why the app is fully usable with an empty `.env`. Live adapters join them as their keys
  * become available; a missing key means the provider is simply absent rather than present
  * and permanently failing.
@@ -92,7 +92,7 @@ function buildProviders(config: ConfigService<Env, true>): FlightProvider[] {
 /**
  * Parses the demo failure-injection setting.
  *
- * Exists so the partial-results path can be demonstrated on demand — `cleartrip:timeout`
+ * Exists so the partial-results path can be demonstrated on demand, `cleartrip:timeout`
  * makes a live audience see the degradation rather than being told about it. Explicit
  * configuration rather than a random failure rate: a demo that fails a coin toss is worse
  * than no demo.

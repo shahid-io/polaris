@@ -7,7 +7,7 @@ import { join } from 'node:path';
  * Fixtures are what let a demonstration survive a dropped network or an exhausted quota,
  * and what make the adapter's tests deterministic. Because a recording is only ever used
  * for the exact date it was captured for, the date you record has to be the date you
- * intend to search — hence this script rather than a one-off command.
+ * intend to search, hence this script rather than a one-off command.
  *
  * **Each route costs one SerpApi credit** against a free tier of 250 a month, so it
  * reports what it is about to spend and skips anything already recorded.
@@ -46,7 +46,7 @@ process.loadEnvFile(new URL('../.env', import.meta.url).pathname);
 const apiKey = process.env.SERPAPI_KEY;
 
 if (!apiKey) {
-  console.error('SERPAPI_KEY is not set in .env — nothing to record against.');
+  console.error('SERPAPI_KEY is not set in .env, nothing to record against.');
   process.exit(1);
 }
 
@@ -95,7 +95,7 @@ for (const route of planned) {
 
     const flights = [...(body.best_flights ?? []), ...(body.other_flights ?? [])];
     if (flights.length === 0) {
-      console.log(`  ${route}  no flights returned — not recorded`);
+      console.log(`  ${route}  no flights returned, not recorded`);
       continue;
     }
 
@@ -108,7 +108,7 @@ for (const route of planned) {
     console.log(`  ${route}  ${flights.length} itineraries · carriers ${[...carriers].join(' ')}`);
     recorded += 1;
   } catch (error) {
-    console.error(`  ${route}  FAILED — ${error.message}`);
+    console.error(`  ${route}  FAILED: ${error.message}`);
   }
 }
 

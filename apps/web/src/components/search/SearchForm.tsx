@@ -29,7 +29,7 @@ export interface SearchFormProps {
 }
 
 /**
- * The search form — the brief's four inputs: source, destination, date and time range.
+ * The search form, the brief's four inputs: source, destination, date and time range.
  *
  * Validation is structural rather than a submit-time error message: the destination picker
  * only offers airports the origin actually reaches, and the submit button stays disabled

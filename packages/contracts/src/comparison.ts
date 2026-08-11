@@ -10,7 +10,7 @@ import { providerIdSchema } from './provider';
  * Rather than hide that behind one opaque number, every sub-score and the weights that
  * produced it are returned, so the UI can answer "why is this ranked first?".
  *
- * Sub-scores are min-max normalised to 0..1 WITHIN the current result set — a score is a
+ * Sub-scores are min-max normalised to 0..1 WITHIN the current result set, a score is a
  * statement about this search, not an absolute rating.
  */
 export const scoreBreakdownSchema = z.object({
@@ -28,7 +28,7 @@ export const valueScoreSchema = z.object({
   /** Weighted total, 0..1. Higher is better. */
   total: z.number().min(0).max(1),
   breakdown: scoreBreakdownSchema,
-  /** The weights actually applied — echoed so the UI can explain and the result reproduce. */
+  /** The weights actually applied, echoed so the UI can explain and the result reproduce. */
   weights: scoreBreakdownSchema,
 });
 
@@ -48,7 +48,7 @@ export const priceSpreadSchema = z.object({
  * The brief requires handling "the same flight available through multiple providers".
  * A ComparisonGroup is one marketed flight with every provider's offer for it attached.
  * IndiGo 6E-2134 DEL→BOM sold by MakeMyTrip, Goibibo and IndiGo direct is ONE group with
- * three offers — not three rows in a list. The price spread across those offers is the
+ * three offers, not three rows in a list. The price spread across those offers is the
  * comparison value the product exists to surface.
  */
 export const comparisonGroupSchema = z.object({

@@ -42,7 +42,7 @@ export interface RepresentativeProviderConfig {
    * Share of a route's flights this provider lists, 0 to 1.
    *
    * Below 1 deliberately: no OTA sells every seat on every flight. This is what produces
-   * a realistic mix of flights sold by three providers, two, or only one — without which
+   * a realistic mix of flights sold by three providers, two, or only one, without which
    * every comparison group would look identical and the dedup would prove nothing.
    */
   inventoryCoverage: number;
@@ -69,12 +69,12 @@ const CABIN_MULTIPLIERS: Record<CabinClass, number> = {
  *
  * Used for MakeMyTrip, Goibibo and Cleartrip, whose partner APIs are commercially gated
  * and genuinely unobtainable for a prototype. The brief explicitly permits representative
- * data in that situation provided it is documented — so every offer produced here is
+ * data in that situation provided it is documented, so every offer produced here is
  * stamped `integrationType: 'representative'` and badged as simulated in the UI, rather
  * than being quietly passed off as real.
  *
  * Crucially, all representative providers price the *same shared timetable*, so the same
- * marketed flight really does appear across providers at different prices — which is the
+ * marketed flight really does appear across providers at different prices, which is the
  * behaviour the comparison engine exists to handle.
  *
  * Everything is derived from a seed built out of the query, so results are identical run
@@ -198,7 +198,7 @@ export class RepresentativeProvider implements FlightProvider {
    * Chooses which fare products to sell on a flight.
    *
    * The cheapest family is always offered; dearer ones appear sometimes, so a group can
-   * legitimately hold two fares from one provider — the case that makes measuring price
+   * legitimately hold two fares from one provider, the case that makes measuring price
    * spread across providers rather than across offers matter.
    *
    * @param rng - Seeded source.
@@ -292,7 +292,7 @@ export class RepresentativeProvider implements FlightProvider {
    * Waits a plausible amount of time before answering.
    *
    * Without this every representative provider would return in under a millisecond, and
-   * the timeout, circuit breaker and partial-results behaviour would never be exercised —
+   * the timeout, circuit breaker and partial-results behaviour would never be exercised,
    * in development or in the demo. The delay is seeded, so it is consistent per query.
    *
    * Resolves early if the search is cancelled, so a caller's abort is not held up by a

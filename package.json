@@ -2,7 +2,7 @@
   "name": "polaris",
   "version": "0.1.0",
   "private": true,
-  "description": "Polaris — find your bearing on every fare. Aggregates and compares flight offers across multiple providers.",
+  "description": "Polaris: find your bearing on every fare. Aggregates and compares flight offers across multiple providers.",
   "packageManager": "pnpm@11.21.0",
   "engines": {
     "node": ">=20"

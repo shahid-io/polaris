@@ -24,12 +24,12 @@ export interface AirportPickerProps {
    * Restricts selectable airports to these codes.
    *
    * Used for the destination picker, so a user can only choose somewhere the timetable
-   * actually flies. Codes outside the list are shown greyed rather than hidden — a
+   * actually flies. Codes outside the list are shown greyed rather than hidden, a
    * destination vanishing from the list as you change origin is disorienting, whereas a
    * disabled row explains itself.
    */
   selectableCodes?: readonly string[];
-  /** Excluded entirely — used so origin cannot equal destination. */
+  /** Excluded entirely: used so origin cannot equal destination. */
   excludeCode?: string;
   disabled?: boolean;
   onChange: (code: string) => void;
@@ -39,7 +39,7 @@ export interface AirportPickerProps {
  * Searchable airport combobox.
  *
  * Filters on city, airport name and IATA code together, because people reach for whichever
- * they know — "Bombay" and "BOM" and "Chhatrapati" should all find the same airport.
+ * they know: "Bombay" and "BOM" and "Chhatrapati" should all find the same airport.
  */
 export function AirportPicker({
   label,
@@ -60,7 +60,7 @@ export function AirportPicker({
         .filter((airport) => airport.code !== excludeCode)
         .map((airport) => ({
           ...airport,
-          // No restriction means everything is selectable — the origin picker's case.
+          // No restriction means everything is selectable, the origin picker's case.
           isSelectable: !selectableCodes || selectableCodes.includes(airport.code),
         }))
         // Selectable first, so the useful options are not buried under greyed rows.
@@ -98,7 +98,7 @@ export function AirportPicker({
 
         <PopoverContent className="w-(--radix-popover-trigger-width) min-w-72">
           <Command
-            // Search city, name and code together — people reach for whichever they know.
+            // Search city, name and code together, people reach for whichever they know.
             filter={(itemValue, search) =>
               itemValue.toLowerCase().includes(search.toLowerCase()) ? 1 : 0
             }

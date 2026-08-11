@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-/** IATA airport code — three uppercase letters, e.g. DEL, BOM. */
+/** IATA airport code, three uppercase letters, e.g. DEL, BOM. */
 export const iataAirportCodeSchema = z
   .string()
   .regex(/^[A-Z]{3}$/, 'Must be a 3-letter IATA airport code, e.g. DEL')
   .describe('IATA airport code');
 
-/** IATA airline designator — two alphanumerics, e.g. 6E (IndiGo), IX (Air India Express). */
+/** IATA airline designator, two alphanumerics, e.g. 6E (IndiGo), IX (Air India Express). */
 export const iataAirlineCodeSchema = z
   .string()
   .regex(/^[A-Z0-9]{2}$/, 'Must be a 2-character IATA airline code, e.g. 6E')
@@ -16,7 +16,7 @@ export const iataAirlineCodeSchema = z
  * Calendar date with no timezone, YYYY-MM-DD.
  *
  * The shape check alone is not enough: `2026-02-31` and `2026-13-01` both match the
- * pattern and are not dates. Round-tripping through UTC catches them — a value that does
+ * pattern and are not dates. Round-tripping through UTC catches them, a value that does
  * not survive being parsed and reformatted was never a real calendar date.
  *
  * Date.UTC is used rather than `new Date(string)` so the check cannot shift by a day
@@ -64,7 +64,7 @@ export const currencyCodeSchema = z
  * and 0.1 + 0.2 !== 0.3 would surface as off-by-one-paisa price spreads in the UI.
  */
 export const moneySchema = z.object({
-  /** Integer amount in the currency's minor unit — e.g. 549900 = ₹5,499.00 */
+  /** Integer amount in the currency's minor unit, e.g. 549900 = ₹5,499.00 */
   amountMinor: z.number().int().nonnegative(),
   currency: currencyCodeSchema,
 });
@@ -73,7 +73,7 @@ export const moneySchema = z.object({
  * A scheduled time carried in three forms simultaneously.
  *
  * This shape exists to prevent a specific, subtle bug. The canonical key used to
- * recognise "the same flight across providers" includes the departure date — and that
+ * recognise "the same flight across providers" includes the departure date, and that
  * date MUST be the local date at the origin airport. A 00:45 IST departure is
  * 19:15Z the previous day; keying on the UTC date would split one flight into two
  * groups whenever providers disagree on which representation they return.

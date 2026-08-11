@@ -5,7 +5,7 @@ import { Providers } from '@/components/providers/Providers';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Polaris — Flight Comparison',
+  title: 'Polaris: Flight Comparison',
   description:
     'Compare the same marketed flight across every provider that sells it, with each seller’s price side by side.',
 };

@@ -86,7 +86,7 @@ describe('CircuitBreaker', () => {
 
   /**
    * The whole point of `half_open`. The orchestrator fans out concurrently, so two searches
-   * can reach `canAttempt` in the same tick just after the cooldown ends — admitting both
+   * can reach `canAttempt` in the same tick just after the cooldown ends, admitting both
    * would send full traffic to a provider that has not yet proved it recovered.
    */
   it('admits exactly one probe when several callers race the end of the reset window', () => {
@@ -106,7 +106,7 @@ describe('CircuitBreaker', () => {
     clock += 30_000;
     breaker.canAttempt();
 
-    // Well past a second reset window — elapsed time must not hand out another probe
+    // Well past a second reset window, elapsed time must not hand out another probe
     // while the first one is unresolved.
     clock += 300_000;
 

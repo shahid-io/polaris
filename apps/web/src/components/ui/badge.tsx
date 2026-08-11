@@ -12,7 +12,7 @@ const badgeVariants = cva(
         outline: 'border-border text-muted-foreground',
         /** Real market data. */
         live: 'border-success/40 bg-success/10 text-success',
-        /** Generated data — never presented as real. */
+        /** Generated data, never presented as real. */
         simulated: 'border-warning/40 bg-warning/10 text-warning',
         destructive: 'border-destructive/40 bg-destructive/10 text-destructive',
       },

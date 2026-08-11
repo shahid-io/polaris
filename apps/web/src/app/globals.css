@@ -12,7 +12,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Hue 275 — a deep indigo, not the stock corporate blue.
+ * Hue 275: a deep indigo, not the stock corporate blue.
  *
  * Every neutral carries a trace of the same hue rather than being a true grey. A grey at
  * zero chroma next to a saturated accent reads as two unrelated decisions; a grey biased a
@@ -20,7 +20,7 @@
  * obvious removed.
  *
  * Deliberately still in the blue family. The status colours below have to keep meaning what
- * they mean — green is the cheapest fare, amber is a tight connection — and an accent that
+ * they mean (green is the cheapest fare, amber is a tight connection) and an accent that
  * strayed toward either would blunt them.
  */
 :root {
@@ -58,7 +58,7 @@
   --radius: 0.5rem;
 
   /*
-   * Tells the browser which theme its own widgets should adopt — checkboxes, the date
+   * Tells the browser which theme its own widgets should adopt: checkboxes, the date
    * picker, scrollbars, focus rings on native controls. Without it those stay light no
    * matter what the tokens say, which is how a dark page ends up with white checkboxes.
    */
@@ -69,7 +69,7 @@
 /*
  * Dark is not an inversion. The accent is lifted to L 0.70 and slightly desaturated,
  * because the same indigo that reads as considered on white reads as a hole punched in a
- * dark card — a saturated mid-tone against a dark ground is where accents usually fail.
+ * dark card. A saturated mid-tone against a dark ground is where accents usually fail.
  */
 .dark {
   --background: oklch(0.17 0.016 275);
@@ -151,14 +151,14 @@
   }
 
   /*
-   * Tailwind 4's preflight sets `cursor: default` on buttons — a deliberate change from v3,
+   * Tailwind 4's preflight sets `cursor: default` on buttons, a deliberate change from v3,
    * and from what every browser does on its own. The result is that nothing on the page
    * reads as clickable: the expand control on a flight card, "Clear filters" and the theme
    * toggle all show an arrow.
    *
    * Restored here rather than as a utility on each component, because the components are
    * not the whole set. Radix and cmdk render their own buttons, and the next one added
-   * would silently arrive with the wrong cursor — a rule in the base layer is the same
+   * would silently arrive with the wrong cursor. A rule in the base layer is the same
    * decision applied once, in the same place the rest of the resets live.
    *
    * Disabled controls are excluded so they keep the default arrow, which is the honest

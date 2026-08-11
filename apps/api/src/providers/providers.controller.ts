@@ -15,7 +15,7 @@ export class ProvidersController {
    * Lists every registered provider and its current circuit state.
    *
    * Serves the provider health view. Exposing which providers are real and which are
-   * representative through the API — rather than only in documentation — is what lets the
+   * representative through the API, rather than only in documentation, is what lets the
    * UI badge simulated data honestly at the point a user sees a price.
    *
    * @returns Provider descriptors with live circuit state.

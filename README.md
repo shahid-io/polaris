@@ -2,8 +2,8 @@
 
 **Find your bearing on every fare.**
 
-A flight comparison prototype that searches multiple providers, aggregates their offers, and —
-critically — recognises when several providers are selling **the same marketed flight**. The
+A flight comparison prototype that searches multiple providers, aggregates their offers, and,
+critically, recognises when several providers are selling **the same marketed flight**. The
 result is a list of flights with a price range attached, not a list of near-duplicate rows.
 
 Built for the North Star Identity Full Stack Developer assessment.
@@ -20,7 +20,7 @@ Requires Node 20+ and pnpm.
 npm i -g pnpm
 
 pnpm install
-cp .env.example .env     # optional — the app runs fine with no credentials
+cp .env.example .env     # optional, the app runs fine with no credentials
 pnpm build
 pnpm dev                 # api :4000 · web :3000
 ```
@@ -34,7 +34,7 @@ curl -X POST http://localhost:4000/api/search \
 ```
 
 **No API keys are required.** Providers without credentials report status `skipped` and the
-search proceeds with the rest — the same partial-results path used when a provider fails.
+search proceeds with the rest, the same partial-results path used when a provider fails.
 Optional extras:
 
 | Variable              | Enables                                         |
@@ -51,10 +51,10 @@ no-ops.
 ## What it does
 
 - **Searches six providers concurrently**, with a ten-second budget each
-- **Deduplicates across providers** — one row per marketed flight, with every seller's price
+- **Deduplicates across providers**: one row per marketed flight, with every seller's price
 - **Ranks by transparent value score**, returning the sub-scores and weights that produced it
 - **Filters and sorts** on price, duration, departure, stops, airline, provider and benefits
-- **Degrades honestly** — a failed provider becomes a visible status, never a failed search
+- **Degrades honestly**: a failed provider becomes a visible status, never a failed search
 
 A real search, DEL→BOM:
 
@@ -80,15 +80,15 @@ Versions are the ones this was built and verified against, not floors.
 |             | pnpm         | 11.21                                                     |
 |             | TypeScript   | 5.9                                                       |
 | **API**     | NestJS       | 11.1                                                      |
-|             | Mongoose     | 9.9 — optional, analytics only                            |
-| **Web**     | Next.js      | 16.3 — App Router                                         |
+|             | Mongoose     | 9.9 (optional, analytics only)                            |
+| **Web**     | Next.js      | 16.3 (App Router)                                         |
 |             | React        | 19.2                                                      |
-|             | Tailwind CSS | 4.3 — CSS-first `@theme`, no config file                  |
-| **Shared**  | Zod          | 4.4 — schemas are the source of truth; types are inferred |
+|             | Tailwind CSS | 4.3 (CSS-first `@theme`, no config file)                  |
+| **Shared**  | Zod          | 4.4 (schemas are the source of truth; types are inferred) |
 | **Tooling** | Turborepo    | 2.10                                                      |
 |             | Vitest       | 4.1                                                       |
-|             | Playwright   | 1.62 — Chromium                                           |
-|             | ESLint       | 9.39 — held below 10, see `eslint.config.mjs`             |
+|             | Playwright   | 1.62 (Chromium)                                           |
+|             | ESLint       | 9.39 (held below 10, see `eslint.config.mjs`)             |
 |             | Prettier     | 3.9                                                       |
 
 ---
@@ -97,10 +97,10 @@ Versions are the ones this was built and verified against, not floors.
 
 | Package                                                | Purpose                                      |          |
 | ------------------------------------------------------ | -------------------------------------------- | -------- |
-| [`apps/api`](./apps/api/README.md)                     | NestJS — fan-out, caching, analytics         | 41 tests |
-| [`apps/web`](./apps/web/README.md)                     | Next.js — search, results, comparison        | 52 tests |
+| [`apps/api`](./apps/api/README.md)                     | NestJS (fan-out, caching, analytics)         | 41 tests |
+| [`apps/web`](./apps/web/README.md)                     | Next.js (search, results, comparison)        | 52 tests |
 | [`packages/contracts`](./packages/contracts/README.md) | Zod schemas shared across the boundary       | 15 tests |
-| [`packages/core`](./packages/core/README.md)           | group · score · filter · sort — pure, no I/O | 79 tests |
+| [`packages/core`](./packages/core/README.md)           | group · score · filter · sort (pure, no I/O) | 79 tests |
 | [`packages/providers`](./packages/providers/README.md) | 6 adapters + resilience primitives           | 76 tests |
 
 Each package has its own README covering what it does and why it is built that way.
@@ -115,7 +115,7 @@ apps/api ─┼─→ core ──→ contracts
 ```
 
 Nothing points back. `core` imports no framework, no HTTP client and no provider, which is
-why its 79 tests run in ~20 ms with no mocks — and why the browser can run the same
+why its 79 tests run in ~20 ms with no mocks, and why the browser can run the same
 comparison functions the server does.
 
 ---
@@ -163,15 +163,15 @@ APIs are commercially gated use documented representative data.
 
 | Provider                         | Integration                    | Source                 | Direct airline/OTA API? |
 | -------------------------------- | ------------------------------ | ---------------------- | ----------------------- |
-| IndiGo                           | Third-party live flight search | SerpApi Google Flights | No — none published     |
-| Air India Express                | Third-party live flight search | SerpApi Google Flights | No — none published     |
-| MakeMyTrip · Goibibo · Cleartrip | Representative data            | Generated              | No — commercially gated |
+| IndiGo                           | Third-party live flight search | SerpApi Google Flights | No (none published)     |
+| Air India Express                | Third-party live flight search | SerpApi Google Flights | No (none published)     |
+| MakeMyTrip · Goibibo · Cleartrip | Representative data            | Generated              | No (commercially gated) |
 
 To be unambiguous: **no airline's own API was integrated**, because none of them publish
 one. IndiGo and Air India Express fares are real live Google Flights results obtained
 through SerpApi, a commercial API operating under its own terms.
 
-Provenance is never hidden — every offer carries its `integrationType` in the API response,
+Provenance is never hidden, every offer carries its `integrationType` in the API response,
 and simulated data is badged in the UI at the point a price is shown. Full matrix and reasoning: [`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md).
 
 ---
@@ -189,8 +189,8 @@ pnpm test        # 263 unit, component and integration tests
 pnpm --filter @polaris/web test:e2e   # browser smoke test (needs both servers running)
 ```
 
-Several tests are named after the wrong answer they prevent — _"measures spread per provider,
-not across fare families"_ — because those are the regressions that would otherwise return
+Several tests are named after the wrong answer they prevent, _"measures spread per provider,
+not across fare families"_, because those are the regressions that would otherwise return
 silently.
 
 ---
@@ -198,11 +198,11 @@ silently.
 ## Assumptions
 
 - **Indian domestic routes, priced in INR**, consistent with the five named providers
-- **One-way search** — the brief specifies a single travel date; the contract extends to
+- **One-way search**: the brief specifies a single travel date; the contract extends to
   round-trip without a breaking change
 - Money is integer minor units (paise); float arithmetic would surface as off-by-one-paisa
   errors in cross-provider spreads
-- **No cookies, no third-party scripts, and no personal data in analytics** — searches are
+- **No cookies, no third-party scripts, and no personal data in analytics**: searches are
   recorded by route and timing, never by who ran them, so there is nothing a consent banner
   would be asking about. Reasoning in [Limitations](./docs/LIMITATIONS.md#privacy)
 

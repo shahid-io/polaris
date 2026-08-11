@@ -12,7 +12,7 @@ import type { ComparisonGroup, SortDirection, SortKey } from '@polaris/contracts
  *
  * @param groups - Scored groups.
  * @param key - Criterion to sort by. Defaults to `value`.
- * @param direction - Sort direction. Defaults to the natural one for the key — descending
+ * @param direction - Sort direction. Defaults to the natural one for the key, descending
  *   for `value` (best first), ascending for everything else (cheapest, shortest, earliest).
  * @returns A new sorted array. The input is not modified.
  *
@@ -61,7 +61,7 @@ function compareBy(key: SortKey, a: ComparisonGroup, b: ComparisonGroup): number
       return a.score.total - b.score.total;
 
     case 'price':
-      // The cheapest offer — the figure shown on the card.
+      // The cheapest offer, the figure shown on the card.
       return a.priceSpread.min.amountMinor - b.priceSpread.min.amountMinor;
 
     case 'duration':
@@ -102,7 +102,7 @@ function arrivalOf(group: ComparisonGroup): string {
  * Compares two local datetime strings chronologically.
  *
  * ISO-8601 local strings sort lexicographically in chronological order, so string
- * comparison is exact here and avoids constructing Date objects — which would reinterpret
+ * comparison is exact here and avoids constructing Date objects, which would reinterpret
  * an offset-less string in the server's timezone and could reorder flights depending on
  * where the API runs.
  *

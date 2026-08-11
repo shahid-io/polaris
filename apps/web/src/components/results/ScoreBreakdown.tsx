@@ -17,7 +17,7 @@ const DIMENSIONS = [
  * Explains why a flight ranks where it does.
  *
  * The brief asks users to compare on "overall value", which is inherently a judgement. A
- * bare number invites the fair question "who decided that?" — so every sub-score, the
+ * bare number invites the fair question "who decided that?", so every sub-score, the
  * weight applied to it, and the fact that scores are relative to the full result set are
  * all shown. That turns a mysterious algorithm into visible product reasoning.
  */
@@ -67,7 +67,7 @@ export function ScoreBreakdown({ score }: { score: ValueScore }) {
         </ul>
 
         <p className="mt-3 border-t border-border pt-2 text-[11px] text-muted-foreground">
-          Scores compare against the full search result, not the filtered view — so filtering never
+          Scores compare against the full search result, not the filtered view, so filtering never
           changes a flight&apos;s score.
         </p>
       </PopoverContent>

@@ -47,7 +47,7 @@ describe('canonicalKeyForSegment', () => {
    *
    * A 00:45 IST departure is 19:15Z the PREVIOUS day. If the key were built from the UTC
    * date, this single flight would key as 2026-08-19 and split into a separate group from
-   * any provider that reported it in local time — silently, and only on red-eye flights.
+   * any provider that reported it in local time, silently, and only on red-eye flights.
    */
   it('keys an after-midnight departure to its local date, not the UTC date', () => {
     const redEye = buildSegment({
@@ -60,7 +60,7 @@ describe('canonicalKeyForSegment', () => {
   });
 
   it('does not shift the date based on the machine timezone', () => {
-    // String slicing rather than Date parsing — a server in UTC and a laptop in IST
+    // String slicing rather than Date parsing, a server in UTC and a laptop in IST
     // must produce byte-identical keys.
     const midnight = buildSegment({ departure: istTime('2026-08-20T00:00') });
 

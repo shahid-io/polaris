@@ -6,12 +6,12 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle';
  * Application header.
  *
  * Sticky, because the theme control and the product identity should stay reachable while
- * scrolling a long result list. Kept to a single row — a comparison tool earns its screen
+ * scrolling a long result list. Kept to a single row, a comparison tool earns its screen
  * space with results, not chrome.
  *
  * The mark is a star: Polaris is the North Star, and the name only means something with it.
  * Filled rather than outlined because an outline at 16px reads as noise, and sat in a
- * rounded tile so its optical centre is fixed — a bare glyph has to be nudged by hand to
+ * rounded tile so its optical centre is fixed, a bare glyph has to be nudged by hand to
  * sit level with text beside it, and that nudge breaks at other sizes.
  */
 export function AppHeader() {

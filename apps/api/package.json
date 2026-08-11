@@ -2,7 +2,7 @@
   "name": "@polaris/api",
   "version": "0.1.0",
   "private": true,
-  "description": "Polaris API — provider fan-out, aggregation and comparison",
+  "description": "Polaris API: provider fan-out, aggregation and comparison",
   "scripts": {
     "build": "nest build",
     "dev": "nest start --watch",

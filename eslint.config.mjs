@@ -8,7 +8,7 @@ import globals from 'globals';
  *
  * A single root config rather than one per package: the rules that matter here are the same
  * everywhere, and five near-identical files would drift the moment one of them was edited.
- * Where a package genuinely differs — only `apps/web` is a React app — that is expressed as
+ * Where a package genuinely differs, only `apps/web` is a React app, that is expressed as
  * a scoped block below rather than as a separate file.
  *
  * Replaces `next lint`, which Next 16 removed. That command had been failing outright, and
@@ -28,7 +28,7 @@ import globals from 'globals';
  * Two adjustments to what the package ships:
  *
  * 1. **Scoped.** Of its four blocks, two carry no `files` key, so they would otherwise apply
- *    to the NestJS API and the three domain packages — reporting missing React imports in
+ *    to the NestJS API and the three domain packages, reporting missing React imports in
  *    files that have never seen JSX. Rewriting `files` on every block keeps them where they
  *    belong.
  * 2. **`next/typescript` dropped.** It registers the `@typescript-eslint` plugin, which is
@@ -75,7 +75,7 @@ export default tseslint.config(
   ...nextRules,
 
   {
-    // Node scripts — fixture recording, the demo capture, GIF encoding. These are real Node
+    // Node scripts: fixture recording, the demo capture, GIF encoding. These are real Node
     // programs rather than bundled source, so they need Node's globals declared.
     files: ['**/*.mjs', '**/scripts/**/*.js'],
     languageOptions: { globals: globals.node },
@@ -87,7 +87,7 @@ export default tseslint.config(
       /**
        * Checks that `<a>` elements do not point at routes the Pages Router would own. This
        * app is App Router only, so the rule has no directory to read and prints a warning
-       * about a missing `pages/` on every run — noise about an absence that is correct.
+       * about a missing `pages/` on every run, noise about an absence that is correct.
        */
       '@next/next/no-html-link-for-pages': 'off',
     },
@@ -97,7 +97,7 @@ export default tseslint.config(
     rules: {
       /**
        * An unused parameter prefixed with an underscore is a deliberate signal that a
-       * signature is being honoured without using every argument — `(_query, ctx)` in a
+       * signature is being honoured without using every argument, `(_query, ctx)` in a
        * provider adapter, for instance. Reporting those trains people to ignore the rule.
        */
       '@typescript-eslint/no-unused-vars': [

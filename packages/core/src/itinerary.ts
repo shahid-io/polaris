@@ -26,7 +26,7 @@ const LONG_CONNECTION_MINUTES = 240;
  * Computes the wait at each connection point.
  *
  * A connecting itinerary's total duration already includes its layovers, but the split
- * between flying and waiting is invisible in that single number — two four-hour journeys
+ * between flying and waiting is invisible in that single number, two four-hour journeys
  * are very different if one is a single flight and the other is ninety minutes of flying
  * either side of a two-hour wait.
  *
@@ -79,7 +79,7 @@ export function flyingMinutes(itinerary: Itinerary): number {
  * Total time spent waiting between legs.
  *
  * Derived from the itinerary's own total rather than by summing layovers, so it stays
- * consistent with the duration shown everywhere else — a provider's reported total is
+ * consistent with the duration shown everywhere else, a provider's reported total is
  * authoritative even when it disagrees slightly with the segment arithmetic.
  *
  * @param itinerary - The journey to measure.

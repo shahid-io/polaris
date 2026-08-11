@@ -4,8 +4,8 @@ import type { Airport } from './airports';
 /**
  * Builds a {@link ScheduledTime} from a local date, a local time and the airport.
  *
- * All three representations are produced together — local wall clock, the same instant in
- * UTC, and the IANA zone — because downstream code needs different ones and picking the
+ * All three representations are produced together, local wall clock, the same instant in
+ * UTC, and the IANA zone, because downstream code needs different ones and picking the
  * wrong one is the subtlest bug in the system. The canonical key needs the local date; a
  * duration calculation needs UTC.
  *
@@ -47,7 +47,7 @@ export function toScheduledTime(
  *
  * Used to derive an arrival from a departure plus a duration. A 21:55 departure with a
  * 130-minute block time arrives at 00:05 the *next* local day, and the returned local date
- * reflects that — which matters because an arrival-sorted list would otherwise place it
+ * reflects that, which matters because an arrival-sorted list would otherwise place it
  * before every morning flight.
  *
  * @param from - Starting time.

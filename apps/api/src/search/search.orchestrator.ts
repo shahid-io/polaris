@@ -31,7 +31,7 @@ import type { Env } from '../config/env';
  * Folds the query's preferred time range into the effective filters.
  *
  * `timeRange` is one of the four search criteria the brief names, and it was previously
- * accepted, validated and then ignored — a stated capability that silently did nothing.
+ * accepted, validated and then ignored, a stated capability that silently did nothing.
  *
  * It is applied here, after grouping and scoring, rather than inside each adapter. Three
  * reasons:
@@ -41,7 +41,7 @@ import type { Env } from '../config/env';
  *    the adapters would make each window its own upstream call, and the live source allows
  *    250 a month.
  * 2. **Consistent scoring.** Scores are normalised across the full day's flights, so a
- *    flight's value does not change depending on which window the user asked for — the
+ *    flight's value does not change depending on which window the user asked for, the
  *    same principle that puts filtering after scoring.
  * 3. **One implementation.** SerpApi has no time-window parameter, so a post-filter would
  *    be needed regardless. Doing it once in the domain layer beats doing it per adapter.
@@ -68,7 +68,7 @@ function mergeTimeRange(
  * Failures that might resolve on their own within a minute or two.
  *
  * `skipped` is excluded on purpose. It means the provider has no credential configured,
- * which will not change until someone edits the environment and restarts — expiring the
+ * which will not change until someone edits the environment and restarts, expiring the
  * whole cache entry early on its account would re-fetch the healthy providers repeatedly
  * and buy nothing.
  */
@@ -84,7 +84,7 @@ interface ProviderOutcome {
   offers: NormalizedOffer[];
 }
 
-/** Cached shape — the unfiltered result, so filtering never re-queries providers. */
+/** Cached shape, the unfiltered result, so filtering never re-queries providers. */
 interface CachedSearch {
   offers: NormalizedOffer[];
   providerStatuses: ProviderStatus[];
@@ -105,7 +105,7 @@ export class SearchOrchestrator {
   /**
    * One breaker per provider, held for the process lifetime.
    *
-   * State must outlive a single request — the entire point is that failures observed on
+   * State must outlive a single request, the entire point is that failures observed on
    * one search inform the next. Keyed by provider id rather than by instance so a rebuilt
    * adapter does not reset its own history.
    */
@@ -121,7 +121,7 @@ export class SearchOrchestrator {
    * Executes a search end to end.
    *
    * Never rejects because a provider failed. A search where every provider fails is still
-   * a successful response carrying zero flights and an honest account of why — the client
+   * a successful response carrying zero flights and an honest account of why, the client
    * can distinguish "no flights on this route" from "nothing answered", which a thrown
    * error would collapse into one indistinguishable failure.
    *
@@ -189,7 +189,7 @@ export class SearchOrchestrator {
    * Chooses how long this result may be cached.
    *
    * The cache stores the provider statuses along with the offers, so a cache hit reproduces
-   * the failures as well as the flights — and reproduces them without calling anyone, which
+   * the failures as well as the flights, and reproduces them without calling anyone, which
    * means the circuit breaker never gets a say. At the full TTL a single timeout would
    * therefore present as a five-minute outage for that provider.
    *
@@ -219,7 +219,7 @@ export class SearchOrchestrator {
    * `Promise.all` is safe here despite rejecting on first failure, because
    * {@link callProvider} has no rejecting path: every provider error is caught and
    * converted into a {@link ProviderOutcome} carrying a status. That is what makes partial
-   * results possible — the isolation lives in the per-provider call, not in the combinator.
+   * results possible, the isolation lives in the per-provider call, not in the combinator.
    *
    * **This is load-bearing.** Any future change that lets `callProvider` throw must move
    * this to `Promise.allSettled` in the same commit, or one provider's failure will discard
@@ -330,7 +330,7 @@ export class SearchOrchestrator {
    * It resets the breaker rather than simply not recording, because this call may have
    * taken the half-open probe. Leaving it unresolved would strand the circuit half-open
    * and reject every later call forever. Resetting is also the honest reading of the
-   * situation — a stale failure history describes a provider that is no longer being
+   * situation, a stale failure history describes a provider that is no longer being
    * reached at all, and re-checking costs nothing since the credential check is local.
    *
    * @param provider - The adapter that failed.

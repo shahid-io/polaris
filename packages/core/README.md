@@ -1,6 +1,6 @@
 # @polaris/core
 
-**The comparison engine — pure functions, no I/O, no framework.**
+**The comparison engine: pure functions, no I/O, no framework.**
 
 Everything that decides _what the user sees_ lives here: recognising when several providers
 are selling the same flight, scoring value, filtering and ranking. Nothing in this package
@@ -14,8 +14,8 @@ Depends only on `@polaris/contracts`.
 
 Every rule worth testing is a function of its arguments, so the 68 tests here run in about
 20 ms with no mocks, no HTTP stubs and no Nest testing module. Had this logic lived inside
-a service, the tests that matter most — the red-eye timezone case, the fare-family spread
-case — would be buried under mock setup.
+a service, the tests that matter most, the red-eye timezone case, the fare-family spread
+case: would be buried under mock setup.
 
 It is also why the frontend can import it directly: the same `sortGroups` and `filterGroups`
 run in the browser and on the server, so "cheapest first" cannot mean two different things.
@@ -41,12 +41,12 @@ const visible = sortGroups(filterGroups(scored, { maxStops: 0 }), 'price');
 ```
 
 **Scoring runs before filtering, deliberately.** Sub-scores are normalised across the result
-set, so filtering first would silently rescale every score as the user toggles a checkbox —
+set, so filtering first would silently rescale every score as the user toggles a checkbox,
 a flight's "value" would change because a _different_ flight was hidden.
 
 ---
 
-## Deduplication — the core idea
+## Deduplication, the core idea
 
 Two offers describe the same flight when this produces the same string:
 
@@ -80,7 +80,7 @@ value = 0.45·price + 0.25·duration + 0.20·stops + 0.10·benefits
 Every sub-score and the weights that produced it are returned with the group, so the UI can
 answer _"why is this ranked first?"_ rather than presenting an opaque number.
 
-- `price`, `duration`, `benefits` are min–max normalised **within the result set** — a score
+- `price`, `duration`, `benefits` are min–max normalised **within the result set**, a score
   is a statement about this search, not an absolute rating.
 - `stops` is absolute, `1 / (1 + stops)`. A non-stop is objectively a non-stop; normalising
   it would score the only non-stop among two-stop options identically to the only one-stop
@@ -90,7 +90,7 @@ answer _"why is this ranked first?"_ rather than presenting an opaque number.
   most card promotions.
 - **Benefits with no monetary value are excluded** rather than assigned an invented number.
 
-Weights are a parameter, not a constant — callers may pass any positive weighting and it is
+Weights are a parameter, not a constant, callers may pass any positive weighting and it is
 normalised internally.
 
 ---
@@ -99,7 +99,7 @@ normalised internally.
 
 Measured across each provider's **cheapest** offer, not across all offers.
 
-A group can hold several fares from one seller — IndiGo SAVER at ₹5,199 and FLEXI at ₹7,499.
+A group can hold several fares from one seller, IndiGo SAVER at ₹5,199 and FLEXI at ₹7,499.
 Spanning those would advertise a ₹2,300 "saving" from switching provider that does not
 exist; both cheap fares come from the same seller.
 
@@ -113,6 +113,6 @@ pnpm test        # 68 tests, ~20ms, no mocks
 pnpm typecheck
 ```
 
-Several tests are named after the wrong answer they prevent — _"measures spread per
+Several tests are named after the wrong answer they prevent, _"measures spread per
 provider, not across fare families"_, _"keys an after-midnight departure to its local date,
-not the UTC date"_ — because those are the regressions that would otherwise return silently.
+not the UTC date"_, because those are the regressions that would otherwise return silently.

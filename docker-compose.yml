@@ -2,7 +2,7 @@
 #
 # Only MongoDB, and only for search analytics. The API deliberately does not require it:
 # if this is not running, searches still work and analytics degrades to a no-op. That is
-# a demo-safety property as much as an architectural one — a database being down should
+# a demo-safety property as much as an architectural one. A database being down should
 # never be the reason a flight search fails.
 services:
   mongo:

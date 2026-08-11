@@ -3,7 +3,7 @@ import { dayOffset, formatDate, formatDuration, formatLocalTime, formatRupees } 
 
 describe('formatRupees', () => {
   it('renders integer paise as whole rupees with Indian grouping', () => {
-    // 5,499 not 5,499.00 — fares are quoted whole, and trailing zeros on every price
+    // 5,499 not 5,499.00, fares are quoted whole, and trailing zeros on every price
     // are noise in a column of numbers.
     expect(formatRupees(549_900)).toBe('₹5,499');
   });

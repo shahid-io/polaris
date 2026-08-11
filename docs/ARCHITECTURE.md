@@ -8,10 +8,10 @@ How Polaris is put together, and why each significant decision went the way it d
 
 ```
 apps/
-  web/          Next.js — search, results, comparison UI
-  api/          NestJS — orchestration, caching, analytics
+  web/          Next.js: search, results, comparison UI
+  api/          NestJS: orchestration, caching, analytics
 packages/
-  contracts/    Zod schemas — the single source of truth across the service boundary
+  contracts/    Zod schemas, the single source of truth across the service boundary
   core/         normalize · group · score · filter · sort   (pure, no I/O, no framework)
   providers/    6 adapters + resilience primitives
 ```
@@ -27,7 +27,7 @@ apps/api ─┼─→ core ──→ contracts
 
 Nothing points back. `core` imports no framework, no HTTP client and no provider, which is
 why its 68 tests run in roughly 20 ms with no mocks and no Nest context. That is the entire
-return on splitting the packages — the rest is convention.
+return on splitting the packages, the rest is convention.
 
 ---
 
@@ -43,7 +43,7 @@ POST /api/search
   ▼ SearchOrchestrator
      1. cache lookup on a normalised key → hit? skip to step 5
      2. FlightProvider[] injected via the FLIGHT_PROVIDERS token
-     3. Promise.all — every provider concurrently, 6 s budget each, circuit
+     3. Promise.all, every provider concurrently, 6 s budget each, circuit
         breaker consulted before each call. Safe because callProvider never
         rejects; see below.
      4. each outcome becomes a ProviderStatus (ok · empty · timeout · error ·
@@ -56,7 +56,7 @@ POST /api/search
      sortGroups     requested ordering
   │
   ▼ SearchResponse { query, groups, providerStatuses, meta }
-     recorded to analytics — not awaited, failures swallowed
+     recorded to analytics, not awaited, failures swallowed
 ```
 
 ---
@@ -73,7 +73,7 @@ Two offers describe the same flight when this produces the same string:
 
 **The departure date is local to the origin airport, never UTC.** A 00:45 IST departure on
 20 August is 19:15 UTC on the 19th. Providers differ in which representation they return, so
-a UTC-derived key splits one flight into two groups whenever they disagree — silently, and
+a UTC-derived key splits one flight into two groups whenever they disagree, silently, and
 only for after-midnight departures, which is exactly when nobody notices.
 
 `ScheduledTime` therefore carries local time, UTC and the IANA zone together, so every call
@@ -82,7 +82,7 @@ site makes the choice explicitly rather than accidentally.
 **Marketing carrier, not operating carrier.** Marketing carrier and flight number are what a
 ticket is _sold_ as and what providers agree on. On a codeshare the operating carrier differs,
 so one aircraft sold under two numbers appears as two flights. That is a documented
-limitation, not an oversight — see [`LIMITATIONS.md`](./LIMITATIONS.md).
+limitation, not an oversight, see [`LIMITATIONS.md`](./LIMITATIONS.md).
 
 ### Money is integer minor units
 
@@ -93,7 +93,7 @@ producing a meaningless figure.
 
 ### Price spread is measured per provider, not per offer
 
-A comparison group can hold several fares from one seller — IndiGo SAVER at ₹5,199 and IndiGo
+A comparison group can hold several fares from one seller, IndiGo SAVER at ₹5,199 and IndiGo
 FLEXI at ₹7,499. Measuring the spread across every offer would report a ₹2,300 difference and
 imply a provider choice worth ₹2,300, when both cheap fares come from the same seller. The
 spread compares each provider's _cheapest_ offer, which answers the question the user
@@ -109,7 +109,7 @@ sub-score and the weights that produced it are returned with each group. The UI 
 value = 0.45·price + 0.25·duration + 0.20·stops + 0.10·benefits
 ```
 
-`price`, `duration` and `benefits` are min-max normalised **within the result set** — a score
+`price`, `duration` and `benefits` are min-max normalised **within the result set**, a score
 is a statement about this search, not an absolute rating. `stops` is absolute (`1/(1+stops)`),
 because a non-stop is objectively a non-stop; normalising it would score the only non-stop
 among two-stop options identically to the only one-stop among non-stops.
@@ -123,7 +123,7 @@ Two deliberate exclusions:
   assigned an invented number.
 
 Scoring runs **before** filtering. Sub-scores are normalised across the result set, so
-filtering first would silently rescale every score as the user toggles a checkbox — a
+filtering first would silently rescale every score as the user toggles a checkbox, a
 flight's "value" would change because a different flight was hidden.
 
 ### The provider registry is a DI token
@@ -131,12 +131,12 @@ flight's "value" would change because a different flight was hidden.
 Every adapter registers under one `FLIGHT_PROVIDERS` symbol. The orchestrator depends on the
 array and never names a concrete provider, so adding one touches a single line. Tests
 override the token with deliberately failing fakes, which is the only practical way to
-exercise the failure paths — waiting for a real provider to break is not a test strategy.
+exercise the failure paths, waiting for a real provider to break is not a test strategy.
 
 ### Failure isolation
 
 **Failure is normalised at the provider boundary, not at the fan-out.** `callProvider`
-never rejects — every exit path returns a `ProviderOutcome`, converting a timeout, an
+never rejects, every exit path returns a `ProviderOutcome`, converting a timeout, an
 error or an open circuit into a status. That is what lets the fan-out use `Promise.all`
 safely.
 
@@ -146,7 +146,7 @@ returned successfully. If `callProvider` ever gains a path that throws, the fan-
 become `Promise.allSettled` in the same change.
 
 A search never fails because a provider did. Even with every provider down, the response is a
-200 carrying zero flights and an honest account of why — so a client can distinguish "no
+200 carrying zero flights and an honest account of why, so a client can distinguish "no
 flights on this route" from "nothing answered". A thrown error collapses those into one
 indistinguishable failure. An empty provider result is likewise recorded as success, not
 failure.
@@ -178,7 +178,7 @@ entry rather than re-querying every provider. This also protects SerpApi's 250-s
 free tier.
 
 Cache keys fix field order explicitly rather than stringifying an object, whose key order
-depends on insertion — two identical searches arriving with differently-ordered JSON would
+depends on insertion, two identical searches arriving with differently-ordered JSON would
 otherwise miss the cache and cost a full fan-out.
 
 The store sits behind a `CacheStore` interface. Moving to Redis means another implementation
@@ -200,8 +200,8 @@ the API and client cannot disagree about what a valid request is, because there 
 definition.
 
 `nestjs-zod` was the first choice and was rejected on inspection: its `createZodDto` expects a
-`ZodObject`, and several schemas end in `.refine(...)` — origin must differ from destination, a
-time range's start must precede its end — producing a wrapped effect type the library does not
+`ZodObject`, and several schemas end in `.refine(...)`, origin must differ from destination, a
+time range's start must precede its end, producing a wrapped effect type the library does not
 accept. A twenty-line pipe handles every Zod type with no dependency.
 
 ### Analytics fails open
@@ -211,7 +211,7 @@ errors, and with no `MONGODB_URI` the module registers without a model and every
 no-ops.
 
 Mongoose is configured with `bufferCommands: false` and a 2-second server-selection timeout,
-because the default is to queue operations indefinitely against a dead connection — which
+because the default is to queue operations indefinitely against a dead connection, which
 would turn "Mongo is not running" into "the search hangs", the opposite of degrading
 gracefully.
 
@@ -223,14 +223,14 @@ No IP address, cookie or session is recorded. See [`LIMITATIONS.md`](./LIMITATIO
 
 | Package     | Tests | What they cover                                                                         |
 | ----------- | ----- | --------------------------------------------------------------------------------------- |
-| `core`      | 68    | Canonical keys, grouping, scoring, filtering, sorting — pure functions, no mocks        |
+| `core`      | 68    | Canonical keys, grouping, scoring, filtering, sorting (pure functions, no mocks)        |
 | `providers` | 54    | Circuit breaker, timeout, retry, representative adapters, cross-provider grouping       |
 | `api`       | 18    | Orchestration through real DI: partial results, total failure, circuit opening, caching |
 | `contracts` | 7     | Schema validation and defaults                                                          |
 
-Several tests are named after the wrong answer they prevent — _"measures spread per provider,
+Several tests are named after the wrong answer they prevent, _"measures spread per provider,
 not across fare families"_, _"keys an after-midnight departure to its local date, not the UTC
-date"_ — because those are the regressions that would otherwise return silently.
+date"_, because those are the regressions that would otherwise return silently.
 
 Simulated provider latency is on by default so timeout and circuit-breaker paths are
 exercised by ordinary development use, and off in tests, where it was costing 13 seconds a

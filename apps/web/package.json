@@ -2,7 +2,7 @@
   "name": "@polaris/web",
   "version": "0.1.0",
   "private": true,
-  "description": "Polaris web — search, compare and filter flight offers",
+  "description": "Polaris web: search, compare and filter flight offers",
   "scripts": {
     "dev": "next dev --turbopack --port 3000",
     "build": "next build",

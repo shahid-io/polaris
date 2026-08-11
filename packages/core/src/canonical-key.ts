@@ -3,7 +3,7 @@ import type { FlightSegment, Itinerary, NormalizedOffer } from '@polaris/contrac
 /**
  * Builds the canonical identity of a single flown leg.
  *
- * The unit of identity here is the **marketed flight** — what a ticket is sold as — not the
+ * The unit of identity here is the **marketed flight**, what a ticket is sold as, not the
  * physical aircraft. Those usually coincide and sometimes do not; see the codeshare note
  * below for why this distinction is deliberate rather than a shortcut.
  *
@@ -16,7 +16,7 @@ import type { FlightSegment, Itinerary, NormalizedOffer } from '@polaris/contrac
  * the 21st. That date **must** be the local date at the origin airport. A 00:45 IST
  * departure on 20 Aug is 19:15Z on 19 Aug; providers vary in which representation they
  * return. Keying on UTC would split one flight into two groups whenever providers
- * disagree — silently, and only on red-eye flights, which is exactly when it is hardest
+ * disagree: silently, and only on red-eye flights, which is exactly when it is hardest
  * to notice.
  *
  * ### Why marketing carrier, not operating carrier
@@ -25,7 +25,7 @@ import type { FlightSegment, Itinerary, NormalizedOffer } from '@polaris/contrac
  * one aircraft may be sold under two flight numbers and will appear here as two flights.
  * That is a documented limitation rather than an oversight: collapsing codeshares needs an
  * operating-carrier + equipment + slot match that providers do not reliably expose, and a
- * wrong merge — showing a fare the user cannot actually buy under that number — is worse
+ * wrong merge: showing a fare the user cannot actually buy under that number, is worse
  * than a missed one. See `docs/LIMITATIONS.md`.
  *
  * @param segment - The leg to identify.
@@ -77,7 +77,7 @@ export function canonicalKeyForItinerary(itinerary: Itinerary): string {
 /**
  * Convenience wrapper: the canonical key of the itinerary an offer sells.
  *
- * Offers differing only by provider, fare family or price share a key — which is precisely
+ * Offers differing only by provider, fare family or price share a key, which is precisely
  * what makes cross-provider grouping possible.
  *
  * @param offer - The provider offer.
@@ -94,7 +94,7 @@ export function canonicalKeyForOffer(offer: NormalizedOffer): string {
  *
  * Deliberately string slicing rather than `new Date(...)`: constructing a Date would
  * interpret the offset-less string in the *server's* timezone and could shift the date by
- * a day depending on where the API runs — reintroducing the very bug the local-date rule
+ * a day depending on where the API runs, reintroducing the very bug the local-date rule
  * exists to prevent.
  *
  * @param localDateTime - Local datetime, e.g. `2026-08-20T06:15:00`.

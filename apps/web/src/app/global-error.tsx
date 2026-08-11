@@ -3,7 +3,7 @@
 /**
  * Last-resort error boundary.
  *
- * Catches failures in the root layout itself, which `error.tsx` cannot — at that point the
+ * Catches failures in the root layout itself, which `error.tsx` cannot, at that point the
  * layout has not rendered, so this component must supply its own `html` and `body`.
  *
  * For the same reason it cannot rely on the application's stylesheet or components: if the

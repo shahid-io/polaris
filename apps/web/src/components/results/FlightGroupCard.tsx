@@ -40,7 +40,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
   const lastSegment = itinerary.segments[itinerary.segments.length - 1]!;
   const arrivalDayOffset = dayOffset(firstSegment.departure.local, lastSegment.arrival.local);
 
-  // One row per provider, cheapest first — the same basis the spread is measured on, so
+  // One row per provider, cheapest first, the same basis the spread is measured on, so
   // the list and the headline figure cannot disagree.
   const cheapestPerProvider = bestOfferPerProvider(offers);
   const visibleOffers = showAllOffers ? cheapestPerProvider : cheapestPerProvider.slice(0, 3);
@@ -57,7 +57,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
         type="button"
         onClick={() => setIsExpanded((open) => !open)}
         aria-expanded={isExpanded}
-        aria-label={`${firstSegment.marketingCarrier} ${firstSegment.flightNumber}, ${formatLocalTime(firstSegment.departure.local)} — ${isExpanded ? 'hide' : 'show'} full journey and all fares`}
+        aria-label={`${firstSegment.marketingCarrier} ${firstSegment.flightNumber}, ${formatLocalTime(firstSegment.departure.local)}: ${isExpanded ? 'hide' : 'show'} full journey and all fares`}
         className="flex w-full flex-col gap-4 rounded-lg p-4 text-left transition-colors hover:bg-muted/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:flex-row sm:items-start sm:justify-between"
       >
         {/* ── Itinerary ─────────────────────────────────────────── */}
@@ -132,7 +132,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
       </div>
 
       {/* ── Providers selling this flight ─────────────────────────
-          A single seller needs no comparison table — the price is already on the card
+          A single seller needs no comparison table, the price is already on the card
           above, so repeating it under a "sold by 1 provider" heading is pure noise. The
           seller's name and badge move up into a single quiet line instead. */}
       {providerCount === 1 ? (
@@ -145,7 +145,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
               {offers[0]!.integrationType === 'representative' ? 'Representative' : 'Live'}
             </Badge>
           </div>
-          {/* Benefits still belong here — what disappears for a single seller is the
+          {/* Benefits still belong here, what disappears for a single seller is the
               comparison framing, not what the fare actually includes. */}
           <OfferPerks offer={offers[0]!} />
         </div>
@@ -228,7 +228,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
  * cancellation and 20 kg of baggage looking identical to a ₹5,499 fare with neither.
  *
  * Conditional benefits are marked rather than hidden. They are real, and a user holding
- * the right card should see them — but they are excluded from the value score, so the
+ * the right card should see them, but they are excluded from the value score, so the
  * marker explains why a visible saving did not move the ranking.
  */
 function OfferPerks({ offer }: { offer: NormalizedOffer }) {
@@ -257,7 +257,7 @@ function OfferPerks({ offer }: { offer: NormalizedOffer }) {
           <GiftIcon className="size-3" aria-hidden="true" />
           {benefit.label}
           {benefit.conditional && (
-            <span className="text-warning" title="Conditional — excluded from the value score">
+            <span className="text-warning" title="Conditional: excluded from the value score">
               *
             </span>
           )}

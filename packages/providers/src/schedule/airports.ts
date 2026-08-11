@@ -13,7 +13,7 @@ export interface Airport {
    * A fixed offset is correct for every airport here because India observes UTC+05:30
    * year-round with no daylight saving. It is recorded per airport rather than as a
    * global constant so that adding an airport in a DST-observing country surfaces as an
-   * obvious wrong value rather than a silent one-hour error — at which point this field
+   * obvious wrong value rather than a silent one-hour error, at which point this field
    * should become a real timezone lookup. Noted in docs/LIMITATIONS.md.
    */
   utcOffsetMinutes: number;
@@ -75,7 +75,7 @@ export function findAirport(code: string): Airport | undefined {
  * Looks up an airport, failing loudly when it is unknown.
  *
  * Used on paths where the code has already been validated against the schedule, so an
- * unknown code means a programming error rather than bad user input — and should not be
+ * unknown code means a programming error rather than bad user input, and should not be
  * silently defaulted to some other city's timezone.
  *
  * @param code - Three-letter IATA code.

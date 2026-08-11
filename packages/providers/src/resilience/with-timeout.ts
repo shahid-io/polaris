@@ -10,8 +10,8 @@ import type { ProviderId } from '@polaris/contracts';
  * socket open and, on a busy server, leaking connections that outlive the requests that
  * spawned them.
  *
- * But aborting is only a request. An adapter that ignores its signal — a third-party
- * client that does not accept one, or simply a mistake — would never settle, and awaiting
+ * But aborting is only a request. An adapter that ignores its signal, a third-party
+ * client that does not accept one, or simply a mistake, would never settle, and awaiting
  * it directly would hang the entire search on the one provider the timeout was meant to
  * contain. Racing a rejecting timer guarantees this function returns on schedule whether
  * or not the operation cooperates.

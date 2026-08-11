@@ -4,7 +4,7 @@
 
 Zod schemas describing search requests, flight offers, comparison groups, provider statuses
 and API errors. Types are derived from the schemas with `z.infer`, so a type and its
-validator cannot disagree — there is only one definition.
+validator cannot disagree: there is only one definition.
 
 Consumed by `apps/api`, `apps/web`, `@polaris/core` and `@polaris/providers`. Depends on
 nothing but Zod.
@@ -13,7 +13,7 @@ nothing but Zod.
 
 ## Why this package exists
 
-A request shape described twice — once as a validator, once as a type — will drift. The two
+A request shape described twice, once as a validator, once as a type, will drift. The two
 copies start identical, one gets a new field, and the mismatch surfaces as a runtime failure
 in whichever layer was not updated.
 
@@ -51,7 +51,7 @@ const response: SearchResponse = await post('/api/search', result.data);
 | ----------------- | --------------------------------------------------------------------- |
 | `common`          | IATA codes, ISO dates, money, scheduled times                         |
 | `provider`        | Provider ids, integration types, per-provider call status             |
-| `search-query`    | The search itself — route, date, time window, passengers, cabin       |
+| `search-query`    | The search itself (route, date, time window, passengers, cabin)       |
 | `search-request`  | Request body: query plus optional filters and sort                    |
 | `offer`           | Segments, itineraries, benefits, baggage, a normalised provider offer |
 | `comparison`      | Comparison groups, price spreads, value scores                        |
@@ -84,7 +84,7 @@ different currencies throws rather than silently producing a meaningless figure.
 This shape exists to prevent one specific bug. The canonical key that recognises the same
 flight across providers includes the departure date, and that date **must** be local to the
 origin. A 00:45 IST departure is 19:15 UTC the day before; providers differ in which they
-report. Keying on UTC splits one flight into two groups whenever they disagree — silently,
+report. Keying on UTC splits one flight into two groups whenever they disagree, silently,
 and only on red-eyes, which is when nobody notices.
 
 Carrying all three makes each consumer's choice explicit rather than accidental.

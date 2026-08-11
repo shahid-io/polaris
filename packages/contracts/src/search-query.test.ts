@@ -84,7 +84,7 @@ describe('searchQuerySchema', () => {
     /**
      * Regression. This previously accepted any string, so a typo passed validation, matched
      * no provider, and produced a successful-looking response in which nothing had actually
-     * been searched — a silent wrong answer instead of a 400 naming the bad value.
+     * been searched, a silent wrong answer instead of a 400 naming the bad value.
      */
     it('rejects an unknown provider id rather than searching nothing', () => {
       const result = searchQuerySchema.safeParse({

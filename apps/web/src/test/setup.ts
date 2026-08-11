@@ -7,7 +7,7 @@ import { afterEach, vi } from 'vitest';
  *
  * Both are built for real browsers and reach for APIs jsdom does not implement. Without
  * these the popover and combobox throw on mount, and the failure looks like a component
- * bug rather than a missing environment feature — so they are stubbed once here rather
+ * bug rather than a missing environment feature, so they are stubbed once here rather
  * than worked around in each test.
  */
 

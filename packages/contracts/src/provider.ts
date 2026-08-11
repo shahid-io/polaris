@@ -5,7 +5,7 @@ import { z } from 'zod';
  *
  * Duffel is not in the brief. It is included deliberately as a sixth provider to
  * prove the adapter abstraction generalises to a vendor contract we did not design
- * around — adding it touched one array and one adapter file, nothing else.
+ * around: adding it touched one array and one adapter file, nothing else.
  */
 export const providerIdSchema = z.enum([
   'makemytrip',
@@ -26,7 +26,7 @@ export const providerIdSchema = z.enum([
 export const integrationTypeSchema = z.enum([
   /** Live third-party API returning real market data. */
   'live-api',
-  /** Vendor sandbox — real API contract, synthetic data. */
+  /** Vendor sandbox: real API contract, synthetic data. */
   'sandbox-api',
   /** Affiliate/partner feed. */
   'affiliate-api',
@@ -55,9 +55,9 @@ export const providerCallStatusSchema = z.enum([
   'timeout',
   /** Responded with an error, or the transport failed. */
   'error',
-  /** Not called — the circuit breaker is open after repeated failures. */
+  /** Not called, the circuit breaker is open after repeated failures. */
   'circuit_open',
-  /** Not called — missing credentials or disabled by configuration. */
+  /** Not called: missing credentials or disabled by configuration. */
   'skipped',
 ]);
 
@@ -65,7 +65,7 @@ export const providerCallStatusSchema = z.enum([
  * Per-provider outcome, returned with every search response.
  *
  * The brief requires handling unavailable providers and partial results. Returning this
- * array on every response — success or failure — is what lets the UI say "4 of 5 providers
+ * array on every response, success or failure, is what lets the UI say "4 of 5 providers
  * responded, Cleartrip timed out" instead of silently showing a shorter list.
  */
 export const providerStatusSchema = z.object({
@@ -90,7 +90,7 @@ export const providerDescriptorSchema = z.object({
   displayName: z.string(),
   integrationType: integrationTypeSchema,
   dataSource: dataSourceSchema,
-  /** False for representative providers — drives the "simulated" badge in the UI. */
+  /** False for representative providers, drives the "simulated" badge in the UI. */
   isRealData: z.boolean(),
   /** Why this provider is integrated the way it is. Feeds docs/INTEGRATIONS.md. */
   integrationNote: z.string(),

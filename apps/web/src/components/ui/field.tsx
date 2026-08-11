@@ -54,7 +54,7 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
  * Native select with the platform chevron replaced.
  *
  * The browser's own arrow is drawn by the OS, so it ignores the page's colours and sits
- * where the platform puts it — noticeably heavier than the pickers beside it, and washed
+ * where the platform puts it, noticeably heavier than the pickers beside it, and washed
  * out against a dark background. `appearance-none` removes it and the same
  * `ChevronsUpDownIcon` the airport pickers use is drawn in its place, so every control in
  * the search row reads as one family.

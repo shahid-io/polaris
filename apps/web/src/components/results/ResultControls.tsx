@@ -44,7 +44,7 @@ export interface ResultControlsProps {
  *
  * Options are built from what the current result actually contains rather than a fixed
  * list, so a user is never offered an airline or provider that would return nothing.
- * Filtering runs client-side against the already-fetched result — instant, and it does not
+ * Filtering runs client-side against the already-fetched result, instant, and it does not
  * spend another provider fan-out or a SerpApi credit per checkbox.
  */
 export function ResultControls({

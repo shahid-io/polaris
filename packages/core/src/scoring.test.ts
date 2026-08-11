@@ -73,7 +73,7 @@ describe('scoreGroups', () => {
    * Stops is absolute, not min-max normalised.
    *
    * If it were relative, the only non-stop in a set of two-stop options would score
-   * identically to the only one-stop in a set of non-stops — which is plainly wrong.
+   * identically to the only one-stop in a set of non-stops, which is plainly wrong.
    */
   it('scores stops on an absolute scale, independent of the result set', () => {
     const nonStopOnly = scoreGroups(groupsForPrices(5000));

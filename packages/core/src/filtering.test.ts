@@ -41,7 +41,7 @@ describe('filterGroups', () => {
   });
 
   it('filters on the cheapest offer, not the dearest', () => {
-    // A flight is affordable if you can buy it for the price — even if one provider
+    // A flight is affordable if you can buy it for the price, even if one provider
     // charges more.
     const itinerary = nonStop();
     const groups = scored([

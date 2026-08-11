@@ -4,7 +4,7 @@ import type { Money } from '@polaris/contracts';
  * @packageDocumentation
  * Integer money arithmetic.
  *
- * Amounts are integer minor units (paise for INR), so every operation here is exact —
+ * Amounts are integer minor units (paise for INR), so every operation here is exact,
  * no float drift in cross-provider price spreads. The module's other job is to refuse to
  * compare amounts in different currencies rather than silently produce a meaningless
  * number.

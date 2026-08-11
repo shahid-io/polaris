@@ -7,13 +7,13 @@ import type { ZodType } from 'zod';
  * ### Why not class-validator DTOs
  * NestJS conventionally validates with decorated DTO classes. That would mean maintaining
  * a second description of every request shape alongside the Zod schema the frontend
- * already uses — and two descriptions of one contract drift apart. Validating directly
+ * already uses, and two descriptions of one contract drift apart. Validating directly
  * against the shared schema means the API and the client cannot disagree about what a
  * valid request is, because there is only one definition.
  *
  * ### Why not the nestjs-zod library
  * It was the first choice, but its `createZodDto` expects a `ZodObject`, and several of
- * our schemas end in `.refine(...)` — origin must differ from destination, and a time
+ * our schemas end in `.refine(...)`, origin must differ from destination, and a time
  * range's start must precede its end. Those produce a wrapped effect type rather than a
  * plain object, which the library does not accept. A twenty-line pipe handles every Zod
  * type and adds no dependency.

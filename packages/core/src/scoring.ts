@@ -26,7 +26,7 @@ export const DEFAULT_SCORE_WEIGHTS: ScoreBreakdown = {
  * first?"*.
  *
  * ### Relative vs absolute sub-scores
- * `price`, `duration` and `benefits` are min-max normalised **within this result set** — a
+ * `price`, `duration` and `benefits` are min-max normalised **within this result set**, a
  * score is a statement about this search, not an absolute rating. `stops` is absolute
  * (`1 / (1 + stops)`), because a non-stop is objectively a non-stop regardless of what
  * else happens to be in the results; normalising it would make the only non-stop in a set
@@ -38,15 +38,15 @@ export const DEFAULT_SCORE_WEIGHTS: ScoreBreakdown = {
  *
  * @param groups - Grouped flights from {@link groupOffers}. May be empty.
  * @param weights - Optional weighting. Need not sum to 1; it is normalised internally.
- * @returns The same groups, each with a `score`. Input order is preserved — ranking is
+ * @returns The same groups, each with a `score`. Input order is preserved, ranking is
  *   the sorter's job.
  *
  * @example
  * ```ts
  * const scored = scoreGroups(groups);
  * scored[0].score.total;             // 0.87
- * scored[0].score.breakdown.price;   // 1 — cheapest in this result set
- * scored[0].score.weights.price;     // 0.45 — echoed so the UI can explain the total
+ * scored[0].score.breakdown.price;   // 1, cheapest in this result set
+ * scored[0].score.weights.price;     // 0.45, echoed so the UI can explain the total
  * ```
  */
 export function scoreGroups(
@@ -65,7 +65,7 @@ export function scoreGroups(
       price: invertedNormalise(prices[index]!, prices),
       duration: invertedNormalise(durations[index]!, durations),
       stops: 1 / (1 + group.itinerary.stops),
-      // Higher is better — no inversion.
+      // Higher is better, no inversion.
       benefits: normalise(benefits[index]!, benefits),
     };
 
@@ -88,7 +88,7 @@ export function scoreGroups(
  * but not comparable across providers, so they are shown in the UI and excluded here
  * rather than assigned an invented number.
  *
- * Conditional benefits — those needing a specific card or coupon — are excluded too. A
+ * Conditional benefits, those needing a specific card or coupon, are excluded too. A
  * "₹500 off with HDFC cards" offer is not a saving for most users, and counting it would
  * systematically over-rank whichever provider advertises the most card promotions.
  *
@@ -139,8 +139,8 @@ function invertedNormalise(value: number, all: readonly number[]): number {
 /**
  * Scales weights so they sum to 1.
  *
- * Callers may pass any positive weighting — `{ price: 3, duration: 1, ... }` is as valid
- * as fractions — and the resulting total stays within `0..1` as the contract requires.
+ * Callers may pass any positive weighting, `{ price: 3, duration: 1, ... }` is as valid
+ * as fractions, and the resulting total stays within `0..1` as the contract requires.
  *
  * Weights that already sum to 1 are returned untouched. Dividing them anyway would
  * introduce floating-point drift (0.45 becomes 0.45000000000000007), and since the applied

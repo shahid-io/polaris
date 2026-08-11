@@ -2,7 +2,7 @@ packages:
   - 'apps/*'
   - 'packages/*'
 # Build scripts are blocked by default in pnpm. esbuild is a Vitest dependency and
-# needs its postinstall to link the platform binary — allowed deliberately.
+# needs its postinstall to link the platform binary, allowed deliberately.
 allowBuilds:
   esbuild: true
   # Next.js image optimisation. Needs its postinstall to link native binaries.

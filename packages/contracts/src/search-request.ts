@@ -8,7 +8,7 @@ import { sortDirectionSchema, sortKeySchema } from './search-response';
  * Constraints a user can apply to a result set.
  *
  * Every field is optional; an omitted field places no constraint on that dimension.
- * Filters combine with AND — they only ever narrow.
+ * Filters combine with AND, they only ever narrow.
  *
  * These live in the shared contract rather than inside the domain package because they
  * cross the service boundary twice: the client sends them for deep-linkable searches, and
@@ -35,7 +35,7 @@ export const flightFiltersSchema = z.object({
 /** How the client wants results ordered. */
 export const sortSpecSchema = z.object({
   key: sortKeySchema.default('value'),
-  /** Omitted means the natural direction for the key — best value, cheapest, earliest. */
+  /** Omitted means the natural direction for the key, best value, cheapest, earliest. */
   direction: sortDirectionSchema.optional(),
 });
 

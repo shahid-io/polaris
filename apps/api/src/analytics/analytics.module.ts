@@ -14,7 +14,7 @@ import { SearchEvent, SearchEventSchema } from './search-event.schema';
  *
  * Mongoose is configured to fail fast rather than buffer: by default a query issued while
  * disconnected waits indefinitely, which would turn "Mongo is not running" into "the
- * search hangs" — the opposite of degrading gracefully.
+ * search hangs", the opposite of degrading gracefully.
  */
 @Global()
 @Module({})

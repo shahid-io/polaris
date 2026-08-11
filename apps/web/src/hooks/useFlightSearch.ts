@@ -19,11 +19,11 @@ export interface UseFlightSearchResult {
  * Runs a flight search and holds the result.
  *
  * Only the query is sent. Filtering and sorting happen client-side against the returned
- * result, so toggling a checkbox is instant rather than another provider fan-out — which
+ * result, so toggling a checkbox is instant rather than another provider fan-out, which
  * also avoids spending a SerpApi credit per interaction against a 250-a-month quota.
  *
  * A search in flight is aborted when a new one starts. Without that, a slow first request
- * can resolve after a fast second one and overwrite newer results with stale ones — a race
+ * can resolve after a fast second one and overwrite newer results with stale ones, a race
  * that shows up exactly when a user corrects a mistyped route.
  */
 export function useFlightSearch(): UseFlightSearchResult {
@@ -44,7 +44,7 @@ export function useFlightSearch(): UseFlightSearchResult {
 
     const { data, error: apiError } = await searchFlights({ query }, { signal: controller.signal });
 
-    // A superseded request must not touch state — its result is already obsolete.
+    // A superseded request must not touch state, its result is already obsolete.
     if (controller.signal.aborted) return;
 
     if (data) {

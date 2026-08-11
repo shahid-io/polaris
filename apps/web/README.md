@@ -11,7 +11,7 @@ per offer. Runs on `:3000` and talks to [`@polaris/api`](../api/README.md) on `:
 
 ```
 src/
-  app/            App Router — page, error boundaries, 404, loading
+  app/            App Router: page, error boundaries, 404, loading
   components/
     ui/           primitives (kebab-case, shadcn convention)
     search/       search form and airport picker (PascalCase)
@@ -24,7 +24,7 @@ e2e/              Playwright smoke test
 
 There is deliberately no `src/schemas/`, `src/actions/` or `src/models/`. Those belong to the
 Next-as-backend pattern; Polaris has a separate NestJS service, so schemas live in
-`@polaris/contracts` and are shared by both sides — one definition, no drift.
+`@polaris/contracts` and are shared by both sides, one definition, no drift.
 
 ---
 
@@ -36,7 +36,7 @@ Next-as-backend pattern; Polaris has a separate NestJS service, so schemas live 
 - `cva` with `VariantProps` for variants; Radix `Slot` for `asChild`
 - Named function declarations, not arrow consts
 - `export type XProps = React.ComponentProps<typeof X>` rather than a hand-written interface
-- Semantic Tailwind tokens (`bg-primary`, `text-muted-foreground`) — never raw palette values
+- Semantic Tailwind tokens (`bg-primary`, `text-muted-foreground`), never raw palette values
 - Components never call `fetch`; `lib/fetch.ts` normalises every outcome to one shape
 
 ---
@@ -50,7 +50,7 @@ providers selling one flight produce six near-identical rows and the user does t
 themselves. Here the flight is the row and the sellers sit inside it.
 
 Offers are reduced to each provider's cheapest, so one seller never appears three times at
-three fare prices — the same basis the price spread is measured on, so the list and the
+three fare prices, the same basis the price spread is measured on, so the list and the
 headline saving cannot disagree.
 
 ### `ProviderStatusBanner`
@@ -61,14 +61,14 @@ banner names what failed, why, and says a cheaper fare may exist.
 
 ### `ScoreBreakdown`
 
-Answers _"who decided these weights?"_ before it is asked — every sub-score, its weight, and
+Answers _"who decided these weights?"_ before it is asked, every sub-score, its weight, and
 the fact that scores are relative to the **full** result set rather than the filtered view,
 so filtering never changes a flight's score.
 
 ### Filtering and sorting run client-side
 
 Against the already-fetched result, using `filterGroups` and `sortGroups` from
-`@polaris/core` — the same functions the API runs. Reimplementing them here would give the
+`@polaris/core`, the same functions the API runs. Reimplementing them here would give the
 UI and the API two definitions of "cheapest first" that agree today and drift the first time
 either gains a tie-breaker.
 
@@ -91,13 +91,13 @@ and a half hours. This is the browser-side twin of the canonical-key timezone ru
 
 ```bash
 pnpm test        # 46 component and integration tests (jsdom)
-pnpm test:e2e    # Playwright smoke test — needs both servers running
+pnpm test:e2e    # Playwright smoke test, needs both servers running
 ```
 
 The component suite covers behaviour. The single Playwright test answers what jsdom
 structurally cannot: does this render and work in a real browser? Hydration mismatches, a
 stylesheet that never loads and client-only crashes all pass a jsdom test and break in front
-of a user — so it asserts zero console errors.
+of a user, so it asserts zero console errors.
 
 Radix and cmdk need `ResizeObserver`, `matchMedia`, `scrollIntoView` and pointer capture,
 none of which jsdom implements. They are stubbed once in `src/test/setup.ts` so a missing
@@ -108,7 +108,7 @@ environment feature cannot masquerade as a component bug.
 ## Regenerating the demo GIF
 
 ```bash
-pnpm dev      # both servers must be running — the capture drives the real app
+pnpm dev      # both servers must be running, the capture drives the real app
 pnpm demo     # from the repo root
 ```
 
