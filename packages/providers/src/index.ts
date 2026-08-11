@@ -16,3 +16,5 @@ export * from './schedule/scheduled-time';
 export * from './representative/seeded-random';
 export * from './representative/representative-provider';
 export * from './representative/ota-providers';
+export * from './live/serpapi-client';
+export * from './live/serpapi.provider';

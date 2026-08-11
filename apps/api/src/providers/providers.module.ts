@@ -2,7 +2,9 @@ import { Module, type DynamicModule } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   createOtaProviders,
+  createSerpApiProviders,
   type FlightProvider,
+  type ProviderMode,
   type SimulatedFailure,
 } from '@polaris/providers';
 import type { Env } from '../config/env';
@@ -72,6 +74,12 @@ function buildProviders(config: ConfigService<Env, true>): FlightProvider[] {
   const failureModes = parseFailureModes(config.get('SIMULATED_FAILURES', { infer: true }));
 
   return [
+    // Live airline fares via SerpApi. With no key these report `skipped`, so the app
+    // remains fully usable on a clean checkout.
+    ...createSerpApiProviders(
+      config.get('SERPAPI_KEY', { infer: true }),
+      config.get('PROVIDER_MODE', { infer: true }) as ProviderMode,
+    ),
     ...createOtaProviders({
       failureModes,
       // Realistic response times in every mode except tests, so the timeout and circuit
