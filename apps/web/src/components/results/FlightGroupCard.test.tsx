@@ -226,3 +226,113 @@ describe('FlightGroupCard', () => {
     expect(screen.getByText('Best value')).toBeInTheDocument();
   });
 });
+
+describe('expanding a flight', () => {
+  it('hides the detail until the card is clicked', () => {
+    render(<FlightGroupCard group={buildGroup()} />);
+
+    expect(screen.queryByText(/All \d+ fares/)).not.toBeInTheDocument();
+  });
+
+  it('reveals the full journey and every fare on click', async () => {
+    const user = userEvent.setup();
+    render(
+      <FlightGroupCard
+        group={buildGroup([
+          { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 4614, offer: { fareFamily: 'SAVER' } },
+          { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 6400, offer: { fareFamily: 'FLEX' } },
+        ])}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: /show full journey and all fares/i }));
+
+    // The card lists one row per provider; the detail lists every fare family.
+    expect(screen.getByText(/All 2 fares/)).toBeInTheDocument();
+    expect(screen.getByText('FLEX')).toBeInTheDocument();
+    expect(screen.getByText(/Total/)).toBeInTheDocument();
+  });
+
+  it('collapses again on a second click', async () => {
+    const user = userEvent.setup();
+    render(<FlightGroupCard group={buildGroup()} />);
+
+    const toggle = screen.getByRole('button', { name: /show full journey/i });
+    await user.click(toggle);
+    expect(screen.getByText(/All \d+ fares/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: /hide full journey/i }));
+    expect(screen.queryByText(/All \d+ fares/)).not.toBeInTheDocument();
+  });
+
+  /**
+   * The split between flying and waiting is invisible in a single total duration — two
+   * four-hour journeys are very different if one is a single flight and the other is
+   * ninety minutes of flying either side of a wait.
+   */
+  it('shows layover time and flags a tight connection', async () => {
+    const user = userEvent.setup();
+    const tight = buildItinerary({
+      segments: [
+        {
+          marketingCarrier: '6E',
+          flightNumber: '6261',
+          origin: 'DEL',
+          destination: 'AMD',
+          departure: istTime('2026-08-20T06:00'),
+          arrival: istTime('2026-08-20T07:30'),
+          durationMinutes: 90,
+        },
+        {
+          marketingCarrier: '6E',
+          flightNumber: '6285',
+          origin: 'AMD',
+          destination: 'BOM',
+          departure: istTime('2026-08-20T08:15'),
+          arrival: istTime('2026-08-20T09:15'),
+          durationMinutes: 60,
+        },
+      ],
+      totalDurationMinutes: 195,
+    });
+
+    render(<FlightGroupCard group={buildGroup(undefined, { itinerary: tight })} />);
+    await user.click(screen.getByRole('button', { name: /show full journey/i }));
+
+    expect(screen.getByText(/45m in AMD/)).toBeInTheDocument();
+    expect(screen.getByText(/tight connection/)).toBeInTheDocument();
+  });
+
+  it('warns when a journey is split across two carriers', async () => {
+    const user = userEvent.setup();
+    const mixed = buildItinerary({
+      segments: [
+        {
+          marketingCarrier: 'IX',
+          flightNumber: '1592',
+          origin: 'DEL',
+          destination: 'AMD',
+          departure: istTime('2026-08-20T06:00'),
+          arrival: istTime('2026-08-20T07:30'),
+          durationMinutes: 90,
+        },
+        {
+          marketingCarrier: '6E',
+          flightNumber: '6285',
+          origin: 'AMD',
+          destination: 'BOM',
+          departure: istTime('2026-08-20T10:00'),
+          arrival: istTime('2026-08-20T11:00'),
+          durationMinutes: 60,
+        },
+      ],
+      totalDurationMinutes: 300,
+    });
+
+    render(<FlightGroupCard group={buildGroup(undefined, { itinerary: mixed })} />);
+    await user.click(screen.getByRole('button', { name: /show full journey/i }));
+
+    expect(screen.getByText('IX + 6E')).toBeInTheDocument();
+    expect(screen.getByText(/baggage may not transfer/)).toBeInTheDocument();
+  });
+});

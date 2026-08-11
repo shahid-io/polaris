@@ -1,11 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDownIcon, GiftIcon, LuggageIcon, PlaneIcon, RotateCcwIcon, TrendingDownIcon } from 'lucide-react';
+import {
+  ChevronDownIcon,
+  GiftIcon,
+  LuggageIcon,
+  PlaneIcon,
+  RotateCcwIcon,
+  TrendingDownIcon,
+} from 'lucide-react';
 import type { ComparisonGroup, NormalizedOffer } from '@polaris/contracts';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { FlightDetail } from '@/components/results/FlightDetail';
 import { ScoreBreakdown } from '@/components/results/ScoreBreakdown';
 import { cn, dayOffset, formatDuration, formatLocalTime, formatRupees } from '@/lib/utils';
 
@@ -25,6 +33,7 @@ export interface FlightGroupCardProps {
  */
 export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardProps) {
   const [showAllOffers, setShowAllOffers] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const { itinerary, priceSpread, offers, providerCount } = group;
   const firstSegment = itinerary.segments[0]!;
@@ -44,7 +53,13 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
         isTopResult ? 'border-primary/40 ring-1 ring-primary/20' : 'border-border',
       )}
     >
-      <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between">
+      <button
+        type="button"
+        onClick={() => setIsExpanded((open) => !open)}
+        aria-expanded={isExpanded}
+        aria-label={`${firstSegment.marketingCarrier} ${firstSegment.flightNumber}, ${formatLocalTime(firstSegment.departure.local)} — ${isExpanded ? 'hide' : 'show'} full journey and all fares`}
+        className="flex w-full flex-col gap-4 rounded-lg p-4 text-left transition-colors hover:bg-muted/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:flex-row sm:items-start sm:justify-between"
+      >
         {/* ── Itinerary ─────────────────────────────────────────── */}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
@@ -100,10 +115,18 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
           ) : (
             <p className="mt-0.5 text-xs text-muted-foreground">Single seller</p>
           )}
-          <div className="mt-2 sm:flex sm:justify-end">
-            <ScoreBreakdown score={group.score} />
-          </div>
+          <p className="tabular mt-2 flex items-center gap-1 text-xs text-muted-foreground sm:justify-end">
+            <ChevronDownIcon
+              className={cn('size-3 transition-transform', isExpanded && 'rotate-180')}
+              aria-hidden="true"
+            />
+            {isExpanded ? 'Hide details' : 'Journey & all fares'}
+          </p>
         </div>
+      </button>
+
+      <div className="flex justify-end px-4 pb-1 sm:-mt-8">
+        <ScoreBreakdown score={group.score} />
       </div>
 
       {/* ── Providers selling this flight ───────────────────────── */}
@@ -149,7 +172,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
           ))}
         </ul>
 
-        {cheapestPerProvider.length > 3 && (
+        {!isExpanded && cheapestPerProvider.length > 3 && (
           <Button
             variant="ghost"
             size="sm"
@@ -167,6 +190,8 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
           </Button>
         )}
       </div>
+
+      {isExpanded && <FlightDetail group={group} />}
     </article>
   );
 }
