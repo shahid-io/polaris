@@ -24,20 +24,39 @@ const IST = { timeZone: 'Asia/Kolkata', utcOffsetMinutes: 330 } as const;
 /**
  * Airports served by the prototype.
  *
- * The busiest Indian domestic airports, which is where the five providers in the brief
- * overlap most and therefore where cross-provider comparison is most meaningful.
+ * The busiest Indian domestic airports plus the larger regional stations. The list is sized
+ * to the timetable deliberately: offering an airport with no departures would give users a
+ * search that returns nothing, which reads as broken even when the empty state is handled
+ * correctly. Every airport here appears on at least one route.
  */
 export const AIRPORTS: readonly Airport[] = [
+  // Metros
   { code: 'DEL', city: 'Delhi', name: 'Indira Gandhi International', ...IST },
   { code: 'BOM', city: 'Mumbai', name: 'Chhatrapati Shivaji Maharaj International', ...IST },
   { code: 'BLR', city: 'Bengaluru', name: 'Kempegowda International', ...IST },
   { code: 'MAA', city: 'Chennai', name: 'Chennai International', ...IST },
   { code: 'HYD', city: 'Hyderabad', name: 'Rajiv Gandhi International', ...IST },
   { code: 'CCU', city: 'Kolkata', name: 'Netaji Subhas Chandra Bose International', ...IST },
+
+  // Major secondary
   { code: 'GOI', city: 'Goa', name: 'Dabolim', ...IST },
   { code: 'PNQ', city: 'Pune', name: 'Pune International', ...IST },
   { code: 'AMD', city: 'Ahmedabad', name: 'Sardar Vallabhbhai Patel International', ...IST },
   { code: 'COK', city: 'Kochi', name: 'Cochin International', ...IST },
+  { code: 'JAI', city: 'Jaipur', name: 'Jaipur International', ...IST },
+  { code: 'LKO', city: 'Lucknow', name: 'Chaudhary Charan Singh International', ...IST },
+  { code: 'IXC', city: 'Chandigarh', name: 'Shaheed Bhagat Singh International', ...IST },
+  { code: 'NAG', city: 'Nagpur', name: 'Dr. Babasaheb Ambedkar International', ...IST },
+
+  // Regional
+  { code: 'PAT', city: 'Patna', name: 'Jay Prakash Narayan International', ...IST },
+  { code: 'BBI', city: 'Bhubaneswar', name: 'Biju Patnaik International', ...IST },
+  { code: 'GAU', city: 'Guwahati', name: 'Lokpriya Gopinath Bordoloi International', ...IST },
+  { code: 'TRV', city: 'Thiruvananthapuram', name: 'Trivandrum International', ...IST },
+  { code: 'IDR', city: 'Indore', name: 'Devi Ahilyabai Holkar', ...IST },
+  { code: 'VNS', city: 'Varanasi', name: 'Lal Bahadur Shastri International', ...IST },
+  { code: 'SXR', city: 'Srinagar', name: 'Sheikh ul-Alam International', ...IST },
+  { code: 'IXB', city: 'Bagdogra', name: 'Bagdogra International', ...IST },
 ];
 
 const AIRPORTS_BY_CODE = new Map(AIRPORTS.map((airport) => [airport.code, airport]));

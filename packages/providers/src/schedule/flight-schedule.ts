@@ -16,20 +16,28 @@ export interface ScheduledFlight {
   daysOfWeek?: readonly number[];
 }
 
+/**
+ * A departure in compact form: `[carrier, flightNumber, localTime, fareOverride?, days?]`.
+ *
+ * Tuples rather than objects because this file is mostly data. Roughly 150 departures in
+ * object form would be four times longer and materially harder to scan for the patterns
+ * that make a timetable look real — morning banks, evening peaks, sensible gaps.
+ */
+type Departure = readonly [
+  carrier: IataAirlineCode,
+  flightNumber: string,
+  departure: string,
+  baseFareInr?: number,
+  daysOfWeek?: readonly number[],
+];
+
 interface RouteSchedule {
   origin: IataAirportCode;
   destination: IataAirportCode;
   durationMinutes: number;
+  /** Route default, used by any departure that does not override it. */
   baseFareInr: number;
-  departures: readonly {
-    carrier: IataAirlineCode;
-    flightNumber: string;
-    departure: string;
-    /** Overrides the route default, for a flight that is unusually cheap or dear. */
-    baseFareInr?: number;
-    durationMinutes?: number;
-    daysOfWeek?: readonly number[];
-  }[];
+  departures: readonly Departure[];
 }
 
 /**
@@ -41,12 +49,16 @@ interface RouteSchedule {
  * underlying departures, the same flight genuinely appears across providers at different
  * prices — which is the behaviour the brief asks us to handle.
  *
- * Carriers, flight numbers and departure banks are modelled on real Indian domestic
- * patterns: IndiGo (6E) dominating frequency, Air India Express (IX) on a thinner network,
- * early-morning and evening peaks, and a red-eye on the trunk route so the local-date
- * canonical key has something real to prove itself against.
+ * Modelled on real Indian domestic patterns: IndiGo (6E) dominating frequency with Air
+ * India Express (IX) on a thinner network, early-morning and evening peaks on trunk routes,
+ * thinner regional schedules, a weekend-only leisure service, and a red-eye on Delhi–Mumbai
+ * so the local-date canonical key has a real case to prove itself against.
+ *
+ * Fares scale roughly with sector length and carry route-level variation — trunk routes are
+ * competitive, regional monopolistic sectors less so.
  */
 const ROUTES: readonly RouteSchedule[] = [
+  // ── Trunk: Delhi ↔ Mumbai ────────────────────────────────────────────────
   {
     origin: 'DEL',
     destination: 'BOM',
@@ -55,14 +67,14 @@ const ROUTES: readonly RouteSchedule[] = [
     departures: [
       // A deliberate red-eye: 00:45 IST is 19:15Z the previous day. This is the flight
       // that breaks any implementation keying its canonical id on the UTC date.
-      { carrier: '6E', flightNumber: '2134', departure: '00:45', baseFareInr: 4650 },
-      { carrier: '6E', flightNumber: '5017', departure: '06:15' },
-      { carrier: 'IX', flightNumber: '1592', departure: '07:40', baseFareInr: 4890 },
-      { carrier: '6E', flightNumber: '6183', departure: '09:20', baseFareInr: 6100 },
-      { carrier: '6E', flightNumber: '2456', departure: '13:05', baseFareInr: 5150 },
-      { carrier: 'IX', flightNumber: '1188', departure: '17:30', baseFareInr: 5720 },
-      { carrier: '6E', flightNumber: '778', departure: '19:45', baseFareInr: 6480 },
-      { carrier: '6E', flightNumber: '944', departure: '21:55', baseFareInr: 5980 },
+      ['6E', '2134', '00:45', 4650],
+      ['6E', '5017', '06:15'],
+      ['IX', '1592', '07:40', 4890],
+      ['6E', '6183', '09:20', 6100],
+      ['6E', '2456', '13:05', 5150],
+      ['IX', '1188', '17:30', 5720],
+      ['6E', '778', '19:45', 6480],
+      ['6E', '944', '21:55', 5980],
     ],
   },
   {
@@ -71,25 +83,27 @@ const ROUTES: readonly RouteSchedule[] = [
     durationMinutes: 135,
     baseFareInr: 5550,
     departures: [
-      { carrier: '6E', flightNumber: '2135', departure: '05:50', baseFareInr: 4980 },
-      { carrier: '6E', flightNumber: '5018', departure: '08:25' },
-      { carrier: 'IX', flightNumber: '1593', departure: '11:10', baseFareInr: 5020 },
-      { carrier: '6E', flightNumber: '6184', departure: '14:40', baseFareInr: 6250 },
-      { carrier: '6E', flightNumber: '2457', departure: '18:15', baseFareInr: 6890 },
-      { carrier: 'IX', flightNumber: '1189', departure: '20:50', baseFareInr: 5340 },
+      ['6E', '2135', '05:50', 4980],
+      ['6E', '5018', '08:25'],
+      ['IX', '1593', '11:10', 5020],
+      ['6E', '6184', '14:40', 6250],
+      ['6E', '2457', '18:15', 6890],
+      ['IX', '1189', '20:50', 5340],
     ],
   },
+
+  // ── Trunk: Delhi ↔ Bengaluru ─────────────────────────────────────────────
   {
     origin: 'DEL',
     destination: 'BLR',
     durationMinutes: 165,
     baseFareInr: 6200,
     departures: [
-      { carrier: '6E', flightNumber: '3021', departure: '05:30', baseFareInr: 5450 },
-      { carrier: '6E', flightNumber: '3155', departure: '08:10' },
-      { carrier: 'IX', flightNumber: '2741', departure: '12:35', baseFareInr: 5890 },
-      { carrier: '6E', flightNumber: '3288', departure: '16:20', baseFareInr: 7100 },
-      { carrier: '6E', flightNumber: '3410', departure: '20:05', baseFareInr: 6740 },
+      ['6E', '3021', '05:30', 5450],
+      ['6E', '3155', '08:10'],
+      ['IX', '2741', '12:35', 5890],
+      ['6E', '3288', '16:20', 7100],
+      ['6E', '3410', '20:05', 6740],
     ],
   },
   {
@@ -98,69 +112,136 @@ const ROUTES: readonly RouteSchedule[] = [
     durationMinutes: 170,
     baseFareInr: 6350,
     departures: [
-      { carrier: '6E', flightNumber: '3022', departure: '06:40', baseFareInr: 5720 },
-      { carrier: '6E', flightNumber: '3156', departure: '10:15' },
-      { carrier: 'IX', flightNumber: '2742', departure: '15:45', baseFareInr: 6010 },
-      { carrier: '6E', flightNumber: '3411', departure: '21:30', baseFareInr: 7290 },
+      ['6E', '3022', '06:40', 5720],
+      ['6E', '3156', '10:15'],
+      ['IX', '2742', '15:45', 6010],
+      ['6E', '3411', '21:30', 7290],
     ],
   },
+
+  // ── Mumbai ↔ Bengaluru ───────────────────────────────────────────────────
   {
     origin: 'BOM',
     destination: 'BLR',
     durationMinutes: 105,
     baseFareInr: 4300,
     departures: [
-      { carrier: '6E', flightNumber: '812', departure: '07:05', baseFareInr: 3890 },
-      { carrier: 'IX', flightNumber: '674', departure: '11:50' },
-      { carrier: '6E', flightNumber: '857', departure: '15:25', baseFareInr: 4620 },
-      { carrier: '6E', flightNumber: '901', departure: '19:10', baseFareInr: 5080 },
+      ['6E', '812', '07:05', 3890],
+      ['IX', '674', '11:50'],
+      ['6E', '857', '15:25', 4620],
+      ['6E', '901', '19:10', 5080],
     ],
   },
+  {
+    origin: 'BLR',
+    destination: 'BOM',
+    durationMinutes: 100,
+    baseFareInr: 4250,
+    departures: [
+      ['6E', '813', '06:20', 3790],
+      ['6E', '858', '10:45'],
+      ['IX', '675', '16:30', 4410],
+      ['6E', '902', '20:40', 4980],
+    ],
+  },
+
+  // ── Delhi ↔ Hyderabad ────────────────────────────────────────────────────
   {
     origin: 'DEL',
     destination: 'HYD',
     durationMinutes: 140,
     baseFareInr: 5100,
     departures: [
-      { carrier: '6E', flightNumber: '445', departure: '06:55', baseFareInr: 4550 },
-      { carrier: '6E', flightNumber: '512', departure: '10:40' },
-      { carrier: 'IX', flightNumber: '1024', departure: '14:15', baseFareInr: 4870 },
-      { carrier: '6E', flightNumber: '689', departure: '18:50', baseFareInr: 5960 },
+      ['6E', '445', '06:55', 4550],
+      ['6E', '512', '10:40'],
+      ['IX', '1024', '14:15', 4870],
+      ['6E', '689', '18:50', 5960],
     ],
   },
+  {
+    origin: 'HYD',
+    destination: 'DEL',
+    durationMinutes: 145,
+    baseFareInr: 5250,
+    departures: [
+      ['6E', '446', '07:35', 4690],
+      ['6E', '513', '12:20'],
+      ['IX', '1025', '17:05', 5110],
+      ['6E', '690', '20:15', 6040],
+    ],
+  },
+
+  // ── Delhi ↔ Chennai ──────────────────────────────────────────────────────
   {
     origin: 'DEL',
     destination: 'MAA',
     durationMinutes: 175,
     baseFareInr: 6050,
     departures: [
-      { carrier: '6E', flightNumber: '2011', departure: '05:45', baseFareInr: 5380 },
-      { carrier: '6E', flightNumber: '2144', departure: '11:25' },
-      { carrier: 'IX', flightNumber: '1310', departure: '16:00', baseFareInr: 5710 },
-      { carrier: '6E', flightNumber: '2277', departure: '20:35', baseFareInr: 6820 },
+      ['6E', '2011', '05:45', 5380],
+      ['6E', '2144', '11:25'],
+      ['IX', '1310', '16:00', 5710],
+      ['6E', '2277', '20:35', 6820],
     ],
   },
+  {
+    origin: 'MAA',
+    destination: 'DEL',
+    durationMinutes: 180,
+    baseFareInr: 6180,
+    departures: [
+      ['6E', '2012', '06:30', 5540],
+      ['6E', '2145', '13:50'],
+      ['IX', '1311', '19:20', 6390],
+    ],
+  },
+
+  // ── Delhi ↔ Kolkata ──────────────────────────────────────────────────────
   {
     origin: 'DEL',
     destination: 'CCU',
     durationMinutes: 135,
     baseFareInr: 5250,
     departures: [
-      { carrier: '6E', flightNumber: '7011', departure: '07:20', baseFareInr: 4720 },
-      { carrier: '6E', flightNumber: '7148', departure: '12:55' },
-      { carrier: 'IX', flightNumber: '1455', departure: '18:30', baseFareInr: 5490 },
+      ['6E', '7011', '07:20', 4720],
+      ['6E', '7148', '12:55'],
+      ['IX', '1455', '18:30', 5490],
     ],
   },
+  {
+    origin: 'CCU',
+    destination: 'DEL',
+    durationMinutes: 140,
+    baseFareInr: 5340,
+    departures: [
+      ['6E', '7012', '08:05', 4810],
+      ['6E', '7149', '14:25'],
+      ['IX', '1456', '20:10', 5620],
+    ],
+  },
+
+  // ── Leisure: Goa ─────────────────────────────────────────────────────────
   {
     origin: 'BOM',
     destination: 'GOI',
     durationMinutes: 70,
     baseFareInr: 3100,
     departures: [
-      { carrier: '6E', flightNumber: '5301', departure: '06:30', baseFareInr: 2790 },
-      { carrier: 'IX', flightNumber: '881', departure: '10:05' },
-      { carrier: '6E', flightNumber: '5422', departure: '14:40', baseFareInr: 3380 },
-      { carrier: '6E', flightNumber: '5588', departure: '18:55', baseFareInr: 3640 },
+      ['6E', '5301', '06:30', 2790],
+      ['IX', '881', '10:05'],
+      ['6E', '5422', '14:40', 3380],
+      ['6E', '5588', '18:55', 3640],
+    ],
+  },
+  {
+    origin: 'GOI',
+    destination: 'BOM',
+    durationMinutes: 70,
+    baseFareInr: 3050,
+    departures: [
+      ['6E', '5302', '08:15', 2740],
+      ['IX', '882', '12:30'],
+      ['6E', '5589', '20:45', 3510],
     ],
   },
   {
@@ -169,20 +250,43 @@ const ROUTES: readonly RouteSchedule[] = [
     durationMinutes: 155,
     baseFareInr: 5800,
     departures: [
-      { carrier: '6E', flightNumber: '4102', departure: '08:45' },
-      { carrier: 'IX', flightNumber: '1720', departure: '13:20', baseFareInr: 5410 },
+      ['6E', '4102', '08:45'],
+      ['IX', '1720', '13:20', 5410],
       // Weekend-only, so the schedule exercises day-of-week handling.
-      { carrier: '6E', flightNumber: '4315', departure: '17:10', daysOfWeek: [5, 6, 0] },
+      ['6E', '4315', '17:10', undefined, [5, 6, 0]],
     ],
   },
+  {
+    origin: 'GOI',
+    destination: 'DEL',
+    durationMinutes: 160,
+    baseFareInr: 5900,
+    departures: [
+      ['6E', '4103', '11:35'],
+      ['IX', '1721', '16:15', 5520],
+    ],
+  },
+
+  // ── Western sectors ──────────────────────────────────────────────────────
   {
     origin: 'DEL',
     destination: 'PNQ',
     durationMinutes: 125,
     baseFareInr: 5350,
     departures: [
-      { carrier: '6E', flightNumber: '6011', departure: '07:50', baseFareInr: 4820 },
-      { carrier: '6E', flightNumber: '6177', departure: '15:35' },
+      ['6E', '6011', '07:50', 4820],
+      ['6E', '6177', '15:35'],
+      ['IX', '2380', '20:25', 5610],
+    ],
+  },
+  {
+    origin: 'PNQ',
+    destination: 'DEL',
+    durationMinutes: 130,
+    baseFareInr: 5420,
+    departures: [
+      ['6E', '6012', '09:30', 4910],
+      ['6E', '6178', '18:05'],
     ],
   },
   {
@@ -191,34 +295,221 @@ const ROUTES: readonly RouteSchedule[] = [
     durationMinutes: 95,
     baseFareInr: 4200,
     departures: [
-      { carrier: '6E', flightNumber: '881', departure: '06:10', baseFareInr: 3740 },
-      { carrier: 'IX', flightNumber: '2205', departure: '12:20' },
-      { carrier: '6E', flightNumber: '967', departure: '19:25', baseFareInr: 4680 },
+      ['6E', '881', '06:10', 3740],
+      ['IX', '2205', '12:20'],
+      ['6E', '967', '19:25', 4680],
     ],
   },
+  {
+    origin: 'BOM',
+    destination: 'AMD',
+    durationMinutes: 75,
+    baseFareInr: 3200,
+    departures: [
+      ['6E', '621', '07:15', 2880],
+      ['6E', '744', '17:40', 3450],
+    ],
+  },
+  {
+    origin: 'BOM',
+    destination: 'HYD',
+    durationMinutes: 85,
+    baseFareInr: 3700,
+    departures: [
+      ['6E', '1105', '06:45', 3320],
+      ['IX', '512', '11:20'],
+      ['6E', '1288', '19:35', 4010],
+    ],
+  },
+
+  // ── Southern sectors ─────────────────────────────────────────────────────
   {
     origin: 'BLR',
     destination: 'COK',
     durationMinutes: 75,
     baseFareInr: 3050,
     departures: [
-      { carrier: '6E', flightNumber: '7702', departure: '09:15' },
-      { carrier: 'IX', flightNumber: '415', departure: '16:45', baseFareInr: 2880 },
+      ['6E', '7702', '09:15'],
+      ['IX', '415', '16:45', 2880],
+    ],
+  },
+  {
+    origin: 'BLR',
+    destination: 'MAA',
+    durationMinutes: 60,
+    baseFareInr: 2700,
+    departures: [
+      ['6E', '4801', '07:00', 2450],
+      ['6E', '4877', '13:30'],
+      ['IX', '338', '19:50', 2890],
+    ],
+  },
+  {
+    origin: 'BLR',
+    destination: 'HYD',
+    durationMinutes: 70,
+    baseFareInr: 2950,
+    departures: [
+      ['6E', '5011', '06:35', 2680],
+      ['6E', '5144', '15:10'],
+    ],
+  },
+  {
+    origin: 'BOM',
+    destination: 'COK',
+    durationMinutes: 115,
+    baseFareInr: 4600,
+    departures: [
+      ['6E', '281', '08:40', 4180],
+      ['IX', '928', '18:20'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'TRV',
+    durationMinutes: 200,
+    baseFareInr: 7400,
+    departures: [
+      ['6E', '1531', '05:15', 6720],
+      ['IX', '1442', '14:55'],
+    ],
+  },
+
+  // ── Northern and eastern regional ────────────────────────────────────────
+  {
+    origin: 'DEL',
+    destination: 'JAI',
+    durationMinutes: 60,
+    baseFareInr: 2600,
+    departures: [
+      ['6E', '2091', '07:25', 2340],
+      ['6E', '2188', '16:50'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'LKO',
+    durationMinutes: 70,
+    baseFareInr: 2900,
+    departures: [
+      ['6E', '3355', '08:00', 2620],
+      ['6E', '3492', '18:40'],
+      ['IX', '761', '13:15', 2780],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'IXC',
+    durationMinutes: 55,
+    baseFareInr: 2450,
+    departures: [
+      ['6E', '891', '09:05', 2210],
+      ['6E', '976', '19:15'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'SXR',
+    durationMinutes: 85,
+    baseFareInr: 3900,
+    departures: [
+      ['6E', '2027', '06:05', 3520],
+      ['IX', '1817', '11:40'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'PAT',
+    durationMinutes: 110,
+    baseFareInr: 4300,
+    departures: [
+      ['6E', '6511', '07:45', 3880],
+      ['6E', '6644', '15:05'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'VNS',
+    durationMinutes: 95,
+    baseFareInr: 3800,
+    departures: [
+      ['6E', '5031', '10:20', 3440],
+      ['IX', '1093', '17:55'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'GAU',
+    durationMinutes: 155,
+    baseFareInr: 5600,
+    departures: [
+      ['6E', '7255', '06:50', 5040],
+      ['6E', '7388', '14:10'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'BBI',
+    durationMinutes: 130,
+    baseFareInr: 5100,
+    departures: [
+      ['6E', '6021', '09:40', 4590],
+      ['IX', '1266', '18:10'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'NAG',
+    durationMinutes: 110,
+    baseFareInr: 4400,
+    departures: [
+      ['6E', '3811', '08:30', 3970],
+      ['6E', '3944', '17:20'],
+    ],
+  },
+  {
+    origin: 'DEL',
+    destination: 'IDR',
+    durationMinutes: 95,
+    baseFareInr: 4050,
+    departures: [
+      ['6E', '2711', '11:00', 3650],
+      ['6E', '2866', '19:40'],
+    ],
+  },
+  {
+    origin: 'CCU',
+    destination: 'IXB',
+    durationMinutes: 65,
+    baseFareInr: 2800,
+    departures: [
+      ['6E', '8021', '08:20', 2520],
+      ['6E', '8155', '15:50'],
+    ],
+  },
+  {
+    origin: 'CCU',
+    destination: 'GAU',
+    durationMinutes: 70,
+    baseFareInr: 2950,
+    departures: [
+      ['6E', '8311', '09:50', 2660],
+      ['IX', '624', '17:25'],
     ],
   },
 ];
 
 /** Flattened timetable, built once at module load. */
 const ALL_FLIGHTS: readonly ScheduledFlight[] = ROUTES.flatMap((route) =>
-  route.departures.map((departure) => ({
-    carrier: departure.carrier,
-    flightNumber: departure.flightNumber,
+  route.departures.map(([carrier, flightNumber, departure, baseFareInr, daysOfWeek]) => ({
+    carrier,
+    flightNumber,
     origin: route.origin,
     destination: route.destination,
-    departure: departure.departure,
-    durationMinutes: departure.durationMinutes ?? route.durationMinutes,
-    baseFareInr: departure.baseFareInr ?? route.baseFareInr,
-    ...(departure.daysOfWeek ? { daysOfWeek: departure.daysOfWeek } : {}),
+    departure,
+    durationMinutes: route.durationMinutes,
+    baseFareInr: baseFareInr ?? route.baseFareInr,
+    ...(daysOfWeek ? { daysOfWeek } : {}),
   })),
 );
 
@@ -255,6 +546,21 @@ export function findFlights(
 /** @returns Every route pair the schedule serves, for diagnostics and UI hints. */
 export function servedRoutes(): { origin: IataAirportCode; destination: IataAirportCode }[] {
   return ROUTES.map((route) => ({ origin: route.origin, destination: route.destination }));
+}
+
+/**
+ * Destinations reachable from an origin.
+ *
+ * Lets the UI narrow the destination picker to routes that actually have flights, so a user
+ * cannot construct a search that returns nothing.
+ *
+ * @param origin - Origin IATA code.
+ * @returns Destination codes served from that origin, sorted.
+ */
+export function destinationsFrom(origin: string): IataAirportCode[] {
+  return ROUTES.filter((route) => route.origin === origin)
+    .map((route) => route.destination)
+    .sort();
 }
 
 /** @returns The complete flattened timetable. Intended for tests and tooling. */

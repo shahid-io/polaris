@@ -128,3 +128,30 @@ export function fetchProviders(
 ): Promise<ApiResult<{ providers: ProviderInfo[] }>> {
   return request<{ providers: ProviderInfo[] }>('/api/providers', { method: 'GET' }, options);
 }
+
+/** An airport offered in the search form. */
+export interface AirportSummary {
+  code: string;
+  city: string;
+  name: string;
+}
+
+/** Airports plus which destinations each origin reaches. */
+export interface AirportsResponse {
+  airports: AirportSummary[];
+  routes: Record<string, string[]>;
+}
+
+/**
+ * Lists served airports and the origin-to-destination adjacency.
+ *
+ * Fetched rather than bundled so the picker cannot drift out of sync with the timetable —
+ * an airport offered in the UI but absent from the schedule would give the user a search
+ * that silently returns nothing.
+ *
+ * @param options - Abort signal and extra headers.
+ * @returns Airports and route adjacency.
+ */
+export function fetchAirports(options: HttpOptions = {}): Promise<ApiResult<AirportsResponse>> {
+  return request<AirportsResponse>('/api/airports', { method: 'GET' }, options);
+}

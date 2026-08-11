@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { resolve } from 'node:path';
 import { HealthController } from './health/health.controller';
+import { AirportsController } from './airports/airports.controller';
 import { ProvidersController } from './providers/providers.controller';
 import { ProvidersModule } from './providers/providers.module';
 import { SearchModule } from './search/search.module';
@@ -45,6 +46,6 @@ try {
     ProvidersModule.forRoot(),
     SearchModule,
   ],
-  controllers: [HealthController, ProvidersController],
+  controllers: [HealthController, ProvidersController, AirportsController],
 })
 export class AppModule {}

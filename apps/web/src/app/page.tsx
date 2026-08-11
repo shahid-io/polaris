@@ -1,36 +1,67 @@
-import { searchQuerySchema, TIME_RANGE_PRESETS } from '@polaris/contracts';
+'use client';
+
+import { useMemo, useState } from 'react';
+import { AirportPicker } from '@/components/search/AirportPicker';
+import { useAirports } from '@/hooks/useAirports';
 
 /**
- * Phase 0 placeholder. The real search UI lands in Phase 3.
- *
- * It parses a query with the shared schema on purpose: this page failing to build is the
- * signal that the workspace wiring between @polaris/contracts and Next.js has broken.
+ * Phase 3 in progress — the airport picker, wired to the live airports endpoint.
+ * The full search form, results and comparison view follow.
  */
 export default function HomePage() {
-  const sample = searchQuerySchema.parse({
-    origin: 'DEL',
-    destination: 'BOM',
-    departureDate: '2026-08-20',
-    timeRange: TIME_RANGE_PRESETS.morning,
-  });
+  const { airports, routes, isLoading, error } = useAirports();
+  const [origin, setOrigin] = useState<string>();
+  const [destination, setDestination] = useState<string>();
+
+  const reachable = useMemo(
+    () => (origin ? (routes[origin] ?? []) : undefined),
+    [origin, routes],
+  );
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-6 px-6">
+    <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-8 px-6 py-16">
       <div>
         <h1 className="text-4xl font-semibold tracking-tight">Polaris</h1>
-        <p className="mt-2 text-slate-600">Find your bearing on every fare.</p>
+        <p className="mt-2 text-muted-foreground">Find your bearing on every fare.</p>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white p-5">
-        <p className="text-sm font-medium text-slate-500">
-          Scaffold check — parsed by <code>@polaris/contracts</code>
+      {error ? (
+        <p className="rounded-md border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm">
+          {error}
         </p>
-        <pre className="mt-3 overflow-x-auto rounded bg-slate-900 p-4 text-xs text-slate-100">
-          {JSON.stringify(sample, null, 2)}
-        </pre>
-      </div>
+      ) : isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading airports…</p>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <AirportPicker
+            label="From"
+            value={origin}
+            airports={airports}
+            excludeCode={destination}
+            onChange={(code) => {
+              setOrigin(code);
+              // Clear a destination the new origin cannot reach, rather than leaving an
+              // invalid pair selected and failing on submit.
+              if (destination && !(routes[code] ?? []).includes(destination)) {
+                setDestination(undefined);
+              }
+            }}
+          />
+          <AirportPicker
+            label="To"
+            value={destination}
+            airports={airports}
+            selectableCodes={reachable}
+            excludeCode={origin}
+            disabled={!origin}
+            onChange={setDestination}
+          />
+        </div>
+      )}
 
-      <p className="text-sm text-slate-500">Phase 0 complete. Search UI arrives in Phase 3.</p>
+      <p className="text-sm text-muted-foreground">
+        {airports.length} airports · {Object.values(routes).flat().length} routes
+      </p>
     </main>
   );
 }
