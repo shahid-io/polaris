@@ -15,7 +15,9 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yaml,yml}\""
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
+    "fixtures:record": "node scripts/record-fixtures.mjs",
+    "demo": "pnpm --filter @polaris/web demo"
   },
   "devDependencies": {
     "prettier": "^3.4.2",

@@ -225,9 +225,10 @@ export interface LoadedFixture {
  * as though they were August's — the offer would carry the requested date in its id while
  * every timestamp inside it disagreed.
  *
- * So a fixture is only usable for the exact date it was captured for. A mismatch returns
- * `undefined`, which the caller reports honestly as having no data rather than quietly
- * substituting the wrong day.
+ * So a fixture is only usable for the exact date it was captured for. The date is part of
+ * the filename — `serpapi-del-bom-2026-08-27.json` — so several dates can be recorded for
+ * one route, and a lookup for an unrecorded date simply finds nothing. The recorded
+ * `outbound_date` is still verified afterwards, so a mislabelled file cannot slip through.
  *
  * @param origin - Origin IATA code.
  * @param destination - Destination IATA code.
@@ -248,7 +249,7 @@ export async function loadFixture(
     '..',
     '..',
     'fixtures',
-    `serpapi-${origin.toLowerCase()}-${destination.toLowerCase()}.json`,
+    fixtureFileName(origin, destination, departureDate),
   );
 
   let response: SerpApiResponse;
@@ -258,12 +259,33 @@ export async function loadFixture(
     return undefined;
   }
 
+  // Belt and braces: the filename says which date this is for, but a file copied or
+  // renamed by hand could disagree with its own contents.
   const recordedDate = response.search_parameters?.outbound_date;
   if (!recordedDate || recordedDate !== departureDate) {
     return undefined;
   }
 
   return { response, recordedDate };
+}
+
+/**
+ * Builds the filename a recording is stored under.
+ *
+ * Exported so the recording script and the loader cannot disagree about where fixtures
+ * live — a mismatch would show up as "no data" with no obvious cause.
+ *
+ * @param origin - Origin IATA code.
+ * @param destination - Destination IATA code.
+ * @param departureDate - `YYYY-MM-DD`.
+ * @returns e.g. `serpapi-del-bom-2026-08-27.json`.
+ */
+export function fixtureFileName(
+  origin: string,
+  destination: string,
+  departureDate: string,
+): string {
+  return `serpapi-${origin.toLowerCase()}-${destination.toLowerCase()}-${departureDate}.json`;
 }
 
 /**
