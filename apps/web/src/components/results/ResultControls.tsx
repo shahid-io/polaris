@@ -3,7 +3,7 @@
 import type { SortKey } from '@polaris/contracts';
 
 import { Select } from '@/components/ui/field';
-import { formatRupees } from '@/lib/utils';
+import { cn, formatRupees } from '@/lib/utils';
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: 'value', label: 'Best value' },
@@ -28,8 +28,8 @@ export interface ResultControlsProps {
   filters: FilterState;
   /** Options present in the unfiltered result, so nothing offered returns zero. */
   available: {
-    airlines: string[];
-    providers: { id: string; label: string }[];
+    airlines: { code: string; count: number }[];
+    providers: { id: string; label: string; count: number }[];
     minPriceMinor: number;
     maxPriceMinor: number;
     hasConnections: boolean;
@@ -129,11 +129,14 @@ export function ResultControls({
           <legend className="mb-1 text-xs text-muted-foreground">Airline</legend>
           {available.airlines.map((airline) => (
             <Checkbox
-              key={airline}
-              label={airline}
+              key={airline.code}
+              label={airline.code}
+              count={airline.count}
               mono
-              checked={filters.airlines.includes(airline)}
-              onChange={() => onFiltersChange({ ...filters, airlines: toggle(filters.airlines, airline) })}
+              checked={filters.airlines.includes(airline.code)}
+              onChange={() =>
+                onFiltersChange({ ...filters, airlines: toggle(filters.airlines, airline.code) })
+              }
             />
           ))}
         </fieldset>
@@ -144,6 +147,7 @@ export function ResultControls({
             <Checkbox
               key={provider.id}
               label={provider.label}
+              count={provider.count}
               checked={filters.providers.includes(provider.id)}
               onChange={() =>
                 onFiltersChange({ ...filters, providers: toggle(filters.providers, provider.id) })
@@ -183,11 +187,14 @@ export function ResultControls({
 function Checkbox({
   label,
   checked,
+  count,
   mono = false,
   onChange,
 }: {
   label: string;
   checked: boolean;
+  /** How many flights carry this option, shown so a user can see what a click leaves. */
+  count?: number;
   mono?: boolean;
   onChange: (checked: boolean) => void;
 }) {
@@ -197,9 +204,12 @@ function Checkbox({
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="size-4 accent-primary"
+        className="size-4 shrink-0 accent-primary"
       />
-      <span className={mono ? 'font-mono' : undefined}>{label}</span>
+      <span className={cn('min-w-0 flex-1 truncate', mono && 'font-mono')}>{label}</span>
+      {count !== undefined && (
+        <span className="tabular shrink-0 text-xs text-muted-foreground">{count}</span>
+      )}
     </label>
   );
 }

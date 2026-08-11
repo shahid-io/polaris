@@ -97,7 +97,7 @@ export default function HomePage() {
             />
           ) : (
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
-              <div className="lg:sticky lg:top-20 lg:w-64 lg:shrink-0">
+              <div className="lg:sticky lg:top-[4.5rem] lg:w-64 lg:shrink-0 lg:self-start">
                 <ResultControls
                   sort={sort}
                   filters={filters}
@@ -165,10 +165,10 @@ function EmptyState({
   const Icon = icon === 'search' ? PlaneTakeoffIcon : SearchXIcon;
 
   return (
-    <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border px-6 py-14 text-center">
-      <Icon className="size-8 text-muted-foreground" aria-hidden="true" />
-      <p className="text-base font-medium">{title}</p>
-      <p className="max-w-md text-sm text-muted-foreground">{description}</p>
+    <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border px-6 py-10 text-center">
+      <Icon className="size-6 text-muted-foreground" aria-hidden="true" />
+      <p className="text-sm font-medium">{title}</p>
+      <p className="max-w-sm text-sm text-muted-foreground">{description}</p>
     </div>
   );
 }
@@ -180,8 +180,10 @@ function EmptyState({
  * @returns Airlines, providers and price bounds actually available.
  */
 function buildFilterOptions(groups: readonly ComparisonGroup[]) {
-  const airlines = new Set<string>();
-  const providers = new Map<string, string>();
+  // Counts rather than a bare list: knowing a filter leaves two results is the difference
+  // between narrowing deliberately and clicking into an empty state.
+  const airlines = new Map<string, number>();
+  const providers = new Map<string, { label: string; count: number }>();
   let minPriceMinor = Number.POSITIVE_INFINITY;
   let maxPriceMinor = 0;
   let hasConnections = false;
@@ -189,8 +191,21 @@ function buildFilterOptions(groups: readonly ComparisonGroup[]) {
 
   for (const group of groups) {
     if (group.offers.some((offer) => offer.refundable === true)) hasRefundable = true;
-    for (const segment of group.itinerary.segments) airlines.add(segment.marketingCarrier);
-    for (const offer of group.offers) providers.set(offer.providerId, offer.providerDisplayName);
+
+    for (const carrier of new Set(group.itinerary.segments.map((s) => s.marketingCarrier))) {
+      airlines.set(carrier, (airlines.get(carrier) ?? 0) + 1);
+    }
+    // Counted per flight, not per offer: a provider selling two fare families on one
+    // flight still only offers that one flight, and the filter selects flights.
+    for (const providerId of group.providerIds) {
+      const label =
+        group.offers.find((offer) => offer.providerId === providerId)?.providerDisplayName ??
+        providerId;
+      providers.set(providerId, {
+        label,
+        count: (providers.get(providerId)?.count ?? 0) + 1,
+      });
+    }
 
     minPriceMinor = Math.min(minPriceMinor, group.priceSpread.min.amountMinor);
     maxPriceMinor = Math.max(maxPriceMinor, group.priceSpread.min.amountMinor);
@@ -198,8 +213,8 @@ function buildFilterOptions(groups: readonly ComparisonGroup[]) {
   }
 
   return {
-    airlines: [...airlines].sort(),
-    providers: [...providers].map(([id, label]) => ({ id, label })),
+    airlines: [...airlines].map(([code, count]) => ({ code, count })).sort((a, b) => a.code.localeCompare(b.code)),
+    providers: [...providers].map(([id, { label, count }]) => ({ id, label, count })),
     minPriceMinor: Number.isFinite(minPriceMinor) ? minPriceMinor : 0,
     maxPriceMinor,
     hasConnections,

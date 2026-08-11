@@ -34,12 +34,15 @@ export function ProviderStatusBanner({
 
   if (failed.length === 0) {
     return (
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-        <CheckCircle2Icon className="size-3.5 text-success" aria-hidden="true" />
-        <span>All {meta.providersAttempted} providers responded</span>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5">
+          <CheckCircle2Icon className="size-3.5 shrink-0 text-success" aria-hidden="true" />
+          All {meta.providersAttempted} providers responded
+        </span>
         {statuses.map((status) => (
-          <Badge key={status.providerId} variant="outline">
-            {status.displayName} · {status.offerCount}
+          <Badge key={status.providerId} variant="outline" title={`${status.latencyMs} ms`}>
+            {status.displayName}
+            <span className="tabular opacity-70">{status.offerCount}</span>
           </Badge>
         ))}
       </div>

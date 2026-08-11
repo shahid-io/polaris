@@ -121,9 +121,7 @@ export function SearchForm({ airports, routes, isSearching, onSearch }: SearchFo
 
       <div className="mt-4 flex items-center justify-between gap-4">
         <p className="text-xs text-muted-foreground">
-          {origin && !destination
-            ? 'Choose a destination this route serves.'
-            : 'Compares the same flight across every provider that sells it.'}
+          {origin && !destination ? 'Choose a destination this route serves.' : ''}
         </p>
         <Button type="submit" size="lg" disabled={!canSearch} className="min-w-40">
           <SearchIcon aria-hidden="true" />
