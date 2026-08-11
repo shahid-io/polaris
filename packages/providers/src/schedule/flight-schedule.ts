@@ -28,6 +28,7 @@ type Departure = readonly [
   flightNumber: string,
   departure: string,
   baseFareInr?: number,
+  durationMinutes?: number,
   daysOfWeek?: readonly number[],
 ];
 
@@ -75,6 +76,26 @@ const ROUTES: readonly RouteSchedule[] = [
       ['IX', '1188', '17:30', 5720],
       ['6E', '778', '19:45', 6480],
       ['6E', '944', '21:55', 5980],
+
+      // ── Real IndiGo services, matched to live data ──────────────────────
+      //
+      // Carrier, flight number, departure time and block time are taken from an actual
+      // Google Flights response for this route, so a live IndiGo fare and these
+      // representative OTA fares produce the same canonical key and land on one card.
+      //
+      // Without this the two data sets never intersect — the live adapter returns the
+      // flights that genuinely operate, the OTAs price invented ones — so every
+      // cross-provider comparison would come from simulated data alone. Real travel
+      // agencies sell real IndiGo services, so an OTA offering flights that do not exist
+      // was the less plausible arrangement, not the more.
+      //
+      // Fares are the live figures; each provider's own multiplier moves them from there.
+      ['6E', '449', '05:00', 6245, 135],
+      ['6E', '6814', '07:15', 6488, 135],
+      ['6E', '6107', '09:30', 6087, 145],
+      ['6E', '324', '13:00', 6087, 130],
+      ['6E', '354', '19:00', 6488, 145],
+      ['6E', '395', '21:45', 6488, 140],
     ],
   },
   {
@@ -253,7 +274,7 @@ const ROUTES: readonly RouteSchedule[] = [
       ['6E', '4102', '08:45'],
       ['IX', '1720', '13:20', 5410],
       // Weekend-only, so the schedule exercises day-of-week handling.
-      ['6E', '4315', '17:10', undefined, [5, 6, 0]],
+      ['6E', '4315', '17:10', undefined, undefined, [5, 6, 0]],
     ],
   },
   {
@@ -501,16 +522,18 @@ const ROUTES: readonly RouteSchedule[] = [
 
 /** Flattened timetable, built once at module load. */
 const ALL_FLIGHTS: readonly ScheduledFlight[] = ROUTES.flatMap((route) =>
-  route.departures.map(([carrier, flightNumber, departure, baseFareInr, daysOfWeek]) => ({
-    carrier,
-    flightNumber,
-    origin: route.origin,
-    destination: route.destination,
-    departure,
-    durationMinutes: route.durationMinutes,
-    baseFareInr: baseFareInr ?? route.baseFareInr,
-    ...(daysOfWeek ? { daysOfWeek } : {}),
-  })),
+  route.departures.map(
+    ([carrier, flightNumber, departure, baseFareInr, durationMinutes, daysOfWeek]) => ({
+      carrier,
+      flightNumber,
+      origin: route.origin,
+      destination: route.destination,
+      departure,
+      durationMinutes: durationMinutes ?? route.durationMinutes,
+      baseFareInr: baseFareInr ?? route.baseFareInr,
+      ...(daysOfWeek ? { daysOfWeek } : {}),
+    }),
+  ),
 );
 
 /**

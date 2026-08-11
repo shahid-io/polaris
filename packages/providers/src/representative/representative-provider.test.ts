@@ -9,6 +9,7 @@ import {
   createOtaProviders,
 } from './ota-providers';
 import { ProviderUnavailableError } from '../types';
+import { findFlights } from '../schedule/flight-schedule';
 
 const query = (overrides: Partial<SearchQuery> = {}): SearchQuery =>
   searchQuerySchema.parse({
@@ -135,8 +136,11 @@ describe('RepresentativeProvider', () => {
     const { offers } = await provider.search(query(), ctx());
     const distinctFlights = new Set(offers.map(canonicalKeyForOffer));
 
-    // The DEL–BOM timetable has 8 departures; Cleartrip covers ~74%.
-    expect(distinctFlights.size).toBeLessThan(8);
+    // Compared against the timetable itself rather than a hardcoded count, so adding a
+    // departure does not silently invert what this test is checking.
+    const scheduled = findFlights('DEL', 'BOM', '2026-08-20').length;
+
+    expect(distinctFlights.size).toBeLessThan(scheduled);
     expect(distinctFlights.size).toBeGreaterThan(0);
   });
 
@@ -294,5 +298,44 @@ describe('the three OTAs together', () => {
 
     expect(settled.filter((r) => r.status === 'fulfilled')).toHaveLength(2);
     expect(settled.filter((r) => r.status === 'rejected')).toHaveLength(1);
+  });
+});
+
+describe('overlap with live data', () => {
+  /**
+   * The demonstration this project exists to make, asserted end to end.
+   *
+   * The live adapter returns the flights that genuinely operate; the OTAs price a
+   * timetable. If the two sets never intersect, every cross-provider comparison comes from
+   * simulated data alone and the deduplication is never shown working on anything real.
+   *
+   * Several DEL–BOM services therefore carry real IndiGo flight numbers and block times,
+   * so a live fare and these representative fares produce the same canonical key.
+   */
+  it('sells real IndiGo services that the live adapter also returns', async () => {
+    const providers = createOtaProviders({ simulateLatency: false });
+    const searchQuery = query({ departureDate: '2026-08-25' });
+
+    const results = await Promise.all(providers.map((p) => p.search(searchQuery, ctx())));
+    const soldFlightNumbers = new Set(
+      results.flatMap((r) => r.offers.map((o) => o.itinerary.segments[0]!.flightNumber)),
+    );
+
+    // Flight numbers taken from a recorded Google Flights response for this route.
+    const realServices = ['449', '6814', '6107', '324', '354', '395'];
+    const covered = realServices.filter((number) => soldFlightNumbers.has(number));
+
+    expect(covered.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('produces identical canonical keys for a shared service', async () => {
+    // Same carrier, number, date and route on both sides — which is all the key uses.
+    const [makeMyTrip] = createOtaProviders({ simulateLatency: false });
+    const { offers } = await makeMyTrip!.search(query({ departureDate: '2026-08-25' }), ctx());
+
+    const shared = offers.find((o) => o.itinerary.segments[0]!.flightNumber === '449');
+
+    expect(shared).toBeDefined();
+    expect(canonicalKeyForOffer(shared!)).toBe('6E-449-2026-08-25-DEL-BOM');
   });
 });
