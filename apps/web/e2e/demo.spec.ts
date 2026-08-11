@@ -37,6 +37,12 @@ test('capture the demo walkthrough', async ({ page }) => {
   await page.setViewportSize({ width: 1180, height: 900 });
   await page.goto('/');
 
+  // The capture runs against `pnpm dev`, so Next paints its dev indicator in the corner.
+  // It is not part of the product and does not exist in a production build, but it was
+  // being baked into the README's GIF. Hidden here rather than by turning the indicator
+  // off globally, which would take it away while actually developing.
+  await page.addStyleTag({ content: 'nextjs-portal { display: none !important; }' });
+
   // ── 1. Before a search ────────────────────────────────────────────────
   const from = page.getByRole('combobox', { name: /^From/ });
   await expect(from).toBeEnabled();
