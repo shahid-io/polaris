@@ -206,6 +206,67 @@ describe('RepresentativeProvider', () => {
     }
   });
 
+  it('builds a one-stop service as two timed legs through the via airport', async () => {
+    const provider = new RepresentativeProvider(FULL_COVERAGE_CONFIG, noLatency);
+
+    const { offers } = await provider.search(query(), ctx());
+    // DEL–BOM 6E-2871 routes via AMD: 08:10 + 95 airborne, 70 on the ground, then the rest.
+    const oneStop = offers.find((offer) => offer.itinerary.segments[0]!.flightNumber === '2871');
+
+    expect(oneStop).toBeDefined();
+    expect(oneStop!.itinerary.stops).toBe(1);
+
+    const [first, second] = oneStop!.itinerary.segments;
+    expect(first!.origin).toBe('DEL');
+    expect(first!.destination).toBe('AMD');
+    expect(first!.departure.local).toBe('2026-08-20T08:10:00');
+    expect(first!.arrival.local).toBe('2026-08-20T09:45:00');
+
+    expect(second!.origin).toBe('AMD');
+    expect(second!.destination).toBe('BOM');
+    // 09:45 plus the 70 minute layover.
+    expect(second!.departure.local).toBe('2026-08-20T10:55:00');
+    // The whole journey is 260 minutes from the origin departure, layover included.
+    expect(second!.arrival.local).toBe('2026-08-20T12:30:00');
+
+    // The legs plus the layover account for the advertised duration exactly, so a journey
+    // cannot quietly gain or lose time in the middle.
+    expect(first!.durationMinutes + 70 + second!.durationMinutes).toBe(
+      oneStop!.itinerary.totalDurationMinutes,
+    );
+  });
+
+  it('offers connecting flights on a trunk route, so the stops filter has something to do', async () => {
+    // Guards the whole no-credentials experience, not just this provider. Every itinerary
+    // here was non-stop until now, which meant `hasConnections` was false, the "Non-stop
+    // only" control never rendered, and the browser test asserting it existed passed only
+    // on days when the searched date happened to hit a recorded live fixture.
+    const provider = new RepresentativeProvider(FULL_COVERAGE_CONFIG, noLatency);
+
+    const { offers } = await provider.search(query(), ctx());
+
+    expect(offers.some((offer) => offer.itinerary.stops > 0)).toBe(true);
+    expect(offers.some((offer) => offer.itinerary.stops === 0)).toBe(true);
+  });
+
+  it('prices a connection below every non-stop on the route', async () => {
+    // The trade-off that makes the filter worth using: stopping is cheaper and slower. If
+    // connections were priced above the non-stops nothing would ever surface them.
+    const provider = new RepresentativeProvider(FULL_COVERAGE_CONFIG, noLatency);
+
+    const { offers } = await provider.search(query(), ctx());
+    const cheapest = (stops: number) =>
+      Math.min(
+        ...offers
+          .filter((offer) =>
+            stops === 0 ? offer.itinerary.stops === 0 : offer.itinerary.stops > 0,
+          )
+          .map((offer) => offer.price.total.amountMinor),
+      );
+
+    expect(cheapest(1)).toBeLessThan(cheapest(0));
+  });
+
   it('omits a weekend-only flight on a weekday', async () => {
     const provider = new RepresentativeProvider(FULL_COVERAGE_CONFIG, noLatency);
     const delGoi = (date: string) =>
