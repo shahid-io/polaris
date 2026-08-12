@@ -40,3 +40,6 @@ docs/assessment-brief.pdf
 
 # demo capture scratch
 apps/web/.demo-frames/
+
+# Local high-quality demo recordings. The README ships the GIF instead.
+recordings/

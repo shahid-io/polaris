@@ -28,6 +28,14 @@ export default defineConfig({
     baseURL: process.env.E2E_BASE_URL ?? 'http://localhost:3000',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
+    // `pnpm demo:video` records the same walkthrough as full-resolution video instead of
+    // the downscaled, 256-colour GIF the README needs. Off by default: recording every
+    // e2e run would cost time and disk for output nobody looks at when tests pass.
+    // The size matches the viewport demo.spec.ts sets. Recording wider than the page only
+    // pillarboxes it, padding the frame with background rather than showing more product.
+    ...(process.env.DEMO_VIDEO
+      ? { video: { mode: 'on' as const, size: { width: 1180, height: 900 } } }
+      : {}),
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 });

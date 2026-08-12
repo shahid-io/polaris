@@ -15,6 +15,11 @@ import { join } from 'node:path';
 
 const FRAME_DIR = join(process.cwd(), '.demo-frames');
 
+// Must match the `--delay` default in scripts/make-gif.mjs. The GIF holds each frame for
+// this long, so it is also how long a state has to stay on screen for the video to be
+// paced like the GIF.
+const FRAME_DELAY_MS = 700;
+
 test('capture the demo walkthrough', async ({ page }) => {
   await rm(FRAME_DIR, { recursive: true, force: true });
   await mkdir(FRAME_DIR, { recursive: true });
@@ -32,6 +37,13 @@ test('capture the demo walkthrough', async ({ page }) => {
     for (let i = 0; i < holdFrames; i += 1) {
       await writeFile(join(FRAME_DIR, `${String(frameIndex++).padStart(3, '0')}.png`), buffer);
     }
+
+    // Repeated frames are what pace the GIF, and video recording has no equivalent: it
+    // captures wall-clock time, so without a real wait `pnpm demo:video` produces the whole
+    // walkthrough at machine speed, every state flashing past unread. Waiting here holds the
+    // state on screen for as long as the GIF would. Only under DEMO_VIDEO, so the GIF path
+    // stays fast and nothing is added to a run whose output nobody watches.
+    if (process.env.DEMO_VIDEO) await page.waitForTimeout(holdFrames * FRAME_DELAY_MS);
   };
 
   await page.setViewportSize({ width: 1180, height: 900 });
@@ -69,37 +81,46 @@ test('capture the demo walkthrough', async ({ page }) => {
   await expect(firstCard).toContainText('₹');
   await capture(6);
 
-  // ── 4. The point of the product: one flight, several sellers ──────────
-  const multiSeller = page
-    .getByRole('article')
-    .filter({ hasText: /Compare \d+ providers/ })
-    .first();
-  if (await multiSeller.count()) {
-    await multiSeller.scrollIntoViewIfNeeded();
-    await capture(6);
-  }
+  // ── 4. Expanding one flight: the journey and every fare ───────────────
+  // The feature the product is built around, and previously absent from the demo. The
+  // step it replaces scrolled to a multi-seller card, which was a no-op because the top
+  // card already is one, so it spent four seconds re-showing the previous frame.
+  // Matches both states: the accessible name flips between "show" and "hide" once open,
+  // so a `/show/` pattern finds nothing when it comes time to collapse again.
+  const expand = firstCard.getByRole('button', { name: /full journey and all fares/ });
+  await expand.click();
+  await expect(page.getByText(/Journey/).first()).toBeVisible();
+  await page.mouse.wheel(0, 320);
+  await capture(6);
+
+  await page.mouse.wheel(0, -320);
+  await expand.click();
 
   // ── 5. Filtering ──────────────────────────────────────────────────────
+  // Asserted rather than guarded. Every `if (await x.count())` below was hiding a
+  // selector that no longer matched, which is how the score step vanished from the GIF
+  // without the capture ever failing.
   const nonStop = page.getByRole('checkbox', { name: /Non-stop only/ });
-  if (await nonStop.count()) {
-    await nonStop.check();
-    await capture(5);
-  }
+  await nonStop.check();
+  await expect(nonStop).toBeChecked();
+  await capture(4);
 
   // ── 6. Sorting ────────────────────────────────────────────────────────
   await page.getByLabel(/Sort by/).selectOption('price');
   await expect(page.getByRole('article').first()).toBeVisible();
   await page.mouse.wheel(0, -400);
-  await capture(5);
+  await capture(4);
 
   // ── 7. Why a flight ranks where it does ───────────────────────────────
-  const scoreButton = page.getByRole('button', { name: /Value 0\./ }).first();
-  if (await scoreButton.count()) {
-    await scoreButton.click();
-    await expect(page.getByText(/How this score is calculated/)).toBeVisible();
-    await capture(7);
-    await page.keyboard.press('Escape');
-  }
+  // The accessible name is "Value score 0.91 of 1. How is this calculated?". The old
+  // pattern `/Value 0\./` matched nothing, so this whole step was skipped silently.
+  const scoreButton = page.getByRole('button', { name: /Value score/ }).first();
+  await scoreButton.click();
+  await expect(page.getByText(/How this score is calculated/)).toBeVisible();
+  await capture(6);
+  await page.keyboard.press('Escape');
 
-  expect(frameIndex).toBeGreaterThan(10);
+  // Guards the flow itself: if a step above stops matching, the count drops and this
+  // fails instead of quietly publishing a shorter demo.
+  expect(frameIndex).toBeGreaterThanOrEqual(30);
 });

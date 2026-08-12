@@ -9,11 +9,23 @@ export interface ScheduledFlight {
   destination: IataAirportCode;
   /** Local departure time at the origin, `HH:MM`. */
   departure: string;
+  /** Gate to gate for the whole journey, including any layover. */
   durationMinutes: number;
   /** Baseline one-way economy fare per adult, in whole rupees, before provider markup. */
   baseFareInr: number;
   /** Days operated, 0 = Sunday. Absent means daily. */
   daysOfWeek?: readonly number[];
+  /** Where the service stops en route. Absent means non-stop. */
+  connection?: Connection;
+}
+
+/** The intermediate stop on a one-stop service. */
+export interface Connection {
+  via: IataAirportCode;
+  /** Airborne minutes on the first leg, origin to `via`. */
+  firstLegMinutes: number;
+  /** Minutes on the ground at `via`. */
+  layoverMinutes: number;
 }
 
 /**
@@ -32,6 +44,27 @@ type Departure = readonly [
   daysOfWeek?: readonly number[],
 ];
 
+/**
+ * A one-stop service on a route.
+ *
+ * Spelled out as an object rather than squeezed into the `Departure` tuple: that tuple is
+ * already six positions wide, and three more optional slots would make the timetable
+ * unreadable for the sake of a handful of entries.
+ */
+interface ConnectingDeparture {
+  carrier: IataAirlineCode;
+  flightNumber: string;
+  /** Local departure time at the origin, `HH:MM`. */
+  departure: string;
+  via: IataAirportCode;
+  firstLegMinutes: number;
+  layoverMinutes: number;
+  /** The whole journey including the layover, so always longer than the non-stop. */
+  durationMinutes: number;
+  baseFareInr: number;
+  daysOfWeek?: readonly number[];
+}
+
 interface RouteSchedule {
   origin: IataAirportCode;
   destination: IataAirportCode;
@@ -39,6 +72,15 @@ interface RouteSchedule {
   /** Route default, used by any departure that does not override it. */
   baseFareInr: number;
   departures: readonly Departure[];
+  /**
+   * One-stop services, if the route has any.
+   *
+   * Trunk routes carry a couple. Without them every generated itinerary is non-stop, the
+   * stops filter has nothing to act on and so never renders, and a reviewer running with no
+   * credentials never sees that the feature exists. It also makes the value score's stops
+   * component meaningful, since with an all-non-stop result set it is constant.
+   */
+  connecting?: readonly ConnectingDeparture[];
 }
 
 /**
@@ -97,6 +139,31 @@ const ROUTES: readonly RouteSchedule[] = [
       ['6E', '354', '19:00', 6488, 145],
       ['6E', '395', '21:45', 6488, 140],
     ],
+    // Cheaper than every non-stop and roughly twice the elapsed time, which is the real
+    // trade-off a one-stop fare represents and the one the stops filter exists to let a
+    // user reject.
+    connecting: [
+      {
+        carrier: '6E',
+        flightNumber: '2871',
+        departure: '08:10',
+        via: 'AMD',
+        firstLegMinutes: 95,
+        layoverMinutes: 70,
+        durationMinutes: 260,
+        baseFareInr: 4180,
+      },
+      {
+        carrier: 'IX',
+        flightNumber: '1436',
+        departure: '15:20',
+        via: 'JAI',
+        firstLegMinutes: 70,
+        layoverMinutes: 85,
+        durationMinutes: 275,
+        baseFareInr: 3990,
+      },
+    ],
   },
   {
     origin: 'BOM',
@@ -110,6 +177,18 @@ const ROUTES: readonly RouteSchedule[] = [
       ['6E', '6184', '14:40', 6250],
       ['6E', '2457', '18:15', 6890],
       ['IX', '1189', '20:50', 5340],
+    ],
+    connecting: [
+      {
+        carrier: '6E',
+        flightNumber: '2872',
+        departure: '09:35',
+        via: 'AMD',
+        firstLegMinutes: 80,
+        layoverMinutes: 75,
+        durationMinutes: 265,
+        baseFareInr: 4310,
+      },
     ],
   },
 
@@ -125,6 +204,18 @@ const ROUTES: readonly RouteSchedule[] = [
       ['IX', '2741', '12:35', 5890],
       ['6E', '3288', '16:20', 7100],
       ['6E', '3410', '20:05', 6740],
+    ],
+    connecting: [
+      {
+        carrier: '6E',
+        flightNumber: '3644',
+        departure: '10:45',
+        via: 'HYD',
+        firstLegMinutes: 130,
+        layoverMinutes: 65,
+        durationMinutes: 300,
+        baseFareInr: 4820,
+      },
     ],
   },
   {
@@ -521,8 +612,8 @@ const ROUTES: readonly RouteSchedule[] = [
 ];
 
 /** Flattened timetable, built once at module load. */
-const ALL_FLIGHTS: readonly ScheduledFlight[] = ROUTES.flatMap((route) =>
-  route.departures.map(
+const ALL_FLIGHTS: readonly ScheduledFlight[] = ROUTES.flatMap((route) => [
+  ...route.departures.map(
     ([carrier, flightNumber, departure, baseFareInr, durationMinutes, daysOfWeek]) => ({
       carrier,
       flightNumber,
@@ -534,7 +625,22 @@ const ALL_FLIGHTS: readonly ScheduledFlight[] = ROUTES.flatMap((route) =>
       ...(daysOfWeek ? { daysOfWeek } : {}),
     }),
   ),
-);
+  ...(route.connecting ?? []).map((service) => ({
+    carrier: service.carrier,
+    flightNumber: service.flightNumber,
+    origin: route.origin,
+    destination: route.destination,
+    departure: service.departure,
+    durationMinutes: service.durationMinutes,
+    baseFareInr: service.baseFareInr,
+    ...(service.daysOfWeek ? { daysOfWeek: service.daysOfWeek } : {}),
+    connection: {
+      via: service.via,
+      firstLegMinutes: service.firstLegMinutes,
+      layoverMinutes: service.layoverMinutes,
+    },
+  })),
+]);
 
 /**
  * Finds every scheduled flight on a route for a given date.

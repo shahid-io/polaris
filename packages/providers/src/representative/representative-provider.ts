@@ -251,15 +251,51 @@ export class RepresentativeProvider implements FlightProvider {
     // units stay exact rather than carrying a fractional remainder.
     const totalMinor = Math.round(perAdultInr) * 100 * query.passengers;
 
-    const segment = {
-      marketingCarrier: flight.carrier,
-      flightNumber: flight.flightNumber,
-      origin: flight.origin,
-      destination: flight.destination,
-      departure,
-      arrival,
-      durationMinutes: flight.durationMinutes,
-    };
+    // A one-stop service is two segments through the intermediate airport, timed off the
+    // same origin departure so the whole journey still ends at `arrival`. The second leg
+    // carries a different flight number, as it genuinely would.
+    const segments = flight.connection
+      ? (() => {
+          const { via, firstLegMinutes, layoverMinutes } = flight.connection;
+          const viaAirport = requireAirport(via);
+          const firstArrival = addMinutes(departure, firstLegMinutes, viaAirport);
+          const secondDeparture = addMinutes(firstArrival, layoverMinutes, viaAirport);
+          const secondLegMinutes = flight.durationMinutes - firstLegMinutes - layoverMinutes;
+
+          return [
+            {
+              marketingCarrier: flight.carrier,
+              flightNumber: flight.flightNumber,
+              origin: flight.origin,
+              destination: via,
+              departure,
+              arrival: firstArrival,
+              durationMinutes: firstLegMinutes,
+            },
+            {
+              marketingCarrier: flight.carrier,
+              // Derived rather than stored: the timetable would otherwise carry a second
+              // number per connecting service that nothing else ever reads.
+              flightNumber: String(Number(flight.flightNumber) + 1),
+              origin: via,
+              destination: flight.destination,
+              departure: secondDeparture,
+              arrival,
+              durationMinutes: secondLegMinutes,
+            },
+          ];
+        })()
+      : [
+          {
+            marketingCarrier: flight.carrier,
+            flightNumber: flight.flightNumber,
+            origin: flight.origin,
+            destination: flight.destination,
+            departure,
+            arrival,
+            durationMinutes: flight.durationMinutes,
+          },
+        ];
 
     return {
       id: `${this.config.providerId}-${flight.carrier}${flight.flightNumber}-${fareFamily.name}-${query.departureDate}`,
@@ -267,11 +303,11 @@ export class RepresentativeProvider implements FlightProvider {
       providerDisplayName: this.config.displayName,
       integrationType: 'representative',
       itinerary: {
-        segments: [segment],
+        segments,
         origin: flight.origin,
         destination: flight.destination,
         totalDurationMinutes: flight.durationMinutes,
-        stops: 0,
+        stops: segments.length - 1,
       },
       price: { total: { amountMinor: totalMinor, currency: 'INR' } },
       cabinClass: query.cabinClass,
