@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "demo:capture": "CAPTURE_DEMO=1 playwright test e2e/demo.spec.ts",
-    "demo": "node scripts/check-servers.mjs && pnpm demo:capture && node scripts/make-gif.mjs"
+    "demo": "node scripts/check-servers.mjs && pnpm demo:capture && node scripts/make-gif.mjs",
+    "demo:video": "node scripts/check-servers.mjs && DEMO_VIDEO=1 CAPTURE_DEMO=1 playwright test e2e/demo.spec.ts && node scripts/collect-recording.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",

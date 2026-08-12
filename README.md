@@ -8,7 +8,7 @@ result is a list of flights with a price range attached, not a list of near-dupl
 
 Built for the North Star Identity Full Stack Developer assessment.
 
-![Searching DEL to BOM, comparing one flight across three providers, filtering to non-stop and sorting by price](./docs/demo.gif)
+![Searching DEL to BOM, expanding one flight to show its journey and every seller's fare, filtering to non-stop, sorting by price, and opening the breakdown behind a flight's value score](./docs/demo.gif)
 
 ---
 
@@ -229,3 +229,13 @@ silently.
 | `pnpm typecheck` | Type-check everything                        |
 | `pnpm lint`      | Lint everything (`pnpm lint:fix` to autofix) |
 | `pnpm format`    | Format with Prettier                         |
+
+Both demo commands drive the running application, so `pnpm dev` has to be up first.
+
+| Command           | Does                                                 |
+| ----------------- | ---------------------------------------------------- |
+| `pnpm demo`       | Re-record `docs/demo.gif` from the walkthrough       |
+| `pnpm demo:video` | Same walkthrough to `recordings/`: video plus stills |
+
+`demo:video` writes full-resolution video and the distinct frames as PNGs, for slides or a
+screen-share. The output is gitignored, the GIF is the version-controlled asset.
