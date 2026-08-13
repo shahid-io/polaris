@@ -101,7 +101,7 @@ Versions are the ones this was built and verified against, not floors.
 | [`apps/web`](./apps/web/README.md)                     | Next.js (search, results, comparison)        | 52 tests |
 | [`packages/contracts`](./packages/contracts/README.md) | Zod schemas shared across the boundary       | 15 tests |
 | [`packages/core`](./packages/core/README.md)           | group · score · filter · sort (pure, no I/O) | 79 tests |
-| [`packages/providers`](./packages/providers/README.md) | 6 adapters + resilience primitives           | 76 tests |
+| [`packages/providers`](./packages/providers/README.md) | 6 adapters + resilience primitives           | 79 tests |
 
 Each package has its own README covering what it does and why it is built that way.
 
@@ -115,7 +115,7 @@ apps/api ─┼─→ core ──→ contracts
 ```
 
 Nothing points back. `core` imports no framework, no HTTP client and no provider, which is
-why its 79 tests run in ~20 ms with no mocks, and why the browser can run the same
+why its 79 tests run in ~30 ms with no mocks, and why the browser can run the same
 comparison functions the server does.
 
 ---
@@ -182,10 +182,10 @@ and simulated data is badged in the UI at the point a price is shown. Full matri
 pnpm test
 ```
 
-263 tests across the workspace, plus a Playwright smoke test in a real browser:
+266 tests across the workspace, plus a Playwright smoke test in a real browser:
 
 ```bash
-pnpm test        # 263 unit, component and integration tests
+pnpm test        # 266 unit, component and integration tests
 pnpm --filter @polaris/web test:e2e   # browser smoke test (needs both servers running)
 ```
 

@@ -90,7 +90,7 @@ and a half hours. This is the browser-side twin of the canonical-key timezone ru
 ## Testing
 
 ```bash
-pnpm test        # 46 component and integration tests (jsdom)
+pnpm test        # 52 component and integration tests (jsdom)
 pnpm test:e2e    # Playwright smoke test, needs both servers running
 ```
 

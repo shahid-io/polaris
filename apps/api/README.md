@@ -184,6 +184,6 @@ coin toss is not a demonstration.
 pnpm dev         # watch mode
 pnpm build
 pnpm start       # node dist/main.js
-pnpm test        # 38 tests, orchestration through real DI
+pnpm test        # 41 tests, orchestration through real DI
 pnpm typecheck
 ```

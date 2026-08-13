@@ -12,8 +12,8 @@ Depends only on `@polaris/contracts`.
 
 ## Why this package exists
 
-Every rule worth testing is a function of its arguments, so the 68 tests here run in about
-20 ms with no mocks, no HTTP stubs and no Nest testing module. Had this logic lived inside
+Every rule worth testing is a function of its arguments, so the 79 tests here run in about
+30 ms with no mocks, no HTTP stubs and no Nest testing module. Had this logic lived inside
 a service, the tests that matter most, the red-eye timezone case, the fare-family spread
 case: would be buried under mock setup.
 
@@ -109,7 +109,7 @@ exist; both cheap fares come from the same seller.
 
 ```bash
 pnpm build
-pnpm test        # 68 tests, ~20ms, no mocks
+pnpm test        # 79 tests, ~30ms, no mocks
 pnpm typecheck
 ```
 

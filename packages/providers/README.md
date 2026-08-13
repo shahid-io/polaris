@@ -165,6 +165,6 @@ coupled to the original five.
 
 ```bash
 pnpm build
-pnpm test        # 67 tests
+pnpm test        # 79 tests
 pnpm typecheck
 ```

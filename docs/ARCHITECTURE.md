@@ -26,7 +26,7 @@ apps/api ─┼─→ core ──→ contracts
 ```
 
 Nothing points back. `core` imports no framework, no HTTP client and no provider, which is
-why its 68 tests run in roughly 20 ms with no mocks and no Nest context. That is the entire
+why its 79 tests run in roughly 30 ms with no mocks and no Nest context. That is the entire
 return on splitting the packages, the rest is convention.
 
 ---
@@ -223,10 +223,11 @@ No IP address, cookie or session is recorded. See [`LIMITATIONS.md`](./LIMITATIO
 
 | Package     | Tests | What they cover                                                                         |
 | ----------- | ----- | --------------------------------------------------------------------------------------- |
-| `core`      | 68    | Canonical keys, grouping, scoring, filtering, sorting (pure functions, no mocks)        |
-| `providers` | 54    | Circuit breaker, timeout, retry, representative adapters, cross-provider grouping       |
-| `api`       | 18    | Orchestration through real DI: partial results, total failure, circuit opening, caching |
-| `contracts` | 7     | Schema validation and defaults                                                          |
+| `core`      | 79    | Canonical keys, grouping, scoring, filtering, sorting (pure functions, no mocks)        |
+| `providers` | 79    | Circuit breaker, timeout, retry, representative adapters, cross-provider grouping       |
+| `web`       | 52    | Components and page behaviour in jsdom, plus a Playwright smoke test in a real browser  |
+| `api`       | 41    | Orchestration through real DI: partial results, total failure, circuit opening, caching |
+| `contracts` | 15    | Schema validation and defaults                                                          |
 
 Several tests are named after the wrong answer they prevent, _"measures spread per provider,
 not across fare families"_, _"keys an after-midnight departure to its local date, not the UTC
