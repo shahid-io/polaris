@@ -1,6 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": { "rootDir": "./src", "outDir": "./dist" },
+  // `types` is explicit because TypeScript 7 does not auto-discover this package's
+  // @types/* the way 5.x did; without it `node:fs/promises` and AbortSignal go unresolved.
+  "compilerOptions": { "rootDir": "./src", "outDir": "./dist", "types": ["node"] },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
