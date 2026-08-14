@@ -9,7 +9,7 @@ import {
 } from '@polaris/contracts';
 import type { FlightProvider, ProviderContext, ProviderResult } from '../types';
 import { ProviderUnavailableError } from '../types';
-import { findFlights, type ScheduledFlight } from '../schedule/flight-schedule';
+import { findFlights, type ScheduledFlight } from './flight-schedule';
 import { findAirport, requireAirport } from '../schedule/airports';
 import { addMinutes, toScheduledTime } from '../schedule/scheduled-time';
 import { chance, createRng, inRange, intInRange, pickSome, type Rng } from './seeded-random';

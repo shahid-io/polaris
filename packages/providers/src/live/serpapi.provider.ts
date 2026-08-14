@@ -255,9 +255,30 @@ export class SerpApiProvider implements FlightProvider {
       price: { total: { amountMinor: Math.round(itinerary.price) * 100, currency: 'INR' } },
       cabinClass: query.cabinClass,
       benefits: [],
+      // Points at Google Flights, not the airline's own site, because that is genuinely
+      // where this price came from. Linking to goindigo.in would invite a reader to check
+      // this number against a page that never produced it, and airlines routinely price
+      // their direct channel differently from what aggregators surface. A verification
+      // link has to lead to the source that actually quoted the fare or it proves nothing.
+      deepLink: googleFlightsUrl(query),
       retrievedAt: ctx.now.toISOString(),
     };
   }
+}
+
+/**
+ * Builds a Google Flights URL for the same search.
+ *
+ * Google Flights has no stable per-itinerary URL, so this is the route-and-date search a
+ * reader can scan for the flight, the same compromise the agency links make.
+ *
+ * @param query - The search being answered.
+ * @returns An absolute google.com/travel/flights URL.
+ * @internal
+ */
+function googleFlightsUrl(query: SearchQuery): string {
+  const q = `Flights from ${query.origin} to ${query.destination} on ${query.departureDate} one way`;
+  return `https://www.google.com/travel/flights?q=${encodeURIComponent(q)}&curr=INR&hl=en&gl=in`;
 }
 
 /**

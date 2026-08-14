@@ -1,11 +1,15 @@
 import { z } from 'zod';
 
 /**
- * The five providers named in the assessment brief, plus Duffel.
+ * The five providers named in the assessment brief, plus three added deliberately.
  *
- * Duffel is not in the brief. It is included deliberately as a sixth provider to
- * prove the adapter abstraction generalises to a vendor contract we did not design
- * around: adding it touched one array and one adapter file, nothing else.
+ * Duffel proves the adapter abstraction generalises to a vendor contract we did not design
+ * around. EaseMyTrip and Ixigo exist for a sharper reason: MakeMyTrip and Goibibo refuse
+ * automated clients at their CDN edge, so real agency fares could not be obtained from
+ * them at all. Rather than let the OTA side of the comparison rest entirely on generated
+ * data, two agencies that *do* serve their public search were integrated for real.
+ *
+ * Adding each of the three touched one array and one adapter file, nothing else.
  */
 export const providerIdSchema = z.enum([
   'makemytrip',
@@ -14,6 +18,8 @@ export const providerIdSchema = z.enum([
   'indigo',
   'airindiaexpress',
   'duffel',
+  'easemytrip',
+  'ixigo',
 ]);
 
 /**
@@ -31,6 +37,17 @@ export const integrationTypeSchema = z.enum([
   /** Affiliate/partner feed. */
   'affiliate-api',
   /**
+   * Real, current data read from the provider's own public search page by driving it in a
+   * browser and capturing the JSON its own front end receives.
+   *
+   * Deliberately *not* folded into `live-api`. The data is genuinely the provider's own
+   * and current, but it arrives through an interface nobody has promised to keep stable
+   * and outside any commercial agreement, so its reliability and its standing are both
+   * different from a contracted API. Collapsing the two would hide exactly the distinction
+   * a reader needs to judge the number.
+   */
+  'browser-automation',
+  /**
    * Deterministic representative data. Used where a provider's API is commercially
    * gated and genuinely unobtainable for a prototype. Always badged as simulated.
    */
@@ -43,6 +60,8 @@ export const dataSourceSchema = z.enum([
   'duffel-api',
   'recorded-fixture',
   'generated-representative',
+  /** The provider's own public web search, read through a headless browser session. */
+  'provider-web-session',
 ]);
 
 /** Outcome of calling one provider during a single search. */

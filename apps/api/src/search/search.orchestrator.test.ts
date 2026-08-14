@@ -5,11 +5,14 @@ import { searchQuerySchema, type SearchRequest } from '@polaris/contracts';
 import {
   ProviderCredentialsMissingError,
   ProviderUnavailableError,
-  createOtaProviders,
   type FlightProvider,
   type ProviderContext,
   type ProviderResult,
 } from '@polaris/providers';
+// Deterministic fakes, deliberately not part of the shipped provider surface. The fan-out,
+// per-provider timeouts and circuit breaker cannot be exercised against live third-party
+// sites: those paths need providers that fail exactly when asked.
+import { createOtaProviders } from '@polaris/providers/testing';
 import { SearchOrchestrator } from './search.orchestrator';
 import { FLIGHT_PROVIDERS } from '../providers/providers.module';
 import { CACHE_STORE, InMemoryCacheStore } from '../cache/cache.store';

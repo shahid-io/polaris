@@ -161,6 +161,15 @@ export interface CreateOtaProvidersOptions {
   failureModes?: Partial<Record<OtaProviderId, SimulatedFailure>>;
   /** Whether to simulate realistic response times. Off in tests. */
   simulateLatency?: boolean;
+  /**
+   * Providers to leave out because a real integration is serving them instead.
+   *
+   * Representative data is the fallback for a provider we cannot reach, so the moment one
+   * becomes reachable its stand-in has to go. Registering both would put the same seller
+   * in a comparison twice, once with real fares and once with invented ones, which is
+   * worse than either alone.
+   */
+  exclude?: readonly OtaProviderId[];
 }
 
 /**
@@ -179,7 +188,8 @@ export interface CreateOtaProvidersOptions {
 export function createOtaProviders(
   options: CreateOtaProvidersOptions = {},
 ): RepresentativeProvider[] {
-  const { failureModes = {}, simulateLatency } = options;
+  const { failureModes = {}, simulateLatency, exclude = [] } = options;
+  const excluded = new Set(exclude);
 
   return (
     [
@@ -187,7 +197,10 @@ export function createOtaProviders(
       [GOIBIBO_CONFIG, failureModes.goibibo],
       [CLEARTRIP_CONFIG, failureModes.cleartrip],
     ] as const
-  ).map(
-    ([config, failureMode]) => new RepresentativeProvider(config, { failureMode, simulateLatency }),
-  );
+  )
+    .filter(([config]) => !excluded.has(config.providerId as OtaProviderId))
+    .map(
+      ([config, failureMode]) =>
+        new RepresentativeProvider(config, { failureMode, simulateLatency }),
+    );
 }

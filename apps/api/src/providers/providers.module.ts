@@ -1,11 +1,13 @@
 import { Module, type DynamicModule } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-  createOtaProviders,
   createSerpApiProviders,
+  createWebSessionProviders,
+  parseWebSessionSites,
+  WEB_SESSION_SITE_IDS,
+  type BrowserProviderMode,
   type FlightProvider,
   type ProviderMode,
-  type SimulatedFailure,
 } from '@polaris/providers';
 import type { Env } from '../config/env';
 
@@ -61,61 +63,34 @@ export class ProvidersModule {
 /**
  * Assembles the adapter list for the current configuration.
  *
- * The three representative OTAs are always registered, they need no credentials, which is
- * why the app is fully usable with an empty `.env`. Live adapters join them as their keys
- * become available; a missing key means the provider is simply absent rather than present
- * and permanently failing.
+ * **Every provider registered here reports a price some real seller is actually showing.**
+ * Nothing generates a fare. A provider that cannot be sourced truthfully is absent rather
+ * than filled in, because a generated number under a real company's name is precisely the
+ * error this product exists to catch, and labelling it does not make it true.
+ *
+ * That is why an unreachable seller simply does not appear. MakeMyTrip and Goibibo refuse
+ * automated clients at their CDN edge, so they have no adapter: not a degraded one, none.
  *
  * @param config - Validated environment.
  * @returns Providers to register.
  * @internal
  */
 function buildProviders(config: ConfigService<Env, true>): FlightProvider[] {
-  const failureModes = parseFailureModes(config.get('SIMULATED_FAILURES', { infer: true }));
+  const configured = config.get('BROWSER_PROVIDERS', { infer: true });
+  // Real sourcing is the default, not an opt-in. The agencies are the only providers whose
+  // prices can be checked against the seller that quoted them, so switching them off is the
+  // choice that needs making deliberately, not the choice that needs making to get them.
+  const agencies = configured === undefined ? new Set(WEB_SESSION_SITE_IDS) : parseWebSessionSites(configured);
+  const browserMode = config.get('BROWSER_PROVIDER_MODE', { infer: true }) as BrowserProviderMode;
 
   return [
-    // Live airline fares via SerpApi. With no key these report `skipped`, so the app
-    // remains fully usable on a clean checkout.
+    // Airline fares via SerpApi's Google Flights engine. With no key these report
+    // `skipped`, so the app still runs on a clean checkout.
     ...createSerpApiProviders(
       config.get('SERPAPI_KEY', { infer: true }),
       config.get('PROVIDER_MODE', { infer: true }) as ProviderMode,
     ),
-    ...createOtaProviders({
-      failureModes,
-      // Realistic response times in every mode except tests, so the timeout and circuit
-      // breaker are exercised by ordinary use rather than only by contrived cases.
-      simulateLatency: config.get('NODE_ENV', { infer: true }) !== 'test',
-    }),
+    // Travel agency fares, read from each agency's own public search.
+    ...createWebSessionProviders(agencies, browserMode),
   ];
-}
-
-/**
- * Parses the demo failure-injection setting.
- *
- * Exists so the partial-results path can be demonstrated on demand, `cleartrip:timeout`
- * makes a live audience see the degradation rather than being told about it. Explicit
- * configuration rather than a random failure rate: a demo that fails a coin toss is worse
- * than no demo.
- *
- * @param raw - Comma-separated `provider:mode` pairs, e.g. `cleartrip:timeout,goibibo:error`.
- * @returns Failure modes by provider. Unknown providers and modes are ignored.
- * @internal
- */
-function parseFailureModes(
-  raw: string | undefined,
-): Partial<Record<'makemytrip' | 'goibibo' | 'cleartrip', SimulatedFailure>> {
-  if (!raw?.trim()) return {};
-
-  const valid = new Set(['makemytrip', 'goibibo', 'cleartrip']);
-  const validModes = new Set<SimulatedFailure>(['none', 'error', 'timeout']);
-  const result: Record<string, SimulatedFailure> = {};
-
-  for (const pair of raw.split(',')) {
-    const [provider, mode] = pair.split(':').map((part) => part.trim());
-    if (provider && mode && valid.has(provider) && validModes.has(mode as SimulatedFailure)) {
-      result[provider] = mode as SimulatedFailure;
-    }
-  }
-
-  return result;
 }

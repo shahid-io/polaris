@@ -11,8 +11,9 @@ import {
 import type { ComparisonGroup, NormalizedOffer } from '@polaris/contracts';
 import { carriersOn, flyingMinutes, layoversFor, waitingMinutes } from '@polaris/core';
 
-import { Badge } from '@/components/ui/badge';
 import { cn, dayOffset, formatDuration, formatLocalTime, formatRupees } from '@/lib/utils';
+import { ProvenanceBadge } from '@/components/results/ProvenanceBadge';
+import { VerifyLink } from '@/components/results/VerifyLink';
 
 /**
  * Everything about one flight that does not fit on its card.
@@ -173,9 +174,7 @@ function FareRow({ offer, isCheapest }: { offer: NormalizedOffer; isCheapest: bo
           {offer.fareFamily && (
             <span className="font-mono text-[11px] text-muted-foreground">{offer.fareFamily}</span>
           )}
-          <Badge variant={offer.integrationType === 'representative' ? 'simulated' : 'live'}>
-            {offer.integrationType === 'representative' ? 'Representative' : 'Live'}
-          </Badge>
+          <ProvenanceBadge integrationType={offer.integrationType} />
         </span>
 
         <span className="flex items-center gap-2">
@@ -222,6 +221,10 @@ function FareRow({ offer, isCheapest }: { offer: NormalizedOffer; isCheapest: bo
             )}
           </li>
         ))}
+        {/* Last, and on its own: this is the row's proof, not one of its attributes. */}
+        <li className="flex items-center gap-1">
+          <VerifyLink offer={offer} />
+        </li>
       </ul>
     </li>
   );

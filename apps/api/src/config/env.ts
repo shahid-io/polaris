@@ -52,16 +52,6 @@ export const envSchema = z.object({
   CIRCUIT_RESET_MS: z.coerce.number().int().positive().default(30_000),
 
   /**
-   * Demo failure injection, as comma-separated `provider:mode` pairs,
-   * e.g. `cleartrip:timeout,goibibo:error`.
-   *
-   * Exists so the partial-results path can be shown deliberately rather than waited for.
-   * Explicit configuration rather than a random failure rate: a demo whose key moment
-   * depends on a coin toss is not a demo.
-   */
-  SIMULATED_FAILURES: z.string().optional(),
-
-  /**
    * MongoDB connection string for search analytics.
    *
    * Optional. Absent means analytics is disabled and every search still works, the app
@@ -72,6 +62,31 @@ export const envSchema = z.object({
   /** Absent keys are tolerated, the affected adapter reports status "skipped". */
   SERPAPI_KEY: z.string().optional(),
   DUFFEL_ACCESS_TOKEN: z.string().optional(),
+
+  /**
+   * Travel agencies to read from their own public search.
+   *
+   * Comma-separated ids, or `all`. Supported: `cleartrip`, `easemytrip`, `ixigo`.
+   * MakeMyTrip and Goibibo are absent because both refuse automated clients at their CDN
+   * edge, which was measured rather than assumed, see docs/INTEGRATIONS.md.
+   *
+   * **Omitting this enables all of them**, because they are the only providers whose prices
+   * can be checked against the seller that quoted them. Turning them off is the decision
+   * that should have to be made deliberately. Set it to an empty string to do so; the app
+   * then serves airline fares alone, or nothing at all without a SerpApi key.
+   *
+   * Requires Chromium (`pnpm exec playwright install chromium`). Without it each agency
+   * reports `skipped`, the same treatment as a missing API key.
+   */
+  BROWSER_PROVIDERS: z.string().optional(),
+
+  /**
+   * Where browser-backed providers take their data from.
+   *
+   * Defaults to `hybrid`: drive the live session, fall back to a recording when it fails,
+   * and label the result as replayed rather than current.
+   */
+  BROWSER_PROVIDER_MODE: z.enum(['live', 'fixture', 'hybrid']).default('hybrid'),
 });
 
 export type Env = z.infer<typeof envSchema>;

@@ -9,7 +9,7 @@ import {
   createOtaProviders,
 } from './ota-providers';
 import { ProviderUnavailableError } from '../types';
-import { findFlights } from '../schedule/flight-schedule';
+import { findFlights } from './flight-schedule';
 
 const query = (overrides: Partial<SearchQuery> = {}): SearchQuery =>
   searchQuerySchema.parse({

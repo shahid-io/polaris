@@ -16,6 +16,8 @@ import { Button } from '@/components/ui/button';
 import { FlightDetail } from '@/components/results/FlightDetail';
 import { ScoreBreakdown } from '@/components/results/ScoreBreakdown';
 import { cn, dayOffset, formatDuration, formatLocalTime, formatRupees } from '@/lib/utils';
+import { ProvenanceBadge } from '@/components/results/ProvenanceBadge';
+import { VerifyLink } from '@/components/results/VerifyLink';
 
 export interface FlightGroupCardProps {
   group: ComparisonGroup;
@@ -141,9 +143,8 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
             <PlaneIcon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
             <span className="text-muted-foreground">Only on</span>
             <span className="font-medium">{offers[0]!.providerDisplayName}</span>
-            <Badge variant={offers[0]!.integrationType === 'representative' ? 'simulated' : 'live'}>
-              {offers[0]!.integrationType === 'representative' ? 'Representative' : 'Live'}
-            </Badge>
+            <ProvenanceBadge integrationType={offers[0]!.integrationType} />
+            <VerifyLink offer={offers[0]!} />
           </div>
           {/* Benefits still belong here, what disappears for a single seller is the
               comparison framing, not what the fare actually includes. */}
@@ -168,11 +169,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
                       aria-hidden="true"
                     />
                     <span className="truncate font-medium">{offer.providerDisplayName}</span>
-                    <Badge
-                      variant={offer.integrationType === 'representative' ? 'simulated' : 'live'}
-                    >
-                      {offer.integrationType === 'representative' ? 'Representative' : 'Live'}
-                    </Badge>
+                    <ProvenanceBadge integrationType={offer.integrationType} />
                     {offer.fareFamily && (
                       <span className="hidden text-xs text-muted-foreground sm:inline">
                         {offer.fareFamily}
@@ -191,6 +188,9 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
                 </div>
 
                 <OfferPerks offer={offer} />
+                {/* Every seller row carries its own proof: the price above is checkable
+                    against the seller that quoted it, not against the group as a whole. */}
+                <VerifyLink offer={offer} />
               </li>
             ))}
           </ul>

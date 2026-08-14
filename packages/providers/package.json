@@ -20,9 +20,23 @@
     "@polaris/contracts": "workspace:*",
     "@polaris/core": "workspace:*"
   },
+  "//": "playwright is optional: only browser-backed providers need it, and they are off by default. The adapter reports `skipped` when it or its Chromium is absent.",
+  "optionalDependencies": {
+    "playwright": "^1.62.1"
+  },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./testing": {
+      "types": "./dist/testing/index.d.ts",
+      "default": "./dist/testing/index.js"
+    }
   }
 }

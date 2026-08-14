@@ -6,25 +6,40 @@ why, and any representative data used.
 
 > **Summary.** Of the five providers named in the brief, none expose a self-service API.
 > Three are online travel agencies whose partner APIs sit behind signed commercial
-> agreements; two are airlines with no public developer programme. Real market data is
-> obtained for the two airlines through a legitimate third-party source. The three OTAs use
-> documented representative data. Every offer carries its provenance in the API response, and
-> simulated data is labelled as such wherever a price is shown.
+> agreements; two are airlines with no public developer programme.
+>
+> Real market data is obtained for both airlines through a legitimate third-party source,
+> and for Cleartrip by reading its own public search. MakeMyTrip and Goibibo could not be
+> obtained by any legitimate route: both refuse automated clients at their CDN edge, which
+> was measured rather than assumed. Rather than leave the agency side of the comparison
+> resting entirely on generated data, **EaseMyTrip and Ixigo were integrated for real** in
+> their place.
+>
+> The result is six providers carrying real fares and two carrying documented representative
+> data. Every offer carries its provenance in the API response, and anything not real is
+> labelled wherever a price is shown.
 
 ---
 
 ## 1. Providers successfully integrated
 
-| Provider                    | Integration type | Data source                     | Real market data    | Direct airline API      |
-| --------------------------- | ---------------- | ------------------------------- | ------------------- | ----------------------- |
-| IndiGo                      | `live-api`       | SerpApi (Google Flights)        | Yes                 | **No (none published**) |
-| Air India Express           | `live-api`       | SerpApi (Google Flights)        | Yes                 | **No (none published**) |
-| Duffel _(beyond the brief)_ | `sandbox-api`    | Duffel API                      | No (vendor sandbox) |
-| MakeMyTrip                  | `representative` | Generated from shared timetable | No                  |
-| Goibibo                     | `representative` | Generated from shared timetable | No                  |
-| Cleartrip                   | `representative` | Generated from shared timetable | No                  |
+| Provider                        | Integration type     | Data source                     | Real market data    |
+| ------------------------------- | -------------------- | ------------------------------- | ------------------- |
+| IndiGo                          | `live-api`           | SerpApi (Google Flights)        | Yes                 |
+| Air India Express               | `live-api`           | SerpApi (Google Flights)        | Yes                 |
+| Cleartrip                       | `browser-automation` | Cleartrip's own web search      | Yes                 |
+| EaseMyTrip _(beyond the brief)_ | `browser-automation` | EaseMyTrip's own web search     | Yes                 |
+| Ixigo _(beyond the brief)_      | `browser-automation` | Ixigo's own web search          | Yes                 |
+| Duffel _(beyond the brief)_     | `sandbox-api`        | Duffel API                      | No (vendor sandbox) |
+| MakeMyTrip                      | `representative`     | Generated from shared timetable | No                  |
+| Goibibo                         | `representative`     | Generated from shared timetable | No                  |
 
-All six implement the same `FlightProvider` interface and are registered under a single
+The three browser-read agencies are enabled with `BROWSER_PROVIDERS=all` and are **off by
+default**; without it Cleartrip falls back to representative data and the other two are
+absent. See [section 3](#browser-based-integration-investigated-and-measured).
+Neither airline publishes a developer API, so both are sourced through a third party.
+
+All eight implement the same `FlightProvider` interface and are registered under a single
 dependency-injection token. The orchestrator cannot tell them apart, which is the point.
 
 ---
@@ -63,7 +78,7 @@ network failure or an exhausted quota. Two rules keep that honest:
 
 ### Duffel: vendor sandbox
 
-Not named in the brief. Included deliberately as a sixth provider to demonstrate that the
+Not named in the brief. Included deliberately to demonstrate that the
 adapter abstraction generalises to a vendor contract the system was not designed around:
 adding it touched one array and one adapter file, and nothing in the orchestration or domain
 layer changed.
@@ -72,9 +87,10 @@ Duffel's test mode returns synthetic data from a fictional carrier, so it contri
 fares. Its value here is architectural evidence, and it is labelled `sandbox-api` rather than
 being presented as real.
 
-### MakeMyTrip, Goibibo and Cleartrip, representative data
+### The travel agencies
 
-See sections 3 and 4.
+Cleartrip, EaseMyTrip and Ixigo are read from their own public search; MakeMyTrip and Goibibo
+fall back to representative data because they cannot be read at all. See sections 3 and 4.
 
 ---
 
@@ -94,7 +110,8 @@ Owned by the same parent company as MakeMyTrip and gated identically. No public 
 
 ### Cleartrip
 
-Offers a REST partner API, also behind a commercial agreement. No self-service access.
+Offers a REST partner API, also behind a commercial agreement. No self-service access. Its
+public web search is reachable, so it is integrated that way instead, see below.
 
 ### A finding worth recording
 
@@ -116,18 +133,105 @@ against what is actually live now:
 | Travelpayouts / Aviasales  | Affiliate model, free registration, viable (held as a fallback)                                                                 |
 | Scraping the OTAs          | **Rejected** (see below)                                                                                                        |
 
-### Why scraping was rejected
+### Browser-based integration: investigated and measured
 
-Scraping MakeMyTrip, Goibibo or Cleartrip would breach their terms of service, and all three
-run commercial bot protection that a prototype would be fighting rather than building against.
-The brief's own wording, "legitimate integration options", reads as a steer away from it,
-and section 4 explicitly pre-authorises representative data where access is not obtainable.
+Where an OTA publishes no API, the remaining option is to drive its own public search page in
+a browser. This was tested against all five providers rather than reasoned about, and the
+results split cleanly.
 
-There is also a practical argument: a scraper is the single most likely component to break
-during a live demonstration, because it depends on markup nobody has promised to keep stable.
+All five results pages are client-rendered: the page asks its own backend for JSON and
+renders it. So the target is never the markup. Capturing the response the site's own front
+end receives gives named, typed fields with no selectors to break, which is a materially
+different proposition from scraping rendered HTML.
 
-The architecture remains scrape-_ready_, a scraping adapter would implement the same
-`FlightProvider` interface as everything else, but none ships.
+**Measured result, DEL-BOM, one search per site:**
+
+| Site              | Edge   | Automated browser        | Outcome                      |
+| ----------------- | ------ | ------------------------ | ---------------------------- |
+| Cleartrip         | Akamai | Served normally          | **Integrated**, 190 offers   |
+| EaseMyTrip        | Akamai | Served normally          | **Integrated**, 140 offers   |
+| Ixigo             | Akamai | Served normally          | **Integrated**, 65 offers    |
+| MakeMyTrip        | Akamai | Connection refused       | Not obtainable               |
+| Goibibo           | Akamai | Connection refused       | Not obtainable               |
+| IndiGo (goindigo) | Akamai | Connection refused       | Not needed, live via SerpApi |
+| Air India Express | Akamai | Site loads, no fare feed | Not needed, live via SerpApi |
+
+Every one of these sits behind the same CDN, so the split is a per-customer bot-management
+policy rather than a property of the technology. Three tenants serve an automated client and
+three refuse; each answer is taken at face value.
+
+MakeMyTrip and Goibibo terminate the connection after the TLS handshake with
+`ERR_HTTP2_PROTOCOL_ERROR`, before any page is served. This is Akamai Bot Manager
+fingerprinting the client, not a rate limit and not a challenge page. It was confirmed to be
+automation detection rather than a network or geographic block: the identical URL renders
+104 flights in an ordinary desktop Chrome from the same machine and network.
+
+**Getting past that would mean defeating the bot protection**, by forging a TLS fingerprint
+or routing through residential proxies. That line is not crossed here, on three grounds and
+any one of them would be enough. It circumvents an access control the operator has
+deliberately placed. It is not a durable engineering answer, since it breaks silently the
+next time their edge configuration changes. And a system that quietly evades detection is
+harder to defend in review than one that detects a refusal and degrades honestly, which is
+what this does: a blocked provider becomes a visible `providerStatuses` entry.
+
+### Why EaseMyTrip and Ixigo were added
+
+MakeMyTrip and Goibibo are two of the brief's three agencies. Losing both would have left
+the entire agency side of the comparison resting on generated data, which demonstrates
+nothing about aggregating real sellers. EaseMyTrip and Ixigo are comparable Indian OTAs that
+do serve their public search, so they were integrated to carry real agency fares in their
+place. Adding each one touched a registry entry and a mapper, nothing else.
+
+### What the three agencies each contribute
+
+All three are reported as `browser-automation` rather than `live-api`: the endpoints are
+undocumented, unversioned and outside any commercial agreement, and a badge implying a
+contracted API would claim a stability nobody has promised.
+
+They disagree about almost everything else, which is the point of the site abstraction.
+Cleartrip answers with normalised lookup tables, EaseMyTrip with abbreviated keys and packed
+strings, Ixigo with a server-sent event stream.
+
+| Contributes                   | Cleartrip | EaseMyTrip | Ixigo |
+| ----------------------------- | --------- | ---------- | ----- |
+| Fare/tax breakdown            | Yes       | Yes (1 pax) | No    |
+| Operating carrier (codeshare) | Yes       | No         | No    |
+| Real IANA zone per airport    | Yes       | No         | No    |
+| Seats remaining               | No        | Yes        | Yes   |
+| Baggage allowance             | No        | Yes        | Yes   |
+| Connecting itineraries        | Yes       | Yes        | **No** |
+
+**Ixigo maps non-stop flights only.** It describes a connection as one end-to-end entry with
+every flight number joined into a single string and layovers named by city rather than
+airport code. Its individual legs cannot be recovered from that, and the canonical key that
+drives deduplication is built from them, so synthesising segments would put invented airport
+codes behind a real price. Those itineraries are declined and the omission is reported in the
+provider status rather than passing silently.
+
+### Cleartrip specifically
+
+What its response supplies that no other source here does:
+
+- `operatingAirlineCode` separately from the marketing carrier, so codeshares are visible
+- a real IANA zone per airport, so no fixed-offset assumption is needed
+- `totalBaseFare` and `totalTax`, so `price.total` reconciles rather than being trusted
+
+Three limitations in [`LIMITATIONS.md`](./LIMITATIONS.md) exist because no other source
+supplies those fields. On this path they do not apply.
+
+Two details worth recording, because both would be wrong if handled naively:
+
+1. **Nearby airports are dropped.** All three agencies answer a Delhi search with departures
+   from DXN. Helpful on their own sites, wrong in a comparison where every other provider
+   answered the route exactly as asked: a flight from a different airport is not the same
+   flight at a better price.
+2. **The quoted price is the undiscounted total.** Every Cleartrip fare carries a coupon.
+   Pricing on the discounted figure would rank it above sellers quoting honestly, on a price
+   most users cannot obtain. The coupon is carried as a `conditional` benefit instead, which
+   scoring already excludes. Ixigo's promotional copy is treated the same way.
+
+Recordings are replayed exactly as on the SerpApi path, under the same two rules: valid only
+for the date captured, and never labelled with the live provenance.
 
 ---
 

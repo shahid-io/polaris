@@ -9,11 +9,15 @@ limitation was a genuine trade-off, the reasoning is recorded.
 
 ## Data
 
-### Three providers use representative data
+### Two providers use representative data
 
-MakeMyTrip, Goibibo and Cleartrip return generated offers, not real fares. Their partner APIs
-are commercially gated and unobtainable for a prototype, see
+MakeMyTrip and Goibibo return generated offers, not real fares. Their partner APIs are
+commercially gated, and their public sites refuse automated clients at the CDN edge, so
+neither route is open. Both were tested rather than assumed, see
 [`INTEGRATIONS.md`](./INTEGRATIONS.md#3-providers-not-integrated-and-the-reason).
+
+Cleartrip joins them only when `BROWSER_PROVIDERS=cleartrip` is unset; with it, Cleartrip
+serves real fares read from its own web search.
 
 The prices are plausible, not accurate. They are not scraped, not historical, and must not
 inform a real purchase. They exist so aggregation, deduplication, comparison and failure
@@ -38,6 +42,21 @@ All prices are INR. `Money` carries a currency and refuses cross-currency compar
 than silently producing a meaningless number, so multi-currency is a display and conversion
 problem rather than a modelling one.
 
+### Ixigo contributes non-stop flights only
+
+Ixigo describes a connecting itinerary as a single end-to-end entry: every flight number
+joined into one string, and layovers named by city rather than airport code. The individual
+legs cannot be recovered from that, and the canonical key that drives deduplication is built
+from them.
+
+Synthesising the legs would put invented airport codes and times behind a real price, so
+those itineraries are declined and the count is reported in the provider status. Ixigo
+therefore lists fewer flights than the other agencies on the same route, which is visible
+rather than silent.
+
+**To fix:** follow the per-itinerary detail call its own UI makes when a card is expanded.
+That returns the legs, at the cost of one request per itinerary.
+
 ### The timetable covers 13 routes
 
 Representative providers serve 13 route pairs across 10 Indian airports. An unserved route
@@ -58,6 +77,12 @@ data that providers do not consistently expose. A _wrong_ merge is worse than a 
 would show a user a fare they cannot actually buy under the flight number displayed. Given
 partial data, the design fails toward showing two rows rather than one incorrect row.
 
+**One source does supply it.** The Cleartrip browser session reports `operatingAirlineCode`
+separately from the marketing carrier, and the adapter records it whenever the two differ. So
+the data needed for the fix below now exists on that path, and the contract field is already
+populated; what is still missing is the same field from enough _other_ providers for a merge
+to be agreed rather than asserted by one seller.
+
 **To fix:** require `operatingCarrier` in the offer contract, match on operating carrier plus
 departure instant plus route, and merge only on full agreement.
 
@@ -70,6 +95,9 @@ errors twice a year.
 
 The offset is stored per airport rather than as a global constant specifically so this shows
 up as an obviously wrong field rather than an invisible assumption.
+
+The Cleartrip browser path is the exception: its response carries a real IANA zone and a
+full offset per timestamp, so offers from it make no assumption at all.
 
 **To fix:** replace the offset with a real IANA timezone lookup. `ScheduledTime` already
 carries the zone, so no call site changes.
@@ -106,6 +134,20 @@ own view of provider health.
 
 `CacheStore` is an interface precisely so this is a deployment change rather than a rewrite,
 a Redis implementation and one changed line in `CacheModule`.
+
+### Browser sessions are serialised, so they are cumulative
+
+Only one page runs at a time. That is deliberate twice over: each page is a real Chromium
+tab rendering a heavy commercial site, and driving a provider's public search is only
+defensible at the rate a person would use it.
+
+The cost is that the three browser-read agencies do not overlap with each other. Measured on
+DEL-BOM they finish at roughly 3.5s, 6.3s and 9.7s, so the last one grazes the default 10s
+`PROVIDER_TIMEOUT_MS` and will intermittently time out. Enabling them means raising that
+budget; `.env.example` says so at the setting.
+
+**To fix properly:** a small pool of contexts, capped well below the number of providers, so
+two agencies can overlap without the fan-out becoming a burst of traffic at one site.
 
 ### No rate limiting
 

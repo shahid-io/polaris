@@ -19,7 +19,8 @@
     "fixtures:record": "node scripts/record-fixtures.mjs",
     "demo": "pnpm --filter @polaris/web demo",
     "lint:fix": "eslint . --fix",
-    "demo:video": "pnpm --filter @polaris/web demo:video"
+    "demo:video": "pnpm --filter @polaris/web demo:video",
+    "fixtures:record:web": "node scripts/record-web-fixtures.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
