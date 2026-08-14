@@ -7,7 +7,6 @@ import { fetchAirports, type AirportSummary } from '@/lib/fetch';
 export interface UseAirportsResult {
   airports: AirportSummary[];
   /** Destinations reachable from each origin, keyed by origin code. */
-  routes: Record<string, string[]>;
   isLoading: boolean;
   error?: string;
 }
@@ -23,7 +22,6 @@ export interface UseAirportsResult {
  */
 export function useAirports(): UseAirportsResult {
   const [airports, setAirports] = useState<AirportSummary[]>([]);
-  const [routes, setRoutes] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string>();
 
@@ -35,7 +33,6 @@ export function useAirports(): UseAirportsResult {
 
       if (data) {
         setAirports(data.airports);
-        setRoutes(data.routes);
       } else {
         setError(apiError?.message ?? 'Could not load airports');
       }
@@ -45,5 +42,5 @@ export function useAirports(): UseAirportsResult {
     return () => controller.abort();
   }, []);
 
-  return { airports, routes, isLoading, error };
+  return { airports, isLoading, error };
 }

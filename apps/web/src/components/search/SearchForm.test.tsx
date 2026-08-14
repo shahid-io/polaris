@@ -12,11 +12,10 @@ const AIRPORTS = [
 ];
 
 // DEL flies to BOM and BLR. GAU is served as a destination from nowhere in this fixture.
-const ROUTES = { DEL: ['BOM', 'BLR'], BOM: ['DEL'] };
 
 function renderForm(onSearch = vi.fn()) {
   render(
-    <SearchForm airports={AIRPORTS} routes={ROUTES} isSearching={false} onSearch={onSearch} />,
+    <SearchForm airports={AIRPORTS} isSearching={false} onSearch={onSearch} />,
   );
   return { onSearch, user: userEvent.setup() };
 }
@@ -46,24 +45,23 @@ describe('SearchForm', () => {
   });
 
   /**
-   * Structural validation rather than a submit-time error: a user cannot build a route
-   * with no flights, so there is nothing to reject afterwards.
+   * Every destination stays selectable. Which routes actually have flights is not
+   * something this app knows: each provider reads a real seller's own search, so an
+   * unserved route is an honest empty result rather than a greyed row asserting, on a
+   * guess, that nobody flies it.
    */
-  it('marks destinations the origin cannot reach as unavailable', async () => {
+  it('leaves every destination selectable once an origin is chosen', async () => {
     const { user } = renderForm();
     await pick(user, /^From/, /Delhi/);
 
     await user.click(screen.getByRole('combobox', { name: /^To/ }));
 
-    // Reachable from DEL.
-    expect(await screen.findByRole('option', { name: /Mumbai/ })).not.toHaveAttribute(
-      'data-disabled',
-      'true',
-    );
-    // Not reachable: shown, but explained rather than silently missing.
-    const unreachable = screen.getByRole('option', { name: /Guwahati/ });
-    expect(unreachable).toHaveAttribute('data-disabled', 'true');
-    expect(unreachable).toHaveTextContent(/no route/i);
+    for (const city of [/Mumbai/, /Guwahati/, /Bengaluru/]) {
+      expect(await screen.findByRole('option', { name: city })).not.toHaveAttribute(
+        'data-disabled',
+        'true',
+      );
+    }
   });
 
   it('excludes the chosen origin from the destination list', async () => {
@@ -73,24 +71,6 @@ describe('SearchForm', () => {
     await user.click(screen.getByRole('combobox', { name: /^To/ }));
 
     expect(screen.queryByRole('option', { name: /Delhi/ })).not.toBeInTheDocument();
-  });
-
-  /**
-   * Changing origin can strand a destination that is no longer reachable. Clearing it is
-   * better than leaving an invalid pair selected to fail later.
-   */
-  it('clears a destination the new origin cannot reach', async () => {
-    const { user } = renderForm();
-    await pick(user, /^From/, /Delhi/);
-    await pick(user, /^To/, /Bengaluru/);
-
-    expect(screen.getByRole('combobox', { name: /^To/ })).toHaveTextContent('BLR');
-
-    // BOM only flies to DEL in this fixture, so BLR must be dropped.
-    await pick(user, /^From/, /Mumbai/);
-
-    expect(screen.getByRole('combobox', { name: /^To/ })).toHaveTextContent(/Select airport/);
-    expect(screen.getByRole('button', { name: /Search flights/ })).toBeDisabled();
   });
 
   it('submits the route and date', async () => {
@@ -145,7 +125,7 @@ describe('SearchForm', () => {
   });
 
   it('shows a searching state while a request is in flight', () => {
-    render(<SearchForm airports={AIRPORTS} routes={ROUTES} isSearching onSearch={vi.fn()} />);
+    render(<SearchForm airports={AIRPORTS} isSearching onSearch={vi.fn()} />);
 
     expect(screen.getByRole('button', { name: /Searching/ })).toBeDisabled();
   });

@@ -1,7 +1,7 @@
 'use client';
 
 import { SearchIcon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { TIME_RANGE_PRESETS, type SearchQueryInput } from '@polaris/contracts';
 
 import { AirportPicker } from '@/components/search/AirportPicker';
@@ -23,7 +23,6 @@ type TimePreset = (typeof TIME_PRESETS)[number]['value'];
 export interface SearchFormProps {
   airports: readonly AirportSummary[];
   /** Destinations reachable from each origin, so the form cannot build a dead end. */
-  routes: Record<string, string[]>;
   isSearching: boolean;
   onSearch: (query: SearchQueryInput) => void;
 }
@@ -36,13 +35,11 @@ export interface SearchFormProps {
  * until the query is complete. A user cannot construct an invalid search, so there is
  * nothing to reject.
  */
-export function SearchForm({ airports, routes, isSearching, onSearch }: SearchFormProps) {
+export function SearchForm({ airports, isSearching, onSearch }: SearchFormProps) {
   const [origin, setOrigin] = useState<string>();
   const [destination, setDestination] = useState<string>();
   const [departureDate, setDepartureDate] = useState(defaultDate);
   const [timePreset, setTimePreset] = useState<TimePreset>('any');
-
-  const reachable = useMemo(() => (origin ? (routes[origin] ?? []) : undefined), [origin, routes]);
 
   const canSearch = Boolean(origin && destination && departureDate) && !isSearching;
 
@@ -70,21 +67,18 @@ export function SearchForm({ airports, routes, isSearching, onSearch }: SearchFo
           value={origin}
           airports={airports}
           excludeCode={destination}
-          onChange={(code) => {
-            setOrigin(code);
-            // Clear a destination the new origin cannot reach, rather than leaving an
-            // invalid pair selected to fail on submit.
-            if (destination && !(routes[code] ?? []).includes(destination)) {
-              setDestination(undefined);
-            }
-          }}
+          // No reachability filtering, and nothing to clear on change. Each picker already
+          // excludes the other's selection, so origin can never equal destination, and
+          // which routes actually have flights is not something this app knows: every
+          // provider reads a real seller's own search, so an unserved route is an honest
+          // empty result rather than a greyed row asserting on a guess that nobody flies it.
+          onChange={setOrigin}
         />
 
         <AirportPicker
           label="To"
           value={destination}
           airports={airports}
-          selectableCodes={reachable}
           excludeCode={origin}
           disabled={!origin}
           onChange={setDestination}

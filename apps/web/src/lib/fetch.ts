@@ -143,7 +143,6 @@ export interface AirportSummary {
 /** Airports plus which destinations each origin reaches. */
 export interface AirportsResponse {
   airports: AirportSummary[];
-  routes: Record<string, string[]>;
 }
 
 /**

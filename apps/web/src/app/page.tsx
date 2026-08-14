@@ -29,7 +29,7 @@ const NO_FILTERS: FilterState = {
  * metered SerpApi credit per checkbox.
  */
 export default function HomePage() {
-  const { airports, routes, isLoading: airportsLoading, error: airportsError } = useAirports();
+  const { airports, isLoading: airportsLoading, error: airportsError } = useAirports();
   const { response, isSearching, error, hasSearched, search } = useFlightSearch();
 
   const [sort, setSort] = useState<SortKey>('value');
@@ -66,7 +66,6 @@ export default function HomePage() {
       ) : (
         <SearchForm
           airports={airports}
-          routes={routes}
           isSearching={isSearching}
           onSearch={(query) => {
             setFilters(NO_FILTERS);

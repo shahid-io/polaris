@@ -11,13 +11,6 @@ export interface AirportSummary {
 /** Airports the search form offers. */
 export interface AirportsResponse {
   airports: AirportSummary[];
-  /**
-   * Destinations reachable from each origin, keyed by origin code.
-   *
-   * Now always empty, and kept so the response shape does not break clients that read it.
-   * See {@link AirportsController.list} for why there is nothing to put in it.
-   */
-  routes: Record<string, string[]>;
 }
 
 @Controller('api/airports')
@@ -35,13 +28,10 @@ export class AirportsController {
    * the first time it drifted it would hide a route that genuinely has flights. An empty
    * result for an unserved route is a truthful answer and costs one search to discover.
    *
-   * @returns Airports, and an empty adjacency map retained for response compatibility.
+   * @returns The airports the search form offers.
    */
   @Get()
   list(): AirportsResponse {
-    return {
-      airports: AIRPORTS.map(({ code, city, name }) => ({ code, city, name })),
-      routes: {},
-    };
+    return { airports: AIRPORTS.map(({ code, city, name }) => ({ code, city, name })) };
   }
 }
