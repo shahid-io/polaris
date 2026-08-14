@@ -19,6 +19,7 @@ vi.mock('@/lib/fetch', () => ({
 }));
 
 const { fetchAirports, searchFlights } = await import('@/lib/fetch');
+const { resetAirportsCache } = await import('@/hooks/useAirports');
 
 const AIRPORTS = {
   airports: [
@@ -41,6 +42,9 @@ async function runSearch(user: ReturnType<typeof userEvent.setup>) {
 }
 
 beforeEach(() => {
+  // The airport request is shared for the process lifetime, which is right in a browser
+  // and wrong here: without this, one case inherits the previous case's response.
+  resetAirportsCache();
   vi.mocked(fetchAirports).mockResolvedValue({ data: AIRPORTS });
 });
 
