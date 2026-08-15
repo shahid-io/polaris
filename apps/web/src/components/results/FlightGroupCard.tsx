@@ -18,6 +18,7 @@ import { ScoreBreakdown } from '@/components/results/ScoreBreakdown';
 import { cn, dayOffset, formatDuration, formatLocalTime, formatRupees } from '@/lib/utils';
 import { ProvenanceBadge } from '@/components/results/ProvenanceBadge';
 import { VerifyLink } from '@/components/results/VerifyLink';
+import { OfferPrice } from '@/components/results/OfferPrice';
 
 export interface FlightGroupCardProps {
   group: ComparisonGroup;
@@ -192,9 +193,7 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
                     {index === 0 && providerCount > 1 && (
                       <span className="text-[11px] font-medium text-success">Cheapest</span>
                     )}
-                    <span className="tabular font-semibold">
-                      {formatRupees(offer.price.total.amountMinor)}
-                    </span>
+                    <OfferPrice offer={offer} />
                   </span>
                 </div>
 

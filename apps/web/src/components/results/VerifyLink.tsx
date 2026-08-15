@@ -26,7 +26,12 @@ export function VerifyLink({ offer }: { offer: NormalizedOffer }) {
   const segment = offer.itinerary.segments[0]!;
   const flight = `${segment.marketingCarrier}-${segment.flightNumber}`;
   const departure = formatLocalTime(segment.departure.local);
-  const price = formatRupees(offer.price.total.amountMinor);
+  // The seller's page leads with its discounted figure where one applies, so that is the
+  // number to tell the reader to look for. Naming the comparable price instead would send
+  // them hunting for something their screen does not show.
+  const price = formatRupees(
+    (offer.price.discountedTotal ?? offer.price.total).amountMinor,
+  );
 
   return (
     <a

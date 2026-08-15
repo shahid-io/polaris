@@ -87,6 +87,20 @@ export const priceBreakdownSchema = z.object({
   taxesAndFees: moneySchema.optional(),
   /** Provider-specific booking/convenience fee, where disclosed. */
   convenienceFee: moneySchema.optional(),
+  /**
+   * What the seller's own page leads with, when a coupon is pre-applied there.
+   *
+   * Deliberately separate from {@link total} rather than replacing it. Comparison and
+   * scoring must run on the price everyone can obtain, because a coupon needs a code and
+   * often a specific bank card, and ranking on it would push whichever seller advertises
+   * the most promotions to the top on a price most users cannot get.
+   *
+   * But the seller's page shows the discounted figure prominently, so a user checking the
+   * quote against the source would find two different numbers and reasonably conclude the
+   * comparison is wrong. Carrying both lets the UI show the comparable price *and* the one
+   * they are about to see.
+   */
+  discountedTotal: moneySchema.optional(),
 });
 
 /**

@@ -71,6 +71,8 @@ interface CleartripFare {
         discountAmount?: number | null;
         couponCode?: string | null;
         message?: string | null;
+        /** Total after the coupon, which is the figure Cleartrip's page leads with. */
+        discountedPrice?: number | null;
       } | null;
     };
   };
@@ -220,6 +222,8 @@ function toOffer(
   const pricing = fare.pricing?.totalPricing;
   const fareFamily = fare.fareFamilySubType ?? fare.displayText?.displayTitle ?? fare.brand;
   const tags = option.fareList?.find((entry) => entry.fareId === fare.fareId)?.benefitTags ?? [];
+  const couponPrice = pricing?.couponDetails?.discountedPrice;
+  const discounted = typeof couponPrice === 'number' ? toMinor(couponPrice) : undefined;
 
   return {
     // fareId is a several-hundred-character signed token, unusable as an identifier. The
@@ -248,6 +252,13 @@ function toOffer(
         : {}),
       ...(pricing?.totalTax !== undefined
         ? { taxesAndFees: { amountMinor: toMinor(pricing.totalTax), currency: 'INR' } }
+        : {}),
+      // What Cleartrip's own page shows. Carried so a reader following the verification
+      // link recognises the number they land on, rather than finding two prices and
+      // concluding the comparison is broken. Only when it is genuinely lower: a coupon
+      // that saves nothing is not worth a second figure on the card.
+      ...(discounted !== undefined && discounted < toMinor(pricing?.totalPrice)
+        ? { discountedTotal: { amountMinor: discounted, currency: 'INR' } }
         : {}),
     },
     cabinClass: query.cabinClass,

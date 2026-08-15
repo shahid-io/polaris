@@ -11,9 +11,10 @@ import {
 import type { ComparisonGroup, NormalizedOffer } from '@polaris/contracts';
 import { carriersOn, flyingMinutes, layoversFor, waitingMinutes } from '@polaris/core';
 
-import { cn, dayOffset, formatDuration, formatLocalTime, formatRupees } from '@/lib/utils';
+import { cn, dayOffset, formatDuration, formatLocalTime } from '@/lib/utils';
 import { ProvenanceBadge } from '@/components/results/ProvenanceBadge';
 import { VerifyLink } from '@/components/results/VerifyLink';
+import { OfferPrice } from '@/components/results/OfferPrice';
 
 /**
  * Everything about one flight that does not fit on its card.
@@ -179,9 +180,7 @@ function FareRow({ offer, isCheapest }: { offer: NormalizedOffer; isCheapest: bo
 
         <span className="flex items-center gap-2">
           {isCheapest && <span className="text-[11px] font-medium text-success">Cheapest</span>}
-          <span className="tabular text-sm font-semibold">
-            {formatRupees(offer.price.total.amountMinor)}
-          </span>
+          <OfferPrice offer={offer} className="text-sm" />
         </span>
       </div>
 
