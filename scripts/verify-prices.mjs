@@ -5,8 +5,14 @@ import {
   closeBrowser,
   easeMyTripSite,
   ixigoSite,
-  withPage,
 } from '../packages/providers/dist/index.js';
+import {
+  gradeOf,
+  lowestQuotedFares,
+  readDisplayedFares,
+  readRenderedPage,
+  rupees,
+} from './lib/verification.mjs';
 
 /**
  * Checks Polaris's prices against what each seller's own page displays.
@@ -88,179 +94,23 @@ const query = {
   cabinClass: 'economy',
 };
 
-/** Matches a line that is nothing but a price, with or without the currency symbol. */
-const PRICE_LINE = /^₹?\s*([\d,]{3,})$/;
-
-/** Matches a line that is nothing but a flight designator, however the site punctuates it. */
-const FLIGHT_LINE = /^\(?([A-Z0-9]{2})[\s-]?(\d{2,4})\)?$/;
-
-/**
- * Bounds on a believable domestic fare, in paise.
- *
- * A number outside this range is far more likely to be something else the window happened
- * to catch, a passenger count, a loyalty balance, a distance, than a price. Refusing it is
- * cheaper than explaining a phantom mismatch.
- */
-const PLAUSIBLE_FARE_MIN = 50_000;
-const PLAUSIBLE_FARE_MAX = 50_000_000;
-
-/** A journey the page itself describes as having no stops. */
-const NON_STOP_LINE = /^non[-\s]?stop$/i;
-
-/**
- * How far below a flight number to look for its fare.
- *
- * Every one of these sites renders the same way: airline, flight number, times, duration,
- * then price. Ten lines covers that with room to spare, and stops well short of the next
- * card, so a flight cannot inherit its neighbour's fare.
- */
-const PRICE_WINDOW = 10;
-
-/**
- * Reads the fares a person would see on a seller's results page.
- *
- * Takes the *first* price following each flight number, which is the fare. Promotional
- * lines ("Extra ₹350 Off", "Lock Price @₹239") always follow it, so first-wins is what
- * separates the fare from the marketing around it.
- *
- * @param text - The page's rendered innerText.
- * @returns Lowest displayed fare per flight, in paise, keyed `6E-2134`.
- */
-function readDisplayedFares(text) {
-  const lines = text
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
-
-  /** Every distinct price this parse associated with a flight, across all scroll passes. */
-  const candidates = new Map();
-  /** Flights seen as non-stop rows where no price could be read at all. */
-  const unreadable = new Set();
-
-  for (const [index, line] of lines.entries()) {
-    const flight = FLIGHT_LINE.exec(line);
-    if (!flight) continue;
-
-    const key = `${flight[1]}-${Number(flight[2])}`;
-    let nonStop = false;
-    let read = false;
-
-    for (let ahead = index + 1; ahead < Math.min(lines.length, index + PRICE_WINDOW); ahead += 1) {
-      if (NON_STOP_LINE.test(lines[ahead])) {
-        nonStop = true;
-        continue;
-      }
-
-      const price = PRICE_LINE.exec(lines[ahead]);
-      if (!price) continue;
-
-      // Every one of these sites prints the stop count between the flight number and the
-      // fare, so by the time a price appears it is known whether this row is a connection.
-      // A connection is out of scope, not a parse failure.
-      if (!nonStop) {
-        read = true;
-        break;
-      }
-
-      const minor = Number(price[1].replace(/,/g, '')) * 100;
-      // Outside any plausible domestic fare. Far more likely a stray number captured by the
-      // window than a real price, so it is not allowed to stand in for one.
-      if (minor < PLAUSIBLE_FARE_MIN || minor > PLAUSIBLE_FARE_MAX) break;
-
-      if (!candidates.has(key)) candidates.set(key, new Set());
-      candidates.get(key).add(minor);
-      read = true;
-      break;
-    }
-
-    // A non-stop row whose price could not be read is a parse failure, and saying nothing
-    // about it would quietly shrink the denominator until the check verified almost
-    // nothing while still reporting a pass.
-    if (nonStop && !read) unreadable.add(key);
-  }
-
-  const fares = new Map();
-  const ambiguous = new Set(unreadable);
-
-  for (const [key, prices] of candidates) {
-    // The page is read repeatedly as it scrolls, so a flight is normally seen several
-    // times and must show the same fare every time. Disagreement means the association
-    // between a flight and a price is not reliable, and the honest response is to refuse
-    // to score it rather than pick one and hope.
-    if (prices.size === 1) fares.set(key, [...prices][0]);
-    else ambiguous.add(key);
-  }
-
-  return { fares, ambiguous };
-}
-
-/**
- * Lowest price Polaris holds per flight for one provider.
- *
- * @param offers - That provider's normalised offers.
- * @returns Lowest total in paise, keyed the same way as {@link readDisplayedFares}.
- */
-function lowestQuotedFares(offers) {
-  const fares = new Map();
-
-  for (const offer of offers) {
-    // Only non-stop journeys, matching what the page side can identify unambiguously.
-    if (offer.itinerary.stops !== 0) continue;
-
-    const segment = offer.itinerary.segments[0];
-    const key = `${segment.marketingCarrier}-${Number(segment.flightNumber)}`;
-    const minor = offer.price.total.amountMinor;
-    if (!fares.has(key) || minor < fares.get(key)) fares.set(key, minor);
-  }
-
-  return fares;
-}
-
-const rupees = (minor) => `₹${(minor / 100).toLocaleString('en-IN')}`;
-
-/**
- * Coverage below which a run is not evidence of anything.
- *
- * Verifying eight flights out of a hundred and printing PASS would be worse than printing
- * nothing: it turns an unanswered question into a false answer, and the number that gets
- * quoted afterwards is "it passed", not "it checked eight".
- */
-const MIN_COVERAGE = 0.6;
-
-/** Coverage below which a pass is real but worth qualifying out loud. */
-const GOOD_COVERAGE = 0.9;
-
-/**
- * Grades one seller's run.
- *
- * @param mismatches - Flights where the two prices disagreed.
- * @param ambiguous - Flights on the page the parser could not read confidently.
- * @param coverage - Fraction of quoted flights actually compared.
- * @returns One of PASS, WARN, INCONCLUSIVE, FAIL.
- */
-function gradeOf(mismatches, ambiguous, coverage) {
-  if (mismatches > 0) return 'FAIL';
-  if (coverage < MIN_COVERAGE) return 'INCONCLUSIVE';
-  if (coverage < GOOD_COVERAGE || ambiguous > 0) return 'WARN';
-  return 'PASS';
-}
-
 const EXPLANATION = {
-  PASS: 'PASSED. Every quoted fare was compared against the seller’s page and matched.\n',
+  PASS: 'PASSED. Every quoted fare was compared against the seller\u2019s page and matched.\n',
   WARN: 'PASSED WITH INCOMPLETE COVERAGE. Everything compared matched, but some fares could not be checked.\n',
   INCONCLUSIVE:
     'INCONCLUSIVE. Too little was actually compared for this run to be evidence of anything.\n',
   FAIL: 'FAILED. Every price Polaris shows should be the price the seller shows.\n',
 };
 
-console.log(`\nVerifying ${route} on ${date} against each seller's own page`);
-console.log('Scope: non-stop itineraries only. Connecting itineraries are not verified,');
-console.log('because one flight number does not identify a multi-leg journey.\n');
-
 let totalChecked = 0;
 let totalMismatched = 0;
 let totalQuoted = 0;
 const report = [];
+
+console.log(`\nVerifying ${route} on ${date} against each seller's own page`);
+console.log('Scope: non-stop itineraries only. Connecting itineraries are not verified,');
+console.log('because one flight number does not identify a multi-leg journey.\n');
+
 
 for (const siteId of sites) {
   const site = SITES[siteId];
@@ -281,50 +131,8 @@ for (const siteId of sites) {
       adults: 1,
       cabinClass: 'economy',
     });
-    const text = await withPage(async ({ page }) => {
-      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45_000 });
-      // No response to await here: the point is what finished rendering, not what arrived.
-      await page.waitForTimeout(20_000);
+    const text = await readRenderedPage(url, controller.signal);
 
-      // These lists render lazily, so a page left alone shows a handful of flights and the
-      // check silently covers almost nothing. Scrolling to the bottom is what a person
-      // comparing prices would do, and it is the difference between verifying six flights
-      // and verifying a hundred.
-      //
-      // Two wrinkles, both learned by measuring rather than assuming. Ixigo scrolls an
-      // inner container, not the window, so scrolling the page moves nothing: whichever
-      // element actually overflows is scrolled instead. And its list is virtualised,
-      // rendering only the rows near the viewport and discarding the rest, so the text is
-      // accumulated at every step. Reading once at the bottom would see the last few
-      // flights and nothing else.
-      const SCROLL_STEP = `
-        (() => {
-          const panes = Array.from(document.querySelectorAll('*')).filter(
-            (el) => el.scrollHeight > el.clientHeight + 200 && el.clientHeight > 300,
-          );
-          if (panes.length === 0) {
-            window.scrollBy(0, 2000);
-            return document.body.scrollHeight;
-          }
-          panes.forEach((el) => { el.scrollTop += 2000; });
-          return panes.reduce((most, el) => Math.max(most, el.scrollTop), 0);
-        })()
-      `;
-
-      const seen = [];
-      let previousPosition = -1;
-      for (let pass = 0; pass < 40; pass += 1) {
-        seen.push(await page.locator('body').innerText({ timeout: 15_000 }));
-
-        const position = await page.evaluate(SCROLL_STEP);
-        // Stopped moving: the end of the list, or nothing scrollable to begin with.
-        if (position === previousPosition && pass > 3) break;
-        previousPosition = position;
-        await page.waitForTimeout(1_000);
-      }
-
-      return seen.join('\n');
-    }, controller.signal, new URL(url).host);
     const { fares: displayed, ambiguous } = readDisplayedFares(text);
 
     // 3. Compare, on flights both sides have and the page could be read for confidently.

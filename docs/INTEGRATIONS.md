@@ -235,6 +235,38 @@ ambiguous rather than guessed at or silently dropped. Silently dropping is the d
 one: it shrinks the denominator until the check verifies nothing while still reporting
 success.
 
+
+### Across many routes
+
+```bash
+pnpm qa:sweep --routes DEL-BOM,DEL-BLR,BOM-BLR,PAT-BLR --dates 2026-08-22,2026-09-05
+```
+
+Runs the same check over a matrix and adds one thing the single-route command structurally
+cannot do: **cross-referencing the sellers against each other**.
+
+Per-seller verification proves Polaris reports what a seller's page says. It cannot prove
+the seller was read correctly in a deeper sense, because a mapper that consistently picks
+the wrong field will match the page every time and still produce a wrong comparison. Three
+independent sellers pricing the same flight is the check on that.
+
+When one seller sits far from the median of its peers, the sweep flags it. It does **not**
+fail the run, because it genuinely cannot tell the two explanations apart: either that
+seller really is cheaper, which is the entire point of the product, or a mapper is wrong.
+Only a human can say which, and pretending otherwise would turn the product working as
+intended into a red build.
+
+Only a disagreement with a seller's own page, an error, or schema drift fails the sweep.
+
+The 20% threshold is calibrated against a real observation, not chosen for neatness:
+EaseMyTrip was seen selling IX-1584 PAT-BLR at ₹8,216 while both peers had ₹10,736, a
+-23.5% gap. An earlier 25% default would have stayed silent through exactly the finding
+this check exists to surface.
+
+That fare had returned to ₹10,736 within the hour, which is its own lesson: these are
+snapshots of a volatile market, and it is the reason offers carry `retrievedAt` and a
+replayed price is never allowed to claim it is current.
+
 **It reads the rendered page, not the JSON.** The adapters work by capturing the JSON a
 site's front end receives; a harness doing the same would compare the pipeline against
 itself and pass even if every mapping were wrong. Reading rendered text checks the whole
