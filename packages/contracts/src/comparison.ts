@@ -64,7 +64,24 @@ export const comparisonGroupSchema = z.object({
   offers: z.array(normalizedOfferSchema).min(1),
 
   /** Convenience pointers so the UI does not recompute. */
+  /**
+   * The cheapest offer whose price is still current.
+   *
+   * Replayed offers are excluded. A recording is real data that is no longer current, and
+   * letting a stale price win "cheapest" would put the most misleading number in the most
+   * prominent position: the one place a user is least likely to check.
+   *
+   * Falls back to the cheapest replayed offer only when every offer in the group is
+   * replayed, in which case `hasCurrentPricing` is false and the whole group is marked.
+   */
   cheapestOfferId: z.string(),
+  /**
+   * False when every offer in this group came from a recording.
+   *
+   * Lets the UI mark a flight whose prices cannot be trusted as current, rather than
+   * relying on the reader to notice a badge on each individual row.
+   */
+  hasCurrentPricing: z.boolean(),
   providerIds: z.array(providerIdSchema),
   providerCount: z.number().int().positive(),
   priceSpread: priceSpreadSchema,

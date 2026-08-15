@@ -74,6 +74,17 @@ export function FlightGroupCard({ group, isTopResult = false }: FlightGroupCardP
               </span>
             )}
             {isTopResult && <Badge variant="live">Best value</Badge>}
+            {/* Every price on this card came from a recording. Said once at the top rather
+                than left to be inferred from a badge on each row: the claim being made is
+                about the flight's price as a whole, not about one seller. */}
+            {!group.hasCurrentPricing && (
+              <Badge
+                variant="simulated"
+                title="Every price for this flight was replayed from a recording, so none of them is confirmed current."
+              >
+                Prices not current
+              </Badge>
+            )}
           </div>
 
           <div className="mt-2.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">

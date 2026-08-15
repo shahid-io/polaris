@@ -73,20 +73,35 @@ function buildGroup(canonicalKey: string, offers: NormalizedOffer[]): UnscoredCo
         : 0,
   );
 
-  const cheapest = sorted[0]!;
+  // Offers whose price is still current. A replayed recording is real data that has gone
+  // stale, so it is shown but must not compete: letting it win "cheapest" would put the
+  // most misleading number in the most prominent position on the card.
+  const current = sorted.filter((offer) => offer.integrationType !== 'representative');
+  const hasCurrentPricing = current.length > 0;
+
+  // When every offer is replayed there is nothing current to prefer, so the group is
+  // ranked on what it has and flagged, rather than being dropped. A stale price the user
+  // is told is stale still answers "roughly what does this flight cost".
+  const priced = hasCurrentPricing ? current : sorted;
+
+  const cheapest = priced[0]!;
   // Derived from the sorted list, so providers are listed cheapest-first.
   const providerIds = [...new Set(sorted.map((offer) => offer.providerId))];
+  const pricedProviderIds = [...new Set(priced.map((offer) => offer.providerId))];
 
   return {
     canonicalKey,
     // Every offer in a group shares an itinerary by construction, the canonical key is
-    // derived from it, so taking the cheapest offer's copy is safe.
+    // derived from it, so taking any offer's copy is safe.
     itinerary: cheapest.itinerary,
     offers: sorted,
     cheapestOfferId: cheapest.id,
+    hasCurrentPricing,
     providerIds,
     providerCount: providerIds.length,
-    priceSpread: computePriceSpread(sorted, providerIds),
+    // Spread over current prices only, for the same reason: a spread that straddles a
+    // stale fare describes a saving nobody can actually obtain.
+    priceSpread: computePriceSpread(priced, pricedProviderIds),
   };
 }
 

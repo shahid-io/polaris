@@ -126,6 +126,7 @@ export function buildGroup(
     itinerary,
     offers,
     cheapestOfferId: offers[0]!.id,
+    hasCurrentPricing: offers.some((offer) => offer.integrationType !== 'representative'),
     providerIds,
     providerCount: providerIds.length,
     priceSpread: {

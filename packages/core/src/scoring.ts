@@ -97,7 +97,10 @@ export function scoreGroups(
  * @internal
  */
 function benefitValueOf(group: UnscoredComparisonGroup): number {
-  const cheapest = group.offers[0]!;
+  // The offer the group actually leads with, which is the cheapest *current* one. Reading
+  // offers[0] would score a replayed offer's perks onto a group priced on a live fare.
+  const cheapest =
+    group.offers.find((offer) => offer.id === group.cheapestOfferId) ?? group.offers[0]!;
   const quantified: Money[] = cheapest.benefits
     .filter((benefit) => !benefit.conditional && benefit.value !== undefined)
     .map((benefit) => benefit.value!);

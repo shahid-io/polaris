@@ -171,3 +171,77 @@ describe('countMultiProviderGroups', () => {
     expect(countMultiProviderGroups(groups)).toBe(1);
   });
 });
+
+describe('provenance and ranking', () => {
+  /**
+   * The failure this prevents: a recording captured days ago is cheaper than every live
+   * fare, so it wins "cheapest", leads the card, and sets the price the group is ranked
+   * on. The user sees the most misleading number in the most prominent position, which is
+   * the one place they are least likely to think to check.
+   */
+  it('never lets a replayed offer win cheapest', () => {
+    const itinerary = buildItinerary();
+    const groups = groupOffers([
+      buildOffer({
+        id: 'stale',
+        providerId: 'cleartrip',
+        integrationType: 'representative',
+        price: { total: { amountMinor: 400_000, currency: 'INR' } },
+        itinerary,
+      }),
+      buildOffer({
+        id: 'live',
+        providerId: 'ixigo',
+        integrationType: 'browser-automation',
+        price: { total: { amountMinor: 900_000, currency: 'INR' } },
+        itinerary,
+      }),
+    ]);
+
+    const group = groups[0]!;
+    // The stale offer is cheaper and is still shown, first, because the list is priced
+    // ascending. It just does not get to be the answer.
+    expect(group.offers[0]!.id).toBe('stale');
+    expect(group.cheapestOfferId).toBe('live');
+    expect(group.hasCurrentPricing).toBe(true);
+    // The spread must describe prices a user can actually obtain today.
+    expect(group.priceSpread.min.amountMinor).toBe(900_000);
+  });
+
+  /**
+   * When nothing current exists there is no better answer available, so the group is
+   * ranked on what it has and flagged rather than dropped: a stale price the user is told
+   * is stale still answers "roughly what does this flight cost".
+   */
+  it('falls back to replayed pricing but marks the group', () => {
+    const itinerary = buildItinerary();
+    const groups = groupOffers([
+      buildOffer({
+        id: 'stale-a',
+        providerId: 'cleartrip',
+        integrationType: 'representative',
+        price: { total: { amountMinor: 400_000, currency: 'INR' } },
+        itinerary,
+      }),
+      buildOffer({
+        id: 'stale-b',
+        providerId: 'ixigo',
+        integrationType: 'representative',
+        price: { total: { amountMinor: 500_000, currency: 'INR' } },
+        itinerary,
+      }),
+    ]);
+
+    const group = groups[0]!;
+    expect(group.cheapestOfferId).toBe('stale-a');
+    expect(group.hasCurrentPricing).toBe(false);
+  });
+
+  it('marks a wholly current group as current', () => {
+    const groups = groupOffers([
+      buildOffer({ providerId: 'cleartrip', integrationType: 'browser-automation' }),
+    ]);
+
+    expect(groups[0]!.hasCurrentPricing).toBe(true);
+  });
+});
