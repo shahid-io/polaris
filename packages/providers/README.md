@@ -1,11 +1,12 @@
 # @polaris/providers
 
-**Six provider adapters behind one interface, plus the primitives that isolate their
+**Three travel agencies behind one interface, plus the primitives that isolate their
 failures.**
 
-A live third-party API, a vendor sandbox and deterministic generated data all satisfy the
-same `FlightProvider` contract. The orchestrator cannot tell them apart, which is why adding
-a provider touches one array.
+Each is read from that seller's own public search, and each answers with a completely
+different payload, normalised lookup tables, packed strings, and a server-sent event
+stream. All three satisfy the same `FlightProvider` contract and the orchestrator cannot
+tell them apart, which is why adding a provider touches a registry entry and a mapper.
 
 Depends on `@polaris/contracts` and `@polaris/core`.
 
@@ -33,27 +34,25 @@ without stubbing globals.
 
 ---
 
-## The six providers
+## The three providers
 
-| Provider          | Integration      | Source                 | Real data      |
-| ----------------- | ---------------- | ---------------------- | -------------- |
-| IndiGo            | `live-api`       | SerpApi Google Flights | Yes            |
-| Air India Express | `live-api`       | SerpApi Google Flights | Yes            |
-| Duffel            | `sandbox-api`    | Duffel API             | No (synthetic) |
-| MakeMyTrip        | `representative` | Shared timetable       | No             |
-| Goibibo           | `representative` | Shared timetable       | No             |
-| Cleartrip         | `representative` | Shared timetable       | No             |
+| Provider   | Integration          | Source                | Real data |
+| ---------- | -------------------- | --------------------- | --------- |
+| Cleartrip  | `browser-automation` | cleartrip.com         | Yes       |
+| EaseMyTrip | `browser-automation` | flight.easemytrip.com | Yes       |
+| Ixigo      | `browser-automation` | ixigo.com             | Yes       |
 
-**No airline's own API is integrated, because none of them publish one.** IndiGo and Air
-India Express fares are real live Google Flights results obtained through SerpApi, a
-commercial API operating under its own terms. The three OTAs have partner APIs behind signed
-commercial agreements, unobtainable for a prototype, see
-[`docs/INTEGRATIONS.md`](../../docs/INTEGRATIONS.md).
+**Nothing here generates a price.** Every adapter reports what a real seller quoted, and
+every offer carries a link back to the page that quoted it.
 
-Every offer carries its `integrationType`, and simulated data is badged in the UI at the
-point a price is shown. Provenance is never hidden.
+MakeMyTrip, Goibibo, IndiGo and Air India Express have no adapter: the first three refuse
+automated clients at their CDN edge, and the airlines could only be priced through an
+aggregator, which is not the same as being priced by the airline. Reasoning and measurements
+in [`docs/INTEGRATIONS.md`](../../docs/INTEGRATIONS.md).
 
----
+Deterministic fakes live in `@polaris/providers/testing`, deliberately outside this
+package's main barrel: partial results and the circuit breaker need a provider that fails
+exactly when asked, and a live site cannot be made to.
 
 ## Representative data
 
@@ -114,15 +113,19 @@ back over.
 ## Provider modes
 
 ```bash
-PROVIDER_MODE=live      # call the API
-PROVIDER_MODE=fixture   # replay a recorded response, offline, deterministic
-PROVIDER_MODE=hybrid    # live, falling back to a fixture on failure  (default)
+BROWSER_PROVIDER_MODE=live      # drive the seller's site
+BROWSER_PROVIDER_MODE=fixture   # replay a recorded response, offline, deterministic
+BROWSER_PROVIDER_MODE=hybrid    # live, falling back to a recording on failure  (default)
 ```
 
-Hybrid keeps a live demonstration working when the network drops or SerpApi's 250-a-month
-free tier is exhausted. The same recordings make tests deterministic, the SerpApi adapter
-was developed entirely against real captured responses rather than by iterating against a
-metered API.
+Hybrid keeps a demonstration working when the network drops or a seller changes its page,
+which is the most fragile dependency here. The same recordings make tests deterministic:
+every mapper was developed against real captured responses rather than by hammering a live
+site.
+
+A replayed offer is downgraded to `representative`, excluded from cheapest and best-value
+ranking, and surfaced in the provider status. Real data that is no longer current must not
+be allowed to win on price.
 
 ### Recording fixtures
 
@@ -132,21 +135,22 @@ Replayed offers are labelled `representative`, never `live-api`; real data that 
 current is closer to representative than to live.
 
 ```bash
-pnpm fixtures:record --date 2026-08-27                        # the default routes
-pnpm fixtures:record --date 2026-08-27 --routes DEL-BOM,DEL-MAA
-pnpm fixtures:record --date 2026-08-27 --force                # re-record existing
+pnpm fixtures:record:web --date 2026-08-27                          # every agency
+pnpm fixtures:record:web --date 2026-08-27 --sites cleartrip,ixigo
+pnpm fixtures:record:web --date 2026-08-27 --routes DEL-BOM --force
 ```
 
-Each route costs one of the 250 monthly credits. The script reports what it will spend and
-skips anything already recorded.
+The script drives each site once per route, then immediately maps what it captured, so a
+recording that cannot be normalised is caught at record time rather than at demo time.
 
-Currently recorded: `DEL-BOM`, `DEL-BLR`, `BOM-GOI` and `DEL-HYD` for both **2026-08-25**
-and **2026-08-27**, plus `DEL-BOM` for `2026-09-15`. Any other route or date correctly
-reports having no data rather than substituting the wrong day.
+Currently recorded: `DEL-BOM` for all three agencies on **2026-08-27**, plus Cleartrip on
+**2026-08-28**. Any other route or date correctly reports having no data rather than
+substituting the wrong day.
 
-Both airline providers are backed by the same endpoint, so identical concurrent requests are
-**coalesced into a single upstream call**. Without that, one user search would spend two of
-the 250 monthly credits on byte-identical data.
+Browser sessions are **serialised**, one page at a time. Two independent reasons: each page
+is a real Chromium tab rendering a heavy commercial site, and driving a seller's public
+search is only defensible at the rate a person would use it. The cost is that their
+latencies are cumulative, which is why `PROVIDER_TIMEOUT_MS` defaults to 20s.
 
 ---
 
@@ -155,9 +159,13 @@ the 250 monthly credits on byte-identical data.
 1. Implement `FlightProvider`.
 2. Add it to the array in `apps/api/src/providers/providers.module.ts`.
 
-Nothing in the orchestration or domain layer changes. Duffel exists specifically to prove
-that: it is not in the assessment brief and was added to demonstrate the abstraction is not
-coupled to the original five.
+Nothing in the orchestration or domain layer changes. EaseMyTrip and Ixigo prove that: both
+are outside the assessment brief and were added after the fact, each costing a registry
+entry and a mapper.
+
+For an agency read from its own web search, implement `WebSearchSite` instead and register
+it in `browser/web-session-providers.ts`, the browser lifecycle, fixture rules and
+provenance downgrade are already written.
 
 ---
 

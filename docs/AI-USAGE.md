@@ -27,7 +27,7 @@ otherwise. Had the plan been written from memory, the whole integration layer wo
 built against a dead dependency and the problem discovered mid-implementation, with days
 already spent.
 
-The same check was applied to every other integration option, Duffel's test mode turns out
+The same check was applied to every other integration option: Duffel's test mode turns out
 to be synthetic, Travelpayouts is affiliate-model, which produced the matrix in
 [`INTEGRATIONS.md`](./INTEGRATIONS.md) rather than a guess.
 

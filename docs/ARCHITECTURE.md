@@ -174,7 +174,7 @@ would defeat the purpose.
 ### Caching
 
 The cache stores the **unfiltered** result set, so toggling a filter is served from the same
-entry rather than re-querying every provider. This also protects SerpApi's 250-searches-a-month
+entry rather than re-querying every provider. This also keeps the browser sessions rare,
 free tier.
 
 Cache keys fix field order explicitly rather than stringifying an object, whose key order

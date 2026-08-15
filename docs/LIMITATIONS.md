@@ -9,28 +9,31 @@ limitation was a genuine trade-off, the reasoning is recorded.
 
 ## Data
 
-### Two providers use representative data
+### Two of the brief's providers are absent entirely
 
-MakeMyTrip and Goibibo return generated offers, not real fares. Their partner APIs are
-commercially gated, and their public sites refuse automated clients at the CDN edge, so
-neither route is open. Both were tested rather than assumed, see
+MakeMyTrip and Goibibo have no adapter. Their partner APIs are commercially gated and their
+public sites refuse automated clients at the CDN edge, so neither route is open, and a
+generated stand-in under a real company's name is not an acceptable substitute. See
 [`INTEGRATIONS.md`](./INTEGRATIONS.md#3-providers-not-integrated-and-the-reason).
 
-Cleartrip joins them only when `BROWSER_PROVIDERS=cleartrip` is unset; with it, Cleartrip
-serves real fares read from its own web search.
+IndiGo and Air India Express are absent for a subtler reason: they could be priced through
+a third-party aggregator, but that price could only ever be checked against the aggregator,
+not against the airline. A row nobody can verify against the seller it names does not meet
+the standard the rest of the product holds to.
 
-The prices are plausible, not accurate. They are not scraped, not historical, and must not
-inform a real purchase. They exist so aggregation, deduplication, comparison and failure
-handling can be exercised against realistic-shaped input.
+The cost is real and worth stating: the comparison covers three online travel agencies and
+no airline direct channel, so a fare available only on an airline's own site will not appear.
 
-Provenance is never hidden: every offer carries `integrationType`, `GET /api/providers`
-reports `isRealData` per provider, and the UI badges simulated data where the price is shown.
+### Recordings age, and a replayed price is not a current one
 
-### The live data source has a hard quota
+`BROWSER_PROVIDER_MODE=hybrid` replays a recorded response when a live session fails, so a
+demonstration survives a changed page or a dropped network. A recording is real data that
+has stopped being current.
 
-SerpApi's free tier allows 250 searches per month. The response cache mitigates this, and
-`PROVIDER_MODE=fixture` replays recorded responses entirely offline, but a sustained
-demonstration could exhaust it. A paid tier or a second source would remove the ceiling.
+That is handled rather than hidden: replayed offers are downgraded so they cannot claim to
+be live, they are excluded from cheapest and best-value ranking, and a flight whose prices
+are all replayed is badged "Prices not current". But the ceiling stands, a replayed price
+tells you roughly what a flight costs, not what you can buy it for.
 
 ### One-way, economy-default, INR only
 
@@ -57,11 +60,11 @@ rather than silent.
 **To fix:** follow the per-itinerary detail call its own UI makes when a card is expanded.
 That returns the legs, at the cost of one request per itinerary.
 
-### The timetable covers 13 routes
+### Route coverage is whatever the agencies sell
 
-Representative providers serve 13 route pairs across 10 Indian airports. An unserved route
-returns zero flights, a legitimate empty result, not an error. Live providers are not
-restricted this way.
+There is no route table any more. Each provider is asked the route the user typed and
+answers for itself, so an unserved route returns an honest empty result rather than being
+greyed out on a guess. The airport picker offers every airport it knows, for the same reason.
 
 ---
 
@@ -253,6 +256,6 @@ Two behaviours that look like bugs and are not:
 on this route" from "nothing answered", and an HTTP error collapses those into one
 indistinguishable failure.
 
-**Some flights show a single provider.** Representative providers list 74–90% of the timetable
-because no travel agency sells every seat on every flight. Uniform coverage would make every
-comparison group identical and prove nothing about deduplication.
+**Some flights show a single provider.** No travel agency sells every seat on every flight,
+and Ixigo contributes non-stop itineraries only, so a flight appearing under one seller is
+ordinary rather than a deduplication failure.

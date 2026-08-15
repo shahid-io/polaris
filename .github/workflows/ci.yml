@@ -1,13 +1,12 @@
 name: CI
 
-# Runs on main only, plus pull requests targeting it. Feature branches are validated
-# through their PR rather than on every push, which keeps the signal on the branch that
-# has to stay green.
+# Runs on every long-lived branch, not just main. develop-v2 carries the current
+# implementation and is what a reviewer is pointed at, so leaving it unvalidated until a PR
+# exists means the branch people actually read is the one nothing checks.
 on:
   push:
-    branches: [main]
+    branches: [main, develop, develop-v2]
   pull_request:
-    branches: [main]
   # Lets the pipeline be run on demand, useful for verifying a change to the workflow
   # itself without pushing a commit to main just to trigger it.
   workflow_dispatch:

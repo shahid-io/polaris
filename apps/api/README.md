@@ -105,7 +105,7 @@ strategy.
 ### The cache stores the unfiltered result
 
 Toggling a filter is served from the same entry rather than re-querying every provider,
-which also protects SerpApi's 250-a-month free tier.
+which also keeps the browser sessions rare, since each one drives a real site.
 
 **The key must contain every field that changes what providers return.** `timeRange` is
 deliberately absent because adapters fetch a whole day and the window is applied afterwards,
@@ -153,16 +153,12 @@ credentials report `skipped` and the search continues with the rest.
 | Variable                    | Default  | Purpose                                                 |
 | --------------------------- | -------- | ------------------------------------------------------- |
 | `API_PORT`                  | `4000`   |                                                         |
-| `PROVIDER_MODE`             | `hybrid` | `live` · `fixture` · `hybrid`                           |
 | `PROVIDER_TIMEOUT_MS`       | `10000`  | Per-provider ceiling                                    |
 | `CACHE_TTL_SECONDS`         | `300`    | Lifetime of a search where every provider answered      |
 | `CACHE_PARTIAL_TTL_SECONDS` | `30`     | Lifetime when one failed, so it is retried soon         |
 | `CIRCUIT_FAILURE_THRESHOLD` | `3`      | Failures before a provider is skipped                   |
 | `CIRCUIT_RESET_MS`          | `30000`  | Before a half-open probe                                |
-| `SERPAPI_KEY`               | -        | Enables live airline fares                              |
-| `DUFFEL_ACCESS_TOKEN`       | -        | Enables the sandbox adapter                             |
 | `MONGODB_URI`               | -        | Enables search analytics                                |
-| `SIMULATED_FAILURES`        | -        | e.g. `cleartrip:timeout` (demonstrates partial results) |
 
 Environment is validated with Zod at boot, so a malformed value fails immediately rather
 than surfacing later as a provider returning nothing.
@@ -170,7 +166,6 @@ than surfacing later as a provider returning nothing.
 ### Demonstrating failure handling
 
 ```bash
-SIMULATED_FAILURES=cleartrip:timeout pnpm dev
 ```
 
 Explicit rather than a random failure rate: a demonstration whose key moment depends on a

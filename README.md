@@ -33,15 +33,18 @@ curl -X POST http://localhost:4000/api/search \
   -d '{"query":{"origin":"DEL","destination":"BOM","departureDate":"2026-08-20"}}'
 ```
 
-**No API keys are required.** Providers without credentials report status `skipped` and the
-search proceeds with the rest, the same partial-results path used when a provider fails.
+**No API keys are required.** Every provider is read from that seller's own public search
+through a headless browser, so there is nothing to sign up for. Chromium is needed once:
+
+```bash
+pnpm browsers:install   # usually already present
+```
+
 Optional extras:
 
-| Variable              | Enables                                         |
-| --------------------- | ----------------------------------------------- |
-| `SERPAPI_KEY`         | Live IndiGo and Air India Express fares         |
-| `DUFFEL_ACCESS_TOKEN` | The Duffel sandbox adapter                      |
-| `MONGODB_URI`         | Search analytics (`docker compose up -d mongo`) |
+| Variable       | Enables                                         |
+| -------------- | ----------------------------------------------- |
+| `MONGODB_URI`  | Search analytics (`docker compose up -d mongo`) |
 
 MongoDB is optional by design: with it stopped, searches still work and analytics silently
 no-ops.
@@ -50,11 +53,12 @@ no-ops.
 
 ## What it does
 
-- **Searches six providers concurrently**, with a ten-second budget each
+- **Searches three travel agencies**, each read from its own public search
 - **Deduplicates across providers**: one row per marketed flight, with every seller's price
 - **Ranks by transparent value score**, returning the sub-scores and weights that produced it
 - **Filters and sorts** on price, duration, departure, stops, airline, provider and benefits
 - **Degrades honestly**: a failed provider becomes a visible status, never a failed search
+- **Proves itself**: every price links to the page that quoted it, so it can be checked
 
 A real search, DEL→BOM:
 
@@ -157,22 +161,34 @@ SIMULATED_FAILURES=cleartrip:timeout pnpm dev
 
 ## Provider integrations
 
-None of the five providers named in the brief expose a self-service API. Two airlines are
-served with real live data through a legitimate third-party source; three OTAs whose partner
-APIs are commercially gated use documented representative data.
+**Every price shown is a price that seller's own website is showing, and every offer links
+back to the page that quoted it.** Nothing is generated. A seller that cannot be sourced
+truthfully is absent rather than filled in, because an invented number under a real
+company's name is the error this product exists to catch, and a disclaimer does not fix it.
 
-| Provider                         | Integration                    | Source                 | Direct airline/OTA API? |
-| -------------------------------- | ------------------------------ | ---------------------- | ----------------------- |
-| IndiGo                           | Third-party live flight search | SerpApi Google Flights | No (none published)     |
-| Air India Express                | Third-party live flight search | SerpApi Google Flights | No (none published)     |
-| MakeMyTrip · Goibibo · Cleartrip | Representative data            | Generated              | No (commercially gated) |
+| Provider   | Integration                  | Source                     | Named in the brief? |
+| ---------- | ---------------------------- | -------------------------- | ------------------- |
+| Cleartrip  | Provider's own web search     | cleartrip.com              | Yes                 |
+| EaseMyTrip | Provider's own web search     | flight.easemytrip.com      | No, added           |
+| Ixigo      | Provider's own web search     | ixigo.com                  | No, added           |
 
-To be unambiguous: **no airline's own API was integrated**, because none of them publish
-one. IndiGo and Air India Express fares are real live Google Flights results obtained
-through SerpApi, a commercial API operating under its own terms.
+These are client-rendered sites, so the adapter captures the structured JSON their own
+front ends receive rather than scraping rendered markup: named fields, typed numbers, and
+no selectors to break.
 
-Provenance is never hidden, every offer carries its `integrationType` in the API response,
-and simulated data is badged in the UI at the point a price is shown. Full matrix and reasoning: [`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md).
+**MakeMyTrip and Goibibo are absent.** Both refuse automated clients at their CDN edge,
+terminating the connection after the TLS handshake before serving a page. That was measured,
+not assumed: the identical URL renders normally in an ordinary desktop Chrome on the same
+machine, so it is automation detection rather than a network or geographic block. Getting
+past it would mean forging a TLS fingerprint, which is not done here. EaseMyTrip and Ixigo
+were integrated in their place so the comparison rests on real agency fares.
+
+No airline's own API was integrated, because none of the Indian carriers publish one.
+
+Provenance is structural, not documentary: every offer carries its `integrationType`, a
+replayed recording is downgraded so it can never claim to be current, and replayed prices
+are excluded from cheapest and best-value ranking. Full matrix and measurements:
+[`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md).
 
 ---
 
