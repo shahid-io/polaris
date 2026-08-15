@@ -212,12 +212,28 @@ Runs a real search, then independently opens each seller's page, reads the fares
 would see, and reports every flight where the two disagree. Exits non-zero on any mismatch.
 
 ```
-PASS  Cleartrip    65 flights checked, 0 mismatched  (66 quoted, 72 on page)
-PASS  EaseMyTrip   49 flights checked, 0 mismatched  (66 quoted, 56 on page)
-PASS  Ixigo        45 flights checked, 0 mismatched  (65 quoted, 51 on page)
+Scope: non-stop itineraries only. Connecting itineraries are not verified,
+because one flight number does not identify a multi-leg journey.
 
-159 flights checked across 3 sellers, 0 mismatched.
+PASS      Cleartrip    65/66   verified (98% coverage), 0 mismatched
+WARN      EaseMyTrip   49/66   verified (74% coverage), 0 mismatched
+WARN      Ixigo        45/65   verified (69% coverage), 0 mismatched
+
+159 of 197 non-stop fares verified (81% coverage), 0 mismatched.
+PASSED WITH INCOMPLETE COVERAGE.
 ```
+
+**Coverage is graded, because a check that verified almost nothing must not read as a
+pass.** `PASS` needs 90% of quoted fares compared, `WARN` is a genuine pass with fares left
+unchecked, and below 60% the run exits non-zero as `INCONCLUSIVE`: verifying eight flights
+out of a hundred is not evidence, and a green tick on it would turn an unanswered question
+into a false answer.
+
+**The parser fails closed.** A flight the page showed but whose fare could not be read
+confidently, no price in range, or different prices across scroll passes, is reported as
+ambiguous rather than guessed at or silently dropped. Silently dropping is the dangerous
+one: it shrinks the denominator until the check verifies nothing while still reporting
+success.
 
 **It reads the rendered page, not the JSON.** The adapters work by capturing the JSON a
 site's front end receives; a harness doing the same would compare the pipeline against

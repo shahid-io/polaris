@@ -94,6 +94,16 @@ const PRICE_LINE = /^₹?\s*([\d,]{3,})$/;
 /** Matches a line that is nothing but a flight designator, however the site punctuates it. */
 const FLIGHT_LINE = /^\(?([A-Z0-9]{2})[\s-]?(\d{2,4})\)?$/;
 
+/**
+ * Bounds on a believable domestic fare, in paise.
+ *
+ * A number outside this range is far more likely to be something else the window happened
+ * to catch, a passenger count, a loyalty balance, a distance, than a price. Refusing it is
+ * cheaper than explaining a phantom mismatch.
+ */
+const PLAUSIBLE_FARE_MIN = 50_000;
+const PLAUSIBLE_FARE_MAX = 50_000_000;
+
 /** A journey the page itself describes as having no stops. */
 const NON_STOP_LINE = /^non[-\s]?stop$/i;
 
@@ -121,7 +131,11 @@ function readDisplayedFares(text) {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean);
-  const fares = new Map();
+
+  /** Every distinct price this parse associated with a flight, across all scroll passes. */
+  const candidates = new Map();
+  /** Flights seen as non-stop rows where no price could be read at all. */
+  const unreadable = new Set();
 
   for (const [index, line] of lines.entries()) {
     const flight = FLIGHT_LINE.exec(line);
@@ -129,6 +143,7 @@ function readDisplayedFares(text) {
 
     const key = `${flight[1]}-${Number(flight[2])}`;
     let nonStop = false;
+    let read = false;
 
     for (let ahead = index + 1; ahead < Math.min(lines.length, index + PRICE_WINDOW); ahead += 1) {
       if (NON_STOP_LINE.test(lines[ahead])) {
@@ -141,17 +156,42 @@ function readDisplayedFares(text) {
 
       // Every one of these sites prints the stop count between the flight number and the
       // fare, so by the time a price appears it is known whether this row is a connection.
-      if (!nonStop) break;
+      // A connection is out of scope, not a parse failure.
+      if (!nonStop) {
+        read = true;
+        break;
+      }
 
       const minor = Number(price[1].replace(/,/g, '')) * 100;
-      // A page can list one flight several times across fare tabs; keep the lowest, which
-      // is what its own summary row shows.
-      if (!fares.has(key) || minor < fares.get(key)) fares.set(key, minor);
+      // Outside any plausible domestic fare. Far more likely a stray number captured by the
+      // window than a real price, so it is not allowed to stand in for one.
+      if (minor < PLAUSIBLE_FARE_MIN || minor > PLAUSIBLE_FARE_MAX) break;
+
+      if (!candidates.has(key)) candidates.set(key, new Set());
+      candidates.get(key).add(minor);
+      read = true;
       break;
     }
+
+    // A non-stop row whose price could not be read is a parse failure, and saying nothing
+    // about it would quietly shrink the denominator until the check verified almost
+    // nothing while still reporting a pass.
+    if (nonStop && !read) unreadable.add(key);
   }
 
-  return fares;
+  const fares = new Map();
+  const ambiguous = new Set(unreadable);
+
+  for (const [key, prices] of candidates) {
+    // The page is read repeatedly as it scrolls, so a flight is normally seen several
+    // times and must show the same fare every time. Disagreement means the association
+    // between a flight and a price is not reliable, and the honest response is to refuse
+    // to score it rather than pick one and hope.
+    if (prices.size === 1) fares.set(key, [...prices][0]);
+    else ambiguous.add(key);
+  }
+
+  return { fares, ambiguous };
 }
 
 /**
@@ -178,10 +218,48 @@ function lowestQuotedFares(offers) {
 
 const rupees = (minor) => `₹${(minor / 100).toLocaleString('en-IN')}`;
 
-console.log(`\nVerifying ${route} on ${date} against each seller's own page\n`);
+/**
+ * Coverage below which a run is not evidence of anything.
+ *
+ * Verifying eight flights out of a hundred and printing PASS would be worse than printing
+ * nothing: it turns an unanswered question into a false answer, and the number that gets
+ * quoted afterwards is "it passed", not "it checked eight".
+ */
+const MIN_COVERAGE = 0.6;
+
+/** Coverage below which a pass is real but worth qualifying out loud. */
+const GOOD_COVERAGE = 0.9;
+
+/**
+ * Grades one seller's run.
+ *
+ * @param mismatches - Flights where the two prices disagreed.
+ * @param ambiguous - Flights on the page the parser could not read confidently.
+ * @param coverage - Fraction of quoted flights actually compared.
+ * @returns One of PASS, WARN, INCONCLUSIVE, FAIL.
+ */
+function gradeOf(mismatches, ambiguous, coverage) {
+  if (mismatches > 0) return 'FAIL';
+  if (coverage < MIN_COVERAGE) return 'INCONCLUSIVE';
+  if (coverage < GOOD_COVERAGE || ambiguous > 0) return 'WARN';
+  return 'PASS';
+}
+
+const EXPLANATION = {
+  PASS: 'PASSED. Every quoted fare was compared against the seller’s page and matched.\n',
+  WARN: 'PASSED WITH INCOMPLETE COVERAGE. Everything compared matched, but some fares could not be checked.\n',
+  INCONCLUSIVE:
+    'INCONCLUSIVE. Too little was actually compared for this run to be evidence of anything.\n',
+  FAIL: 'FAILED. Every price Polaris shows should be the price the seller shows.\n',
+};
+
+console.log(`\nVerifying ${route} on ${date} against each seller's own page`);
+console.log('Scope: non-stop itineraries only. Connecting itineraries are not verified,');
+console.log('because one flight number does not identify a multi-leg journey.\n');
 
 let totalChecked = 0;
 let totalMismatched = 0;
+let totalQuoted = 0;
 const report = [];
 
 for (const siteId of sites) {
@@ -246,43 +324,62 @@ for (const siteId of sites) {
       }
 
       return seen.join('\n');
-    }, controller.signal);
-    const displayed = readDisplayedFares(text);
+    }, controller.signal, new URL(url).host);
+    const { fares: displayed, ambiguous } = readDisplayedFares(text);
 
-    // 3. Compare, on flights both sides actually have.
+    // 3. Compare, on flights both sides have and the page could be read for confidently.
     const comparable = [...quoted.keys()].filter((key) => displayed.has(key));
     const mismatches = comparable.filter(
       (key) => Math.abs(quoted.get(key) - displayed.get(key)) > tolerance * 100,
     );
+    const flagged = [...quoted.keys()].filter((key) => ambiguous.has(key));
+    const unchecked = quoted.size - comparable.length - flagged.length;
+    const coverage = quoted.size === 0 ? 0 : comparable.length / quoted.size;
 
     totalChecked += comparable.length;
     totalMismatched += mismatches.length;
+    totalQuoted += quoted.size;
 
-    const status = mismatches.length === 0 ? 'PASS' : 'FAIL';
+    const status = gradeOf(mismatches.length, flagged.length, coverage);
     console.log(
-      `${status}  ${site.displayName.padEnd(11)} ${String(comparable.length).padStart(3)} flights checked, ` +
-        `${mismatches.length} mismatched  (${quoted.size} quoted, ${displayed.size} on page)`,
+      `${status.padEnd(9)} ${site.displayName.padEnd(11)} ` +
+        `${String(comparable.length).padStart(3)}/${String(quoted.size).padEnd(4)} verified ` +
+        `(${Math.round(coverage * 100)}% coverage), ${mismatches.length} mismatched`,
     );
 
     for (const key of mismatches) {
       const delta = quoted.get(key) - displayed.get(key);
       console.log(
-        `        ${key.padEnd(9)} Polaris ${rupees(quoted.get(key)).padEnd(9)} ` +
+        `          ${key.padEnd(9)} Polaris ${rupees(quoted.get(key)).padEnd(9)} ` +
           `page ${rupees(displayed.get(key)).padEnd(9)} ${delta > 0 ? '+' : ''}${rupees(delta)}`,
       );
     }
 
-    // Flights the page never rendered. Not a failure, but worth seeing: if this is most of
-    // them, the check is thinner than the headline number suggests.
-    const unchecked = quoted.size - comparable.length;
+    // Named separately from "not rendered": these are flights the page *did* show and the
+    // parser could not read confidently, which is a signal the parser needs attention
+    // rather than a signal about coverage.
+    if (flagged.length > 0) {
+      console.log(
+        `          ${flagged.length} flights on the page could not be read confidently: ` +
+          `${flagged.slice(0, 6).join(', ')}${flagged.length > 6 ? '…' : ''}`,
+      );
+    }
     if (unchecked > 0) {
-      console.log(`        ${unchecked} flights not shown on the rendered page, unchecked`);
+      console.log(`          ${unchecked} flights never rendered, so never compared`);
     }
 
-    report.push({ site: siteId, checked: comparable.length, mismatched: mismatches.length });
+    report.push({
+      site: siteId,
+      checked: comparable.length,
+      quoted: quoted.size,
+      mismatched: mismatches.length,
+      ambiguous: flagged.length,
+      coverage,
+      status,
+    });
   } catch (error) {
-    console.log(`ERROR ${site.displayName.padEnd(11)} ${error.message}`);
-    report.push({ site: siteId, error: error.message });
+    console.log(`ERROR     ${site.displayName.padEnd(11)} ${error.message}`);
+    report.push({ site: siteId, error: error.message, status: 'ERROR' });
   } finally {
     clearTimeout(deadline);
   }
@@ -290,14 +387,23 @@ for (const siteId of sites) {
 
 await closeBrowser();
 
-const failed = report.some((entry) => entry.error || entry.mismatched > 0);
-console.log(
-  `\n${totalChecked} flights checked across ${report.length} sellers, ${totalMismatched} mismatched.`,
-);
-console.log(
-  failed
-    ? 'FAILED. Every price Polaris shows should be the price the seller shows.\n'
-    : 'PASSED. Every checked price matches the seller’s own page.\n',
-);
+const overall = report.some((entry) => entry.status === 'ERROR' || entry.status === 'FAIL')
+  ? 'FAIL'
+  : report.some((entry) => entry.status === 'INCONCLUSIVE')
+    ? 'INCONCLUSIVE'
+    : report.some((entry) => entry.status === 'WARN')
+      ? 'WARN'
+      : 'PASS';
 
-process.exit(failed ? 1 : 0);
+const coverage = totalQuoted === 0 ? 0 : totalChecked / totalQuoted;
+
+console.log(
+  `\n${totalChecked} of ${totalQuoted} non-stop fares verified ` +
+    `(${Math.round(coverage * 100)}% coverage), ${totalMismatched} mismatched.`,
+);
+console.log(EXPLANATION[overall]);
+
+// INCONCLUSIVE exits non-zero deliberately. A run that verified almost nothing is not
+// evidence of correctness, and a green tick on 5% coverage is worse than no check at all:
+// it converts an unanswered question into a false answer.
+process.exit(overall === 'PASS' || overall === 'WARN' ? 0 : 1);

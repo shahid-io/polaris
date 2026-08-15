@@ -18,15 +18,22 @@ let browser: Browser | undefined;
 let launching: Promise<Browser> | undefined;
 
 /**
- * Serialises page work.
+ * Serialises page work **per host**, so one seller is never asked two things at once.
  *
- * Two independent reasons, either of which alone would justify it. Each page is a real
- * Chromium tab rendering a heavy commercial site, so running several concurrently is a
- * memory problem in a process that also serves HTTP. And driving one provider's public
- * search page is only defensible at the rate a person would use it, which parallel tabs
- * are not.
+ * The politeness constraint that motivates queueing is per-seller: driving a provider's
+ * public search is only defensible at the rate a person would use it. That says nothing
+ * about two *different* sellers, and a single global queue conflated the two.
+ *
+ * The conflation had a real cost. Providers were dispatched concurrently but their browser
+ * work ran end to end, so with three agencies the last one spent most of its per-provider
+ * timeout waiting in the queue rather than searching, and its budget measured queueing
+ * rather than the thing it was meant to bound. Keying the queue by host makes the providers
+ * genuinely concurrent while keeping each seller's traffic sequential.
+ *
+ * The remaining cost is memory: a handful of Chromium tabs rather than one. Bounded by the
+ * number of registered providers, which is small and known at boot.
  */
-let queue: Promise<unknown> = Promise.resolve();
+const queues = new Map<string, Promise<unknown>>();
 
 /** Pending idle shutdown, cancelled whenever new work arrives. */
 let idleTimer: NodeJS.Timeout | undefined;
@@ -132,17 +139,24 @@ async function ensureBrowser(): Promise<Browser> {
  *
  * @param task - Receives a ready page. Must not outlive the call.
  * @param signal - Cancellation from the orchestrator's per-provider deadline.
+ * @param host - Which seller this work is for. Work for the same host is serialised;
+ *   work for different hosts runs concurrently.
  * @returns Whatever the task returns.
  * @throws {BrowserUnavailableError} When the browser cannot be started.
  */
 export function withPage<T>(
   task: (session: PageSession) => Promise<T>,
   signal: AbortSignal,
+  host = 'default',
 ): Promise<T> {
-  // Chain onto the queue, and keep the queue alive regardless of this task's outcome: a
-  // rejection here must not poison every later caller.
-  const run = queue.then(() => execute(task, signal));
-  queue = run.catch(() => undefined);
+  // Chain onto that host's queue, and keep the queue alive regardless of this task's
+  // outcome: a rejection here must not poison every later caller for the same seller.
+  const previous = queues.get(host) ?? Promise.resolve();
+  const run = previous.then(() => execute(task, signal));
+  queues.set(
+    host,
+    run.catch(() => undefined),
+  );
   return run;
 }
 

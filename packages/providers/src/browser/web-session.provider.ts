@@ -101,6 +101,8 @@ export class WebSessionProvider<TResponse> implements FlightProvider {
     return {
       offers,
       droppedOfferCount,
+      // What this call actually read, as distinct from what this provider normally reads.
+      dataSource: live ? 'provider-web-session' : 'recorded-fixture',
       // Surfaced in the provider status so a viewer can tell a degraded search from a
       // healthy one, not only from the per-offer badge.
       ...(note ? { message: note } : {}),
@@ -200,7 +202,9 @@ export class WebSessionProvider<TResponse> implements FlightProvider {
       if (!parsed) throw new Error(`${this.site.displayName} returned an unreadable response`);
 
       return parsed;
-    }, ctx.signal);
+      // Keyed by host so this seller's searches stay sequential while other sellers run
+      // concurrently: the politeness constraint is per-site, not global.
+    }, ctx.signal, new URL(url).host);
   }
 
   /**

@@ -1,4 +1,5 @@
 import type {
+  DataSource,
   NormalizedOffer,
   ProviderDescriptor,
   ProviderId,
@@ -54,6 +55,20 @@ export interface ProviderResult {
 
   /** Optional note surfaced in the provider status, e.g. a partial-data warning. */
   readonly message?: string;
+
+  /**
+   * Where this particular response came from, when it differs from the adapter's usual
+   * source.
+   *
+   * The descriptor describes a capability: what this provider does when it is working. It
+   * cannot describe one call, so a provider replaying a recording still advertised
+   * `provider-web-session` while its offers were downgraded to `representative`. Reading
+   * the two together, a client could reasonably ask which was true.
+   *
+   * Reporting the actual source per call resolves it: the descriptor says what the
+   * provider is, the status says what just happened.
+   */
+  readonly dataSource?: DataSource;
 }
 
 /**

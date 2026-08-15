@@ -16,14 +16,14 @@ export const envSchema = z.object({
   /**
    * Per-provider ceiling. One slow provider must never hold up the whole search.
    *
-   * 20s because every provider is now a browser session, and those are deliberately
-   * serialised: one page at a time, at the rate a person would search. That makes their
-   * latency cumulative rather than concurrent, so the third agency to run finishes around
-   * 10s on a warm machine and rather later on a cold one.
+   * This is now a real measure of one provider's work. Browser sessions are serialised per
+   * host rather than globally, so providers run concurrently and a provider's budget is
+   * spent searching rather than waiting behind another seller's page. Measured live on
+   * DEL-BOM: roughly 3-5s each, in parallel.
    *
-   * The cost is that a genuinely dead provider is waited on for 20s. That is bounded, and
-   * the circuit breaker stops it recurring after a few failures, whereas a budget that
-   * cuts off the last provider on every search is not recoverable.
+   * 20s leaves generous headroom over that for a cold browser launch and a slow network.
+   * The cost is that a genuinely dead provider is waited on for 20s, which is bounded, runs
+   * concurrently with the others, and is stopped from recurring by the circuit breaker.
    */
   PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
   CACHE_TTL_SECONDS: z.coerce.number().int().nonnegative().default(300),

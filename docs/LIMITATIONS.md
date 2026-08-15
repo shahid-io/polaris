@@ -138,19 +138,21 @@ own view of provider health.
 `CacheStore` is an interface precisely so this is a deployment change rather than a rewrite,
 a Redis implementation and one changed line in `CacheModule`.
 
-### Browser sessions are serialised, so they are cumulative
+### One page at a time per seller
 
-Only one page runs at a time. That is deliberate twice over: each page is a real Chromium
-tab rendering a heavy commercial site, and driving a provider's public search is only
-defensible at the rate a person would use it.
+Browser work is serialised **per host**: a given seller is never asked two things at once,
+because driving its public search is only defensible at the rate a person would use it.
+Different sellers run concurrently, since that constraint says nothing about them.
 
-The cost is that the three browser-read agencies do not overlap with each other. Measured on
-DEL-BOM they finish at roughly 3.5s, 6.3s and 9.7s, so the last one grazes the default 10s
-`PROVIDER_TIMEOUT_MS` and will intermittently time out. Enabling them means raising that
-budget; `.env.example` says so at the setting.
+An earlier revision used a single global queue, which conflated the two. Providers were
+dispatched concurrently but their browser work ran end to end, so the last agency spent most
+of its per-provider timeout waiting rather than searching, and that budget measured queueing
+rather than the thing it was meant to bound. Measured on DEL-BOM, the search went from
+roughly 10s to 4.5s when the queue became per-host.
 
-**To fix properly:** a small pool of contexts, capped well below the number of providers, so
-two agencies can overlap without the fan-out becoming a burst of traffic at one site.
+What remains is a memory ceiling: one Chromium tab per registered provider during a search.
+Bounded and small, but it grows with the provider list, and a bounded context pool is the
+obvious next step if that list ever gets long.
 
 ### No rate limiting
 

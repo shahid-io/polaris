@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'node:crypto';
 import {
+  type DataSource,
   type NormalizedOffer,
   type ProviderCallStatus,
   type ProviderStatus,
@@ -313,7 +314,7 @@ export class SearchOrchestrator {
           latencyMs,
           result.offers.length,
           result.droppedOfferCount,
-          { message: result.message },
+          { message: result.message, dataSource: result.dataSource },
         ),
       };
     } catch (error) {
@@ -395,7 +396,7 @@ export class SearchOrchestrator {
     latencyMs: number,
     offerCount: number,
     droppedOfferCount: number,
-    extra: { message?: string } = {},
+    extra: { message?: string; dataSource?: DataSource } = {},
   ): ProviderStatus {
     const { descriptor } = provider;
 
@@ -403,7 +404,11 @@ export class SearchOrchestrator {
       providerId: descriptor.providerId,
       displayName: descriptor.displayName,
       integrationType: descriptor.integrationType,
-      dataSource: descriptor.dataSource,
+      // What this call actually read, falling back to what the provider normally reads.
+      // The descriptor describes a capability and cannot describe one call, so a provider
+      // replaying a recording would otherwise advertise a live source while its offers
+      // said otherwise.
+      dataSource: extra.dataSource ?? descriptor.dataSource,
       status,
       latencyMs,
       offerCount,
