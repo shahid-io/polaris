@@ -253,6 +253,13 @@ source and a display preference.
 
 Two behaviours that look like bugs and are not:
 
+**A provider can be made to fail on purpose.** `SIMULATED_FAILURES=cleartrip:timeout`
+wraps a provider so it exceeds its budget, errors, or answers empty. It exists because the
+partial-results path is worth showing rather than describing, and because a real outage
+cannot be scheduled. `timeout` deliberately hangs rather than throwing a timeout error, so
+the orchestrator's deadline is what ends the call: that demonstrates the budget being
+enforced rather than merely reported.
+
 **A search returns 200 even when every provider failed.** With zero flights and an honest
 `providerStatuses` array. This is deliberate: a client must be able to distinguish "no flights
 on this route" from "nothing answered", and an HTTP error collapses those into one

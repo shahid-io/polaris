@@ -2,8 +2,10 @@ import { Module, type DynamicModule } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   createWebSessionProviders,
+  parseSimulatedFailures,
   parseWebSessionSites,
   WEB_SESSION_SITE_IDS,
+  withSimulatedFailures,
   type BrowserProviderMode,
   type FlightProvider,
 } from '@polaris/providers';
@@ -81,6 +83,11 @@ function buildProviders(config: ConfigService<Env, true>): FlightProvider[] {
   const agencies = configured === undefined ? new Set(WEB_SESSION_SITE_IDS) : parseWebSessionSites(configured);
   const browserMode = config.get('BROWSER_PROVIDER_MODE', { infer: true }) as BrowserProviderMode;
 
-  // Travel agency fares, read from each agency's own public search.
-  return createWebSessionProviders(agencies, browserMode);
+  // Travel agency fares, read from each agency's own public search. Wrapped last, so a
+  // configured failure applies to whatever the registration produced rather than having to
+  // be threaded through every adapter.
+  return withSimulatedFailures(
+    createWebSessionProviders(agencies, browserMode),
+    parseSimulatedFailures(config.get('SIMULATED_FAILURES', { infer: true })),
+  );
 }

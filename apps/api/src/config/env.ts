@@ -56,6 +56,20 @@ export const envSchema = z.object({
   MONGODB_URI: z.string().optional(),
 
   /**
+   * Demo failure injection, as comma-separated `provider:mode` pairs,
+   * e.g. `cleartrip:timeout,ixigo:error`. Modes: `error`, `timeout`, `empty`.
+   *
+   * The brief requires unavailable providers and partial results to be handled, and they
+   * are, but a behaviour nobody can trigger is a behaviour nobody can see. Waiting for a
+   * real outage mid-walkthrough is not a plan, and pulling the network takes down every
+   * provider at once, which demonstrates total failure rather than partial results.
+   *
+   * Explicit configuration rather than a random failure rate: a demonstration whose key
+   * moment depends on a coin toss is not a demonstration.
+   */
+  SIMULATED_FAILURES: z.string().optional(),
+
+  /**
    * Travel agencies to read from their own public search.
    *
    * Comma-separated ids, or `all`. Supported: `cleartrip`, `easemytrip`, `ixigo`.

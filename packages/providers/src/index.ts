@@ -16,6 +16,7 @@ export * from './types';
 export * from './resilience/circuit-breaker';
 export * from './resilience/with-timeout';
 export * from './resilience/retry';
+export * from './resilience/fault-injection';
 export * from './schedule/airports';
 export * from './schedule/scheduled-time';
 export * from './browser/browser-session';

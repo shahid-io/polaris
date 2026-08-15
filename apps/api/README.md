@@ -147,6 +147,11 @@ search hangs".
 
 ## Configuration
 
+Set `SIMULATED_FAILURES=cleartrip:timeout,ixigo:error` to demonstrate partial results: the
+search returns 200 with `partial: true`, the failed providers appear in `providerStatuses`
+with their reasons, and the remaining provider's flights are still returned.
+
+
 Every variable has a default; the service runs with an empty `.env`. Providers without
 credentials report `skipped` and the search continues with the rest.
 
