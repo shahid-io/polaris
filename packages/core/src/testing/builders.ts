@@ -71,7 +71,7 @@ export function buildOffer(
   overrides: Partial<NormalizedOffer> & { priceInr?: number } = {},
 ): NormalizedOffer {
   const { priceInr, ...rest } = overrides;
-  const providerId: ProviderId = rest.providerId ?? 'indigo';
+  const providerId: ProviderId = rest.providerId ?? 'cleartrip';
 
   return {
     id: rest.id ?? `offer-${++offerCounter}`,

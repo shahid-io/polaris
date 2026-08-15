@@ -139,10 +139,10 @@ describe('the search page', () => {
     vi.mocked(searchFlights).mockResolvedValue({
       data: buildSearchResponse({
         groups: [
-          buildGroup([{ providerId: 'goibibo', displayName: 'Goibibo', priceInr: 3000 }], {
+          buildGroup([{ providerId: 'ixigo', displayName: 'Ixigo', priceInr: 3000 }], {
             canonicalKey: 'cheap',
           }),
-          buildGroup([{ providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 9000 }], {
+          buildGroup([{ providerId: 'easemytrip', displayName: 'EaseMyTrip', priceInr: 9000 }], {
             canonicalKey: 'dear',
           }),
         ],
@@ -165,7 +165,7 @@ describe('the search page', () => {
   it('reorders when the sort changes', async () => {
     const user = userEvent.setup();
     const cheapLowScore = buildGroup(
-      [{ providerId: 'goibibo', displayName: 'Goibibo', priceInr: 3000 }],
+      [{ providerId: 'ixigo', displayName: 'Ixigo', priceInr: 3000 }],
       {
         canonicalKey: 'cheap',
         itinerary: buildItinerary({
@@ -189,7 +189,7 @@ describe('the search page', () => {
       },
     );
     const dearHighScore = buildGroup([
-      { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 9000 },
+      { providerId: 'easemytrip', displayName: 'EaseMyTrip', priceInr: 9000 },
     ]);
 
     vi.mocked(searchFlights).mockResolvedValue({
@@ -213,7 +213,7 @@ describe('the search page', () => {
     vi.mocked(searchFlights).mockResolvedValue({
       data: buildSearchResponse({
         providerStatuses: [
-          buildProviderStatus({ providerId: 'makemytrip', displayName: 'MakeMyTrip' }),
+          buildProviderStatus({ providerId: 'easemytrip', displayName: 'EaseMyTrip' }),
           buildProviderStatus({
             providerId: 'cleartrip',
             displayName: 'Cleartrip',

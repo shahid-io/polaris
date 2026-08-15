@@ -18,9 +18,9 @@ describe('groupOffers', () => {
   it('collapses the same flight from three providers into one group', () => {
     // The central requirement of the brief, stated as a test.
     const offers = buildSameFlightAcrossProviders({
-      makemytrip: 5499,
-      goibibo: 5299,
-      indigo: 5199,
+      easemytrip: 5499,
+      ixigo: 5299,
+      cleartrip: 5199,
     });
 
     const groups = groupOffers(offers);
@@ -29,7 +29,7 @@ describe('groupOffers', () => {
     expect(groups[0]!.offers).toHaveLength(3);
     expect(groups[0]!.providerCount).toBe(3);
     // Cheapest provider first, derived from the price-sorted offers.
-    expect(groups[0]!.providerIds).toEqual(['indigo', 'goibibo', 'makemytrip']);
+    expect(groups[0]!.providerIds).toEqual(['cleartrip', 'ixigo', 'easemytrip']);
   });
 
   it('keeps genuinely different flights apart', () => {
@@ -45,7 +45,7 @@ describe('groupOffers', () => {
 
   it('orders offers within a group cheapest first', () => {
     const groups = groupOffers(
-      buildSameFlightAcrossProviders({ makemytrip: 5499, goibibo: 5299, indigo: 5199 }),
+      buildSameFlightAcrossProviders({ easemytrip: 5499, ixigo: 5299, cleartrip: 5199 }),
     );
 
     const prices = groups[0]!.offers.map((offer) => rupees(offer.price.total.amountMinor));
@@ -54,18 +54,18 @@ describe('groupOffers', () => {
   });
 
   it('points cheapestOfferId at the lowest-priced offer', () => {
-    const groups = groupOffers(buildSameFlightAcrossProviders({ makemytrip: 5499, indigo: 5199 }));
+    const groups = groupOffers(buildSameFlightAcrossProviders({ easemytrip: 5499, cleartrip: 5199 }));
     const group = groups[0]!;
 
     const cheapest = group.offers.find((offer) => offer.id === group.cheapestOfferId)!;
 
-    expect(cheapest.providerId).toBe('indigo');
+    expect(cheapest.providerId).toBe('cleartrip');
     expect(rupees(cheapest.price.total.amountMinor)).toBe(5199);
   });
 
   it('reports the price spread across providers', () => {
     const groups = groupOffers(
-      buildSameFlightAcrossProviders({ makemytrip: 5499, goibibo: 5299, indigo: 5199 }),
+      buildSameFlightAcrossProviders({ easemytrip: 5499, ixigo: 5299, cleartrip: 5199 }),
     );
     const { priceSpread } = groups[0]!;
 
@@ -76,7 +76,7 @@ describe('groupOffers', () => {
   });
 
   it('reports a zero spread when only one provider sells the flight', () => {
-    const groups = groupOffers([buildOffer({ providerId: 'indigo', priceInr: 5199 })]);
+    const groups = groupOffers([buildOffer({ providerId: 'cleartrip', priceInr: 5199 })]);
     const { priceSpread } = groups[0]!;
 
     expect(priceSpread.delta.amountMinor).toBe(0);
@@ -94,27 +94,27 @@ describe('groupOffers', () => {
   it('measures spread per provider, not across fare families', () => {
     const itinerary = buildItinerary();
     const groups = groupOffers([
-      buildOffer({ providerId: 'indigo', itinerary, fareFamily: 'SAVER', priceInr: 5199 }),
-      buildOffer({ providerId: 'indigo', itinerary, fareFamily: 'FLEXI', priceInr: 7499 }),
-      buildOffer({ providerId: 'makemytrip', itinerary, fareFamily: 'SAVER', priceInr: 5399 }),
+      buildOffer({ providerId: 'cleartrip', itinerary, fareFamily: 'SAVER', priceInr: 5199 }),
+      buildOffer({ providerId: 'cleartrip', itinerary, fareFamily: 'FLEXI', priceInr: 7499 }),
+      buildOffer({ providerId: 'easemytrip', itinerary, fareFamily: 'SAVER', priceInr: 5399 }),
     ]);
     const group = groups[0]!;
 
     expect(group.offers).toHaveLength(3);
     expect(group.providerCount).toBe(2);
-    // IndiGo's best (5199) vs MakeMyTrip's best (5399), not 5199 vs 7499.
+    // Cleartrip's best (5199) vs EaseMyTrip's best (5399), not 5199 vs 7499.
     expect(rupees(group.priceSpread.delta.amountMinor)).toBe(200);
   });
 
   it('counts a provider once even when it sells several fares', () => {
     const itinerary = buildItinerary();
     const groups = groupOffers([
-      buildOffer({ providerId: 'indigo', itinerary, fareFamily: 'SAVER' }),
-      buildOffer({ providerId: 'indigo', itinerary, fareFamily: 'FLEXI' }),
+      buildOffer({ providerId: 'cleartrip', itinerary, fareFamily: 'SAVER' }),
+      buildOffer({ providerId: 'cleartrip', itinerary, fareFamily: 'FLEXI' }),
     ]);
 
     expect(groups[0]!.providerCount).toBe(1);
-    expect(groups[0]!.providerIds).toEqual(['indigo']);
+    expect(groups[0]!.providerIds).toEqual(['cleartrip']);
   });
 
   it('groups a red-eye consistently despite its UTC date differing', () => {
@@ -129,8 +129,8 @@ describe('groupOffers', () => {
     });
 
     const groups = groupOffers([
-      buildOffer({ providerId: 'makemytrip', itinerary: redEye }),
-      buildOffer({ providerId: 'goibibo', itinerary: redEye }),
+      buildOffer({ providerId: 'easemytrip', itinerary: redEye }),
+      buildOffer({ providerId: 'ixigo', itinerary: redEye }),
     ]);
 
     expect(groups).toHaveLength(1);
@@ -162,9 +162,9 @@ describe('countMultiProviderGroups', () => {
     });
 
     const groups = groupOffers([
-      buildOffer({ providerId: 'makemytrip', itinerary: shared }),
-      buildOffer({ providerId: 'goibibo', itinerary: shared }),
-      buildOffer({ providerId: 'indigo', itinerary: soloItinerary }),
+      buildOffer({ providerId: 'easemytrip', itinerary: shared }),
+      buildOffer({ providerId: 'ixigo', itinerary: shared }),
+      buildOffer({ providerId: 'cleartrip', itinerary: soloItinerary }),
     ]);
 
     expect(groups).toHaveLength(2);

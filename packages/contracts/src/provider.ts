@@ -1,26 +1,21 @@
 import { z } from 'zod';
 
 /**
- * The five providers named in the assessment brief, plus three added deliberately.
+ * The travel agencies Polaris compares.
  *
- * Duffel proves the adapter abstraction generalises to a vendor contract we did not design
- * around. EaseMyTrip and Ixigo exist for a sharper reason: MakeMyTrip and Goibibo refuse
- * automated clients at their CDN edge, so real agency fares could not be obtained from
- * them at all. Rather than let the OTA side of the comparison rest entirely on generated
- * data, two agencies that *do* serve their public search were integrated for real.
+ * Only sellers whose own site can be read appear here, because a price is only worth
+ * showing if it can be checked against the seller that quoted it.
  *
- * Adding each of the three touched one array and one adapter file, nothing else.
+ * Of the five providers named in the brief, Cleartrip is the only one that serves an
+ * automated client; MakeMyTrip and Goibibo refuse at their CDN edge. EaseMyTrip and Ixigo
+ * were added in their place so the comparison rests on real agency fares rather than on
+ * one seller or on generated data.
+ *
+ * Ids for sellers that cannot be sourced are deliberately absent rather than reserved. An
+ * id in this enum is a promise that an adapter exists, and an unimplemented promise is
+ * indistinguishable from a bug to anyone reading the contract.
  */
-export const providerIdSchema = z.enum([
-  'makemytrip',
-  'goibibo',
-  'cleartrip',
-  'indigo',
-  'airindiaexpress',
-  'duffel',
-  'easemytrip',
-  'ixigo',
-]);
+export const providerIdSchema = z.enum(['cleartrip', 'easemytrip', 'ixigo']);
 
 /**
  * How a provider's data is actually obtained.
@@ -30,12 +25,6 @@ export const providerIdSchema = z.enum([
  * The assessment brief asks us to document exactly this (section 4).
  */
 export const integrationTypeSchema = z.enum([
-  /** Live third-party API returning real market data. */
-  'live-api',
-  /** Vendor sandbox: real API contract, synthetic data. */
-  'sandbox-api',
-  /** Affiliate/partner feed. */
-  'affiliate-api',
   /**
    * Real, current data read from the provider's own public search page by driving it in a
    * browser and capturing the JSON its own front end receives.
@@ -56,12 +45,10 @@ export const integrationTypeSchema = z.enum([
 
 /** Underlying data source, which is not always the provider itself. */
 export const dataSourceSchema = z.enum([
-  'serpapi-google-flights',
-  'duffel-api',
-  'recorded-fixture',
-  'generated-representative',
   /** The provider's own public web search, read through a headless browser session. */
   'provider-web-session',
+  /** A previously recorded response from that same search, replayed. */
+  'recorded-fixture',
 ]);
 
 /** Outcome of calling one provider during a single search. */

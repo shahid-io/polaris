@@ -19,11 +19,8 @@ export class HealthController {
     return {
       status: 'ok',
       service: 'polaris-api',
-      providerMode: this.config.get('PROVIDER_MODE', { infer: true }),
       analytics: this.analytics.isConnected() ? 'connected' : 'disconnected',
       credentials: {
-        serpapi: Boolean(this.config.get('SERPAPI_KEY', { infer: true })),
-        duffel: Boolean(this.config.get('DUFFEL_ACCESS_TOKEN', { infer: true })),
       },
       timestamp: new Date().toISOString(),
     };

@@ -401,12 +401,12 @@ describe('SearchOrchestrator', () => {
           origin: 'DEL',
           destination: 'BOM',
           departureDate: '2026-08-20',
-          providers: ['goibibo'],
+          providers: ['ixigo'],
         }),
       });
 
       expect(response.providerStatuses).toHaveLength(1);
-      expect(response.providerStatuses[0]!.providerId).toBe('goibibo');
+      expect(response.providerStatuses[0]!.providerId).toBe('ixigo');
     });
   });
 

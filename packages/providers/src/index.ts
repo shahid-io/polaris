@@ -18,8 +18,6 @@ export * from './resilience/with-timeout';
 export * from './resilience/retry';
 export * from './schedule/airports';
 export * from './schedule/scheduled-time';
-export * from './live/serpapi-client';
-export * from './live/serpapi.provider';
 export * from './browser/browser-session';
 export * from './browser/site-helpers';
 export * from './browser/web-session-site';

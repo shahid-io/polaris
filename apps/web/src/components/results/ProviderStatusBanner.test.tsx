@@ -10,8 +10,8 @@ const metaFor = (statuses: ReturnType<typeof buildProviderStatus>[]) =>
 describe('ProviderStatusBanner', () => {
   it('reports quietly when every provider responded', () => {
     const statuses = [
-      buildProviderStatus({ providerId: 'makemytrip', displayName: 'MakeMyTrip' }),
-      buildProviderStatus({ providerId: 'goibibo', displayName: 'Goibibo' }),
+      buildProviderStatus({ providerId: 'easemytrip', displayName: 'EaseMyTrip' }),
+      buildProviderStatus({ providerId: 'ixigo', displayName: 'Ixigo' }),
     ];
 
     render(<ProviderStatusBanner statuses={statuses} meta={metaFor(statuses)} />);
@@ -27,7 +27,7 @@ describe('ProviderStatusBanner', () => {
    */
   it('names the failed provider and why when results are partial', () => {
     const statuses = [
-      buildProviderStatus({ providerId: 'makemytrip', displayName: 'MakeMyTrip' }),
+      buildProviderStatus({ providerId: 'easemytrip', displayName: 'EaseMyTrip' }),
       buildProviderStatus({
         providerId: 'cleartrip',
         displayName: 'Cleartrip',
@@ -68,8 +68,8 @@ describe('ProviderStatusBanner', () => {
   it('explains a provider skipped for missing credentials', () => {
     const statuses = [
       buildProviderStatus({
-        providerId: 'duffel',
-        displayName: 'Duffel',
+        providerId: 'ixigo',
+        displayName: 'Ixigo',
         status: 'skipped',
         offerCount: 0,
       }),

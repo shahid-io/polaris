@@ -43,7 +43,7 @@ import type { Env } from '../config/env';
  * 2. **Consistent scoring.** Scores are normalised across the full day's flights, so a
  *    flight's value does not change depending on which window the user asked for, the
  *    same principle that puts filtering after scoring.
- * 3. **One implementation.** SerpApi has no time-window parameter, so a post-filter would
+ * 3. **One implementation.** No provider exposes a time-window parameter, so a post-filter would
  *    be needed regardless. Doing it once in the domain layer beats doing it per adapter.
  *
  * An explicit `filters.departureWindow` wins if the caller supplies one, since it is the

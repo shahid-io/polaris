@@ -9,7 +9,7 @@ import {
 
 describe('withTimeout', () => {
   it('returns the result when the operation finishes in time', async () => {
-    const result = await withTimeout('indigo', 1000, async () => 'offers');
+    const result = await withTimeout('cleartrip', 1000, async () => 'offers');
 
     expect(result).toBe('offers');
   });
@@ -17,7 +17,7 @@ describe('withTimeout', () => {
   it('throws ProviderTimeoutError when the budget elapses', async () => {
     const neverResolves = () => new Promise<string>(() => {});
 
-    await expect(withTimeout('indigo', 10, neverResolves)).rejects.toThrow(ProviderTimeoutError);
+    await expect(withTimeout('cleartrip', 10, neverResolves)).rejects.toThrow(ProviderTimeoutError);
   });
 
   it('attributes the timeout to the right provider and budget', async () => {
@@ -37,7 +37,7 @@ describe('withTimeout', () => {
     let observed: AbortSignal | undefined;
 
     await expect(
-      withTimeout('indigo', 10, (signal) => {
+      withTimeout('cleartrip', 10, (signal) => {
         observed = signal;
         return new Promise<string>(() => {});
       }),
@@ -57,7 +57,7 @@ describe('withTimeout', () => {
     let observed: AbortSignal | undefined;
 
     const pending = withTimeout(
-      'indigo',
+      'cleartrip',
       5000,
       (signal) => {
         observed = signal;
@@ -77,7 +77,7 @@ describe('withTimeout', () => {
   it('does not relabel an external abort as a timeout', async () => {
     const parent = new AbortController();
     const pending = withTimeout(
-      'indigo',
+      'cleartrip',
       5000,
       (signal) =>
         new Promise<string>((_, reject) => {
@@ -94,7 +94,7 @@ describe('withTimeout', () => {
   it('clears its timer so a fast success leaves nothing pending', async () => {
     const clearSpy = vi.spyOn(globalThis, 'clearTimeout');
 
-    await withTimeout('indigo', 1000, async () => 'ok');
+    await withTimeout('cleartrip', 1000, async () => 'ok');
 
     expect(clearSpy).toHaveBeenCalled();
     clearSpy.mockRestore();
@@ -154,7 +154,7 @@ describe('withRetry', () => {
    */
   it('does not retry a non-retryable failure', async () => {
     const operation = vi.fn(async () => {
-      throw new ProviderCredentialsMissingError('indigo', 'SERPAPI_KEY');
+      throw new ProviderCredentialsMissingError('cleartrip', 'BROWSER_PROVIDERS');
     });
 
     await expect(
@@ -270,7 +270,7 @@ describe('withRetry', () => {
 describe('isRetryable', () => {
   it('honours the flag on a ProviderError', () => {
     expect(isRetryable(new ProviderUnavailableError('goibibo', '503'))).toBe(true);
-    expect(isRetryable(new ProviderCredentialsMissingError('indigo', 'KEY'))).toBe(false);
+    expect(isRetryable(new ProviderCredentialsMissingError('cleartrip', 'KEY'))).toBe(false);
   });
 
   it('assumes an unknown error is a transient transport failure', () => {

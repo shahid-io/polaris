@@ -125,11 +125,11 @@ describe('canonicalKeyForItinerary', () => {
 describe('canonicalKeyForOffer', () => {
   it('matches offers from different providers selling one flight', () => {
     const itinerary = buildItinerary();
-    const viaMakeMyTrip = buildOffer({ providerId: 'makemytrip', itinerary, priceInr: 5499 });
-    const viaGoibibo = buildOffer({ providerId: 'goibibo', itinerary, priceInr: 5299 });
-    const direct = buildOffer({ providerId: 'indigo', itinerary, priceInr: 5199 });
+    const viaEaseMyTrip = buildOffer({ providerId: 'easemytrip', itinerary, priceInr: 5499 });
+    const viaIxigo = buildOffer({ providerId: 'ixigo', itinerary, priceInr: 5299 });
+    const direct = buildOffer({ providerId: 'cleartrip', itinerary, priceInr: 5199 });
 
-    const keys = new Set([viaMakeMyTrip, viaGoibibo, direct].map(canonicalKeyForOffer));
+    const keys = new Set([viaEaseMyTrip, viaIxigo, direct].map(canonicalKeyForOffer));
 
     expect(keys.size).toBe(1);
   });

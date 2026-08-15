@@ -77,7 +77,7 @@ describe('searchQuerySchema', () => {
   describe('provider selection', () => {
     it('accepts known provider ids', () => {
       expect(
-        searchQuerySchema.safeParse({ ...validQuery, providers: ['indigo', 'goibibo'] }).success,
+        searchQuerySchema.safeParse({ ...validQuery, providers: ['cleartrip', 'ixigo'] }).success,
       ).toBe(true);
     });
 

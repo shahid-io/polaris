@@ -1,13 +1,11 @@
 import { Module, type DynamicModule } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
-  createSerpApiProviders,
   createWebSessionProviders,
   parseWebSessionSites,
   WEB_SESSION_SITE_IDS,
   type BrowserProviderMode,
   type FlightProvider,
-  type ProviderMode,
 } from '@polaris/providers';
 import type { Env } from '../config/env';
 
@@ -25,7 +23,7 @@ export const FLIGHT_PROVIDERS = Symbol('FLIGHT_PROVIDERS');
  * Registers the provider adapters.
  *
  * A dynamic module because *which* adapters exist is a runtime decision driven by
- * `PROVIDER_MODE` and by which credentials are present. Registering the set at module
+ * `BROWSER_PROVIDERS`. Registering the set at module
  * construction, rather than having each adapter decide at call time whether it is
  * enabled: means the provider list is a fact about the running system, reportable by
  * `GET /api/providers` before any search happens.
@@ -83,14 +81,6 @@ function buildProviders(config: ConfigService<Env, true>): FlightProvider[] {
   const agencies = configured === undefined ? new Set(WEB_SESSION_SITE_IDS) : parseWebSessionSites(configured);
   const browserMode = config.get('BROWSER_PROVIDER_MODE', { infer: true }) as BrowserProviderMode;
 
-  return [
-    // Airline fares via SerpApi's Google Flights engine. With no key these report
-    // `skipped`, so the app still runs on a clean checkout.
-    ...createSerpApiProviders(
-      config.get('SERPAPI_KEY', { infer: true }),
-      config.get('PROVIDER_MODE', { infer: true }) as ProviderMode,
-    ),
-    // Travel agency fares, read from each agency's own public search.
-    ...createWebSessionProviders(agencies, browserMode),
-  ];
+  // Travel agency fares, read from each agency's own public search.
+  return createWebSessionProviders(agencies, browserMode);
 }

@@ -108,7 +108,8 @@ export class RepresentativeProvider implements FlightProvider {
       providerId: config.providerId,
       displayName: config.displayName,
       integrationType: 'representative',
-      dataSource: 'generated-representative',
+      // Test doubles never ship, so this only has to be a legal value.
+      dataSource: 'recorded-fixture',
       isRealData: false,
       integrationNote: config.integrationNote,
       enabled: true,

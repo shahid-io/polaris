@@ -28,7 +28,7 @@ export type UnscoredComparisonGroup = Omit<ComparisonGroup, 'score'>;
  *
  * @example
  * ```ts
- * const groups = groupOffers([mmtOffer, goibiboOffer, indigoOffer]);
+ * const groups = groupOffers([cleartripOffer, easeMyTripOffer, ixigoOffer]);
  * groups.length;               // 1, all three sell 6E-2134
  * groups[0].providerCount;     // 3
  * groups[0].priceSpread.delta; // ₹300 between the cheapest and dearest provider
@@ -94,7 +94,7 @@ function buildGroup(canonicalKey: string, offers: NormalizedOffer[]): UnscoredCo
  * Measures how much one flight's price varies across the providers selling it.
  *
  * Computed over the **cheapest offer per provider**, not over every offer. A group can
- * hold several fare families from one provider (IndiGo SAVER at ₹5,199 and FLEXI at
+ * hold several fare families from one provider (Cleartrip SAVER at ₹5,199 and FLEX at
  * ₹7,499); spanning those would report a ₹2,300 "spread" that has nothing to do with
  * choosing a provider. Comparing each provider's best price answers the question the user
  * actually has: *where should I book this flight?*

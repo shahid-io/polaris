@@ -23,16 +23,16 @@ describe('FlightGroupCard', () => {
     render(
       <FlightGroupCard
         group={buildGroup([
-          { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 4614 },
-          { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 4704 },
+          { providerId: 'ixigo', displayName: 'Ixigo', priceInr: 4614 },
+          { providerId: 'easemytrip', displayName: 'EaseMyTrip', priceInr: 4704 },
           { providerId: 'cleartrip', displayName: 'Cleartrip', priceInr: 4890 },
         ])}
       />,
     );
 
     expect(screen.getAllByRole('article')).toHaveLength(1);
-    expect(screen.getByText('Goibibo')).toBeInTheDocument();
-    expect(screen.getByText('MakeMyTrip')).toBeInTheDocument();
+    expect(screen.getByText('Ixigo')).toBeInTheDocument();
+    expect(screen.getByText('EaseMyTrip')).toBeInTheDocument();
     expect(screen.getByText('Cleartrip')).toBeInTheDocument();
     expect(screen.getByText(/Compare 3 providers/)).toBeInTheDocument();
   });
@@ -41,14 +41,14 @@ describe('FlightGroupCard', () => {
     render(
       <FlightGroupCard
         group={buildGroup([
-          { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 4704 },
-          { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 4614 },
+          { providerId: 'easemytrip', displayName: 'EaseMyTrip', priceInr: 4704 },
+          { providerId: 'ixigo', displayName: 'Ixigo', priceInr: 4614 },
         ])}
       />,
     );
 
     const rows = screen.getAllByRole('listitem');
-    expect(within(rows[0]!).getByText('Goibibo')).toBeInTheDocument();
+    expect(within(rows[0]!).getByText('Ixigo')).toBeInTheDocument();
     expect(within(rows[0]!).getByText('Cheapest')).toBeInTheDocument();
   });
 
@@ -56,8 +56,8 @@ describe('FlightGroupCard', () => {
     render(
       <FlightGroupCard
         group={buildGroup([
-          { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 4614 },
-          { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 4704 },
+          { providerId: 'ixigo', displayName: 'Ixigo', priceInr: 4614 },
+          { providerId: 'easemytrip', displayName: 'EaseMyTrip', priceInr: 4704 },
         ])}
       />,
     );
@@ -68,7 +68,7 @@ describe('FlightGroupCard', () => {
   it('says single seller rather than showing a zero saving', () => {
     render(
       <FlightGroupCard
-        group={buildGroup([{ providerId: 'indigo', displayName: 'IndiGo', priceInr: 6074 }])}
+        group={buildGroup([{ providerId: 'cleartrip', displayName: 'Cleartrip', priceInr: 6074 }])}
       />,
     );
 
@@ -80,22 +80,24 @@ describe('FlightGroupCard', () => {
    * Data provenance must be visible where the price is, not only in the API response.
    * A user should never have to guess whether a fare is real.
    */
-  it('badges each offer as live or representative', () => {
+  it('badges a web-sourced offer differently from a replayed one', () => {
     render(
       <FlightGroupCard
         group={buildGroup([
           {
-            providerId: 'indigo',
-            displayName: 'IndiGo',
+            providerId: 'cleartrip',
+            displayName: 'Cleartrip',
             priceInr: 4500,
-            offer: { integrationType: 'live-api' },
+            offer: { integrationType: 'browser-automation' },
           },
-          { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 4704 },
+          { providerId: 'easemytrip', displayName: 'EaseMyTrip', priceInr: 4704 },
         ])}
       />,
     );
 
-    expect(screen.getByText('Live')).toBeInTheDocument();
+    // Real and current, read from the seller's own search.
+    expect(screen.getByText('From provider site')).toBeInTheDocument();
+    // Replayed from a recording, so it must not claim to be current.
     expect(screen.getByText('Representative')).toBeInTheDocument();
   });
 
@@ -104,8 +106,8 @@ describe('FlightGroupCard', () => {
       <FlightGroupCard
         group={buildGroup([
           {
-            providerId: 'goibibo',
-            displayName: 'Goibibo',
+            providerId: 'ixigo',
+            displayName: 'Ixigo',
             priceInr: 4614,
             offer: {
               benefits: [buildBenefit({ label: '₹400 goCash' })],
@@ -132,8 +134,8 @@ describe('FlightGroupCard', () => {
       <FlightGroupCard
         group={buildGroup([
           {
-            providerId: 'makemytrip',
-            displayName: 'MakeMyTrip',
+            providerId: 'easemytrip',
+            displayName: 'EaseMyTrip',
             priceInr: 4704,
             offer: {
               benefits: [buildBenefit({ label: '₹750 off with HDFC cards', conditional: true })],
@@ -147,24 +149,26 @@ describe('FlightGroupCard', () => {
     expect(screen.getByTitle(/Conditional/)).toBeInTheDocument();
   });
 
-  it('collapses providers beyond the first three behind a toggle', async () => {
-    const user = userEvent.setup();
+  /**
+   * The card collapses sellers beyond the first three. With three agencies integrated that
+   * threshold cannot currently be reached, so what is worth pinning down is the opposite:
+   * every seller stays visible, and no toggle appears offering to reveal nothing.
+   */
+  it('shows every provider without a toggle when there are three or fewer', async () => {
     render(
       <FlightGroupCard
         group={buildGroup([
-          { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 4600 },
-          { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 4700 },
+          { providerId: 'ixigo', displayName: 'Ixigo', priceInr: 4600 },
+          { providerId: 'easemytrip', displayName: 'EaseMyTrip', priceInr: 4700 },
           { providerId: 'cleartrip', displayName: 'Cleartrip', priceInr: 4800 },
-          { providerId: 'indigo', displayName: 'IndiGo', priceInr: 4900 },
         ])}
       />,
     );
 
-    expect(screen.queryByText('IndiGo')).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: /Show 1 more provider/ }));
-
-    expect(screen.getByText('IndiGo')).toBeInTheDocument();
+    expect(screen.getByText('Ixigo')).toBeInTheDocument();
+    expect(screen.getByText('EaseMyTrip')).toBeInTheDocument();
+    expect(screen.getByText('Cleartrip')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Show \d+ more provider/ })).not.toBeInTheDocument();
   });
 
   /**
@@ -241,14 +245,14 @@ describe('expanding a flight', () => {
       <FlightGroupCard
         group={buildGroup([
           {
-            providerId: 'goibibo',
-            displayName: 'Goibibo',
+            providerId: 'ixigo',
+            displayName: 'Ixigo',
             priceInr: 4614,
             offer: { fareFamily: 'SAVER' },
           },
           {
-            providerId: 'goibibo',
-            displayName: 'Goibibo',
+            providerId: 'ixigo',
+            displayName: 'Ixigo',
             priceInr: 6400,
             offer: { fareFamily: 'FLEX' },
           },

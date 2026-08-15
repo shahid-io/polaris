@@ -45,8 +45,8 @@ describe('filterGroups', () => {
     // charges more.
     const itinerary = nonStop();
     const groups = scored([
-      buildOffer({ providerId: 'indigo', itinerary, priceInr: 4500 }),
-      buildOffer({ providerId: 'makemytrip', itinerary, priceInr: 8000 }),
+      buildOffer({ providerId: 'cleartrip', itinerary, priceInr: 4500 }),
+      buildOffer({ providerId: 'easemytrip', itinerary, priceInr: 8000 }),
     ]);
 
     expect(filterGroups(groups, { maxPriceMinor: 500_000 })).toHaveLength(1);
@@ -112,7 +112,7 @@ describe('filterGroups', () => {
   });
 
   it('keeps a connecting journey when the filtered airline flies only one leg', () => {
-    // A user filtering for IndiGo still wants the journey IndiGo partly operates,
+    // A user filtering for Cleartrip still wants the journey Cleartrip partly operates,
     // rather than an empty result set.
     const groups = scored([
       buildOffer({
@@ -136,12 +136,13 @@ describe('filterGroups', () => {
   it('keeps a flight when any of the selected providers sells it', () => {
     const itinerary = nonStop();
     const groups = scored([
-      buildOffer({ providerId: 'indigo', itinerary }),
-      buildOffer({ providerId: 'makemytrip', itinerary }),
+      buildOffer({ providerId: 'cleartrip', itinerary }),
+      buildOffer({ providerId: 'easemytrip', itinerary }),
     ]);
 
-    expect(filterGroups(groups, { providers: ['makemytrip'] })).toHaveLength(1);
-    expect(filterGroups(groups, { providers: ['cleartrip'] })).toHaveLength(0);
+    expect(filterGroups(groups, { providers: ['easemytrip'] })).toHaveLength(1);
+    // Ixigo does not sell this flight, so filtering to it must empty the result.
+    expect(filterGroups(groups, { providers: ['ixigo'] })).toHaveLength(0);
   });
 
   it('combines filters with AND', () => {
@@ -176,8 +177,8 @@ describe('availableFilterOptions', () => {
   it('reports only options present in the result set', () => {
     const itinerary = nonStop({ marketingCarrier: '6E', durationMinutes: 125 });
     const groups = scored([
-      buildOffer({ providerId: 'indigo', itinerary, priceInr: 5199 }),
-      buildOffer({ providerId: 'makemytrip', itinerary, priceInr: 5499 }),
+      buildOffer({ providerId: 'cleartrip', itinerary, priceInr: 5199 }),
+      buildOffer({ providerId: 'easemytrip', itinerary, priceInr: 5499 }),
       buildOffer({
         providerId: 'cleartrip',
         itinerary: nonStop({ flightNumber: '400', marketingCarrier: 'IX', durationMinutes: 140 }),
@@ -189,7 +190,7 @@ describe('availableFilterOptions', () => {
 
     expect(options.airlines).toEqual(['6E', 'IX']);
     expect(options.providers).toEqual(
-      expect.arrayContaining(['indigo', 'makemytrip', 'cleartrip']),
+      expect.arrayContaining(['cleartrip', 'easemytrip', 'cleartrip']),
     );
     expect(options.minPriceMinor).toBe(519_900);
     expect(options.maxPriceMinor).toBe(610_000);

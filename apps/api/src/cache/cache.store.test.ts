@@ -25,14 +25,14 @@ describe('buildCacheKey', () => {
     ['departureDate', { departureDate: '2026-08-21' }],
     ['passengers', { passengers: 2 }],
     ['cabinClass', { cabinClass: 'business' }],
-    ['providers', { providers: ['goibibo'] }],
+    ['providers', { providers: ['ixigo'] }],
   ])('changes when %s changes', (_field, override) => {
     expect(buildCacheKey({ ...baseQuery, ...override })).not.toBe(buildCacheKey(baseQuery));
   });
 
   it('treats the same providers in a different order as one key', () => {
-    const a = buildCacheKey({ ...baseQuery, providers: ['goibibo', 'indigo'] });
-    const b = buildCacheKey({ ...baseQuery, providers: ['indigo', 'goibibo'] });
+    const a = buildCacheKey({ ...baseQuery, providers: ['ixigo', 'cleartrip'] });
+    const b = buildCacheKey({ ...baseQuery, providers: ['cleartrip', 'ixigo'] });
 
     expect(a).toBe(b);
   });

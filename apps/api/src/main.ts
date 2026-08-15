@@ -24,7 +24,6 @@ async function bootstrap() {
 
   const logger = new Logger('Bootstrap');
   logger.log(`Polaris API listening on http://localhost:${port}`);
-  logger.log(`Provider mode: ${config.get('PROVIDER_MODE', { infer: true })}`);
 }
 
 void bootstrap();

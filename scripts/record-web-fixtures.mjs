@@ -23,8 +23,7 @@ const SITES = { cleartrip: cleartripSite, easemytrip: easeMyTripSite, ixigo: ixi
  * Because a recording is only ever valid for the exact date it was captured for, the date
  * you record has to be the date you intend to search, hence a script rather than a one-off.
  *
- * Unlike the SerpApi recorder this spends no quota, but it does drive a real site, so it
- * runs one route at a time and skips anything already recorded.
+ * It drives a real site, so it runs one route at a time and skips anything already recorded.
  *
  * Usage:
  *   node scripts/record-web-fixtures.mjs --date 2026-08-28

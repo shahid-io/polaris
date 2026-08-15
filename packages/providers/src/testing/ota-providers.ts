@@ -97,7 +97,7 @@ const cleartripBenefits: readonly Benefit[] = [
  * flexibility rather than headline price.
  */
 export const MAKEMYTRIP_CONFIG: RepresentativeProviderConfig = {
-  providerId: 'makemytrip',
+  providerId: 'easemytrip',
   displayName: 'MakeMyTrip',
   integrationNote:
     'Partner API exists but is commercially gated, requires a signed agreement and an ' +
@@ -119,7 +119,7 @@ export const MAKEMYTRIP_CONFIG: RepresentativeProviderConfig = {
  * flights is what makes the price-spread badge worth showing.
  */
 export const GOIBIBO_CONFIG: RepresentativeProviderConfig = {
-  providerId: 'goibibo',
+  providerId: 'ixigo',
   displayName: 'Goibibo',
   integrationNote:
     'Owned by the same parent company as MakeMyTrip and gated identically. No public ' +
@@ -153,7 +153,7 @@ export const CLEARTRIP_CONFIG: RepresentativeProviderConfig = {
 };
 
 /** Which OTA to force into failure, for demonstrating partial results. */
-export type OtaProviderId = 'makemytrip' | 'goibibo' | 'cleartrip';
+export type OtaProviderId = 'cleartrip' | 'easemytrip' | 'ixigo';
 
 /** Options for {@link createOtaProviders}. */
 export interface CreateOtaProvidersOptions {
@@ -193,8 +193,8 @@ export function createOtaProviders(
 
   return (
     [
-      [MAKEMYTRIP_CONFIG, failureModes.makemytrip],
-      [GOIBIBO_CONFIG, failureModes.goibibo],
+      [MAKEMYTRIP_CONFIG, failureModes.easemytrip],
+      [GOIBIBO_CONFIG, failureModes.ixigo],
       [CLEARTRIP_CONFIG, failureModes.cleartrip],
     ] as const
   )

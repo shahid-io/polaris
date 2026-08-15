@@ -32,8 +32,8 @@ export function istTime(local: string) {
 export function buildOffer(overrides: Partial<NormalizedOffer> = {}): NormalizedOffer {
   return {
     id: `offer-${Math.random().toString(36).slice(2, 8)}`,
-    providerId: 'makemytrip',
-    providerDisplayName: 'MakeMyTrip',
+    providerId: 'easemytrip',
+    providerDisplayName: 'EaseMyTrip',
     integrationType: 'representative',
     itinerary: buildItinerary(),
     price: { total: { amountMinor: 549_900, currency: 'INR' } },
@@ -95,8 +95,8 @@ export function buildGroup(
     priceInr: number;
     offer?: Partial<NormalizedOffer>;
   }[] = [
-    { providerId: 'goibibo', displayName: 'Goibibo', priceInr: 4614 },
-    { providerId: 'makemytrip', displayName: 'MakeMyTrip', priceInr: 4704 },
+    { providerId: 'ixigo', displayName: 'Ixigo', priceInr: 4614 },
+    { providerId: 'easemytrip', displayName: 'EaseMyTrip', priceInr: 4704 },
   ],
   overrides: Partial<ComparisonGroup> = {},
 ): ComparisonGroup {
@@ -145,10 +145,10 @@ export function buildGroup(
 
 export function buildProviderStatus(overrides: Partial<ProviderStatus> = {}): ProviderStatus {
   return {
-    providerId: 'makemytrip',
-    displayName: 'MakeMyTrip',
+    providerId: 'easemytrip',
+    displayName: 'EaseMyTrip',
     integrationType: 'representative',
-    dataSource: 'generated-representative',
+    dataSource: 'recorded-fixture',
     status: 'ok',
     latencyMs: 420,
     offerCount: 12,

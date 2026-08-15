@@ -46,7 +46,7 @@ interface CacheEntry {
  *
  * ### Why this is worth having at all
  * Flight searches are expensive and repetitive: a user toggling filters, going back, or
- * re-running the same route hits identical provider calls. On the live SerpApi adapter the
+ * re-running the same route hits identical provider calls. On the browser adapters the
  * cache also protects a hard monthly quota of 250 searches, without it, a demo could
  * plausibly exhaust the free tier during rehearsal.
  *

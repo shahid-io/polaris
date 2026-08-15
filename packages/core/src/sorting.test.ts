@@ -45,8 +45,8 @@ describe('sortGroups', () => {
     const cheapElsewhere = flight('100');
     const groups = scoreGroups(
       groupOffers([
-        buildOffer({ providerId: 'makemytrip', itinerary: cheapElsewhere, priceInr: 9000 }),
-        buildOffer({ providerId: 'indigo', itinerary: cheapElsewhere, priceInr: 4000 }),
+        buildOffer({ providerId: 'easemytrip', itinerary: cheapElsewhere, priceInr: 9000 }),
+        buildOffer({ providerId: 'cleartrip', itinerary: cheapElsewhere, priceInr: 4000 }),
         buildOffer({ itinerary: flight('200'), priceInr: 6000 }),
       ]),
     );

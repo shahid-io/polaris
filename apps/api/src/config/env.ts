@@ -10,26 +10,22 @@ import { z } from 'zod';
 export const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 
-  /** Selects which adapters ProvidersModule registers. See docs/ARCHITECTURE.md. */
-  PROVIDER_MODE: z.enum(['live', 'fixture', 'hybrid']).default('hybrid'),
-
   API_PORT: z.coerce.number().int().positive().default(4000),
   API_CORS_ORIGIN: z.string().default('http://localhost:3000'),
 
   /**
    * Per-provider ceiling. One slow provider must never hold up the whole search.
    *
-   * 10s rather than something tighter because the live source is genuinely slow on a cold
-   * query: SerpApi caches server-side, so the first request for a route takes around five
-   * seconds and repeats take under one. A 6s budget fitted the repeats and cut off the
-   * first, which meant the live providers timed out on exactly the search a user runs
-   * first.
+   * 20s because every provider is now a browser session, and those are deliberately
+   * serialised: one page at a time, at the rate a person would search. That makes their
+   * latency cumulative rather than concurrent, so the third agency to run finishes around
+   * 10s on a warm machine and rather later on a cold one.
    *
-   * The cost is that a genuinely dead provider is waited on for 10s. That is bounded, runs
-   * concurrently with the others, and the circuit breaker stops it recurring after a few
-   * failures: whereas losing live data on every first search is not recoverable.
+   * The cost is that a genuinely dead provider is waited on for 20s. That is bounded, and
+   * the circuit breaker stops it recurring after a few failures, whereas a budget that
+   * cuts off the last provider on every search is not recoverable.
    */
-  PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
+  PROVIDER_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
   CACHE_TTL_SECONDS: z.coerce.number().int().nonnegative().default(300),
 
   /**
@@ -59,10 +55,6 @@ export const envSchema = z.object({
    */
   MONGODB_URI: z.string().optional(),
 
-  /** Absent keys are tolerated, the affected adapter reports status "skipped". */
-  SERPAPI_KEY: z.string().optional(),
-  DUFFEL_ACCESS_TOKEN: z.string().optional(),
-
   /**
    * Travel agencies to read from their own public search.
    *
@@ -73,7 +65,7 @@ export const envSchema = z.object({
    * **Omitting this enables all of them**, because they are the only providers whose prices
    * can be checked against the seller that quoted them. Turning them off is the decision
    * that should have to be made deliberately. Set it to an empty string to do so; the app
-   * then serves airline fares alone, or nothing at all without a SerpApi key.
+   * then registers no providers at all and every search returns an empty result.
    *
    * Requires Chromium (`pnpm exec playwright install chromium`). Without it each agency
    * reports `skipped`, the same treatment as a missing API key.
