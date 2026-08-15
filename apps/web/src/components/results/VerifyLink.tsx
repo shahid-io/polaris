@@ -26,12 +26,10 @@ export function VerifyLink({ offer }: { offer: NormalizedOffer }) {
   const segment = offer.itinerary.segments[0]!;
   const flight = `${segment.marketingCarrier}-${segment.flightNumber}`;
   const departure = formatLocalTime(segment.departure.local);
-  // The seller's page leads with its discounted figure where one applies, so that is the
-  // number to tell the reader to look for. Naming the comparable price instead would send
-  // them hunting for something their screen does not show.
-  const price = formatRupees(
-    (offer.price.discountedTotal ?? offer.price.total).amountMinor,
-  );
+  // The undiscounted total, because that is the figure these results pages actually print
+  // in their price column; any coupon appears as a separate line beneath it. Verified by
+  // `pnpm verify:prices`, which reads the rendered page rather than the underlying JSON.
+  const price = formatRupees(offer.price.total.amountMinor);
 
   return (
     <a

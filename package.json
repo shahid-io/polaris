@@ -21,7 +21,8 @@
     "lint:fix": "eslint . --fix",
     "demo:video": "pnpm --filter @polaris/web demo:video",
     "fixtures:record:web": "node scripts/record-web-fixtures.mjs",
-    "browsers:install": "pnpm --filter @polaris/providers exec playwright install chromium"
+    "browsers:install": "pnpm --filter @polaris/providers exec playwright install chromium",
+    "verify:prices": "node scripts/verify-prices.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",

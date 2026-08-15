@@ -88,8 +88,8 @@ provider status rather than passing silently.
    and a coupon needs a code not everyone can use; ranking on it would push whichever seller
    advertises the most promotions to the top on a price most users cannot get. The coupon is
    carried as a `conditional` benefit, which scoring excludes, and the discounted figure is
-   shown beside the comparable one so a reader following the verification link recognises
-   the number they land on.
+   shown beside the comparable one because their page shows it the same way: the fare in the
+   price column, the coupon on a line beneath it.
 
 ### When the live session fails
 
@@ -185,9 +185,11 @@ site cannot be made to.
 
 ---
 
-## 5. Verifying a price yourself
+## 5. Verifying a price
 
-This is the part that matters, and it does not require reading any code.
+Two ways, one for a person and one for the build.
+
+### By hand
 
 1. Run a search.
 2. Expand a flight and click **Check on <provider>** on any seller's row.
@@ -199,6 +201,46 @@ None of the three sites supports linking to a single itinerary: their result car
 script-driven with no per-flight URL, and only Ixigo honours an airline filter in the query
 string. So the link lands on a list, and the UI names the flight, departure time and price
 to look for, which turns verification into a scan rather than a hunt.
+
+### By command
+
+```bash
+pnpm verify:prices --route DEL-BOM --date 2026-08-27
+```
+
+Runs a real search, then independently opens each seller's page, reads the fares a human
+would see, and reports every flight where the two disagree. Exits non-zero on any mismatch.
+
+```
+PASS  Cleartrip    65 flights checked, 0 mismatched  (66 quoted, 72 on page)
+PASS  EaseMyTrip   49 flights checked, 0 mismatched  (66 quoted, 56 on page)
+PASS  Ixigo        45 flights checked, 0 mismatched  (65 quoted, 51 on page)
+
+159 flights checked across 3 sellers, 0 mismatched.
+```
+
+**It reads the rendered page, not the JSON.** The adapters work by capturing the JSON a
+site's front end receives; a harness doing the same would compare the pipeline against
+itself and pass even if every mapping were wrong. Reading rendered text checks the whole
+chain against what the seller actually shows a customer, which is the only version of this
+check worth having.
+
+That makes the harness deliberately fragile where the product is not. It depends on page
+layout, and it is meant to: when a seller redesigns, this should start failing and say so.
+
+Two constraints worth knowing:
+
+- **Non-stop itineraries only.** A flight number identifies a journey only when it has no
+  stops; a connection renders both leg numbers, so keying on either would pair a price with
+  a journey that may not match. Same reasoning as the canonical key.
+- **Only what the page renders.** These lists load lazily, and Ixigo's is virtualised inside
+  an inner scroll container, so the harness scrolls whichever element actually overflows and
+  accumulates text as it goes. Flights that never render are reported as unchecked rather
+  than counted as passing.
+
+It has already earned its place. It caught that the verification link was telling readers to
+look for a coupon-discounted figure, when these pages print the undiscounted fare in the
+price column and show the coupon on a separate line beneath.
 
 ---
 

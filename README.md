@@ -187,8 +187,19 @@ No airline's own API was integrated, because none of the Indian carriers publish
 
 Provenance is structural, not documentary: every offer carries its `integrationType`, a
 replayed recording is downgraded so it can never claim to be current, and replayed prices
-are excluded from cheapest and best-value ranking. Full matrix and measurements:
-[`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md).
+are excluded from cheapest and best-value ranking.
+
+**The claim is checkable, not just stated:**
+
+```bash
+pnpm verify:prices --route DEL-BOM --date 2026-08-27
+```
+
+opens each seller's page, reads the fares a human would see, and fails on any disagreement.
+It reads the rendered page rather than the underlying JSON, so it checks the whole pipeline
+against what the seller actually shows a customer instead of comparing the code to itself.
+
+Full matrix and measurements: [`docs/INTEGRATIONS.md`](./docs/INTEGRATIONS.md).
 
 ---
 

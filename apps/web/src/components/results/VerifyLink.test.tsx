@@ -52,11 +52,11 @@ describe('VerifyLink', () => {
   });
 
   /**
-   * The seller's page leads with its discounted figure, so that is the number to send the
-   * reader looking for. Naming the comparable price would send them hunting for something
-   * their screen does not show.
+   * These results pages print the undiscounted fare in their price column and show any
+   * coupon as a separate line beneath it, so the total is the number to send the reader
+   * looking for. Confirmed by reading the rendered pages in `pnpm verify:prices`.
    */
-  it('points at the discounted figure when the seller shows one', () => {
+  it('names the undiscounted total even when a coupon applies', () => {
     render(
       <VerifyLink
         offer={buildOffer({
@@ -69,7 +69,8 @@ describe('VerifyLink', () => {
       />,
     );
 
-    expect(screen.getByRole('link').getAttribute('title')).toContain('₹5,505');
+    expect(screen.getByRole('link').getAttribute('title')).toContain('₹5,942');
+    expect(screen.getByRole('link').getAttribute('title')).not.toContain('₹5,505');
   });
 
   it('renders nothing when an offer has no link to prove it', () => {
