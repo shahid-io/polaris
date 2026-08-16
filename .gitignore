@@ -43,3 +43,4 @@ apps/web/.demo-frames/
 
 # Local high-quality demo recordings. The README ships the GIF instead.
 recordings/
+.screenshots/
